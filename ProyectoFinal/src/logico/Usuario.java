@@ -2,6 +2,7 @@ package logico;
 
 public class Usuario {
 	
+	private String Id;
 	private String username;
 	private String password;
 	private String correo;
@@ -10,9 +11,10 @@ public class Usuario {
 	private TipoUser tipoUser;
 	
 	
-	public Usuario(String username, String password, String correo, Empresa empresa, Persona persona,
+	public Usuario(String Id,String username, String password, String correo, Empresa empresa, Persona persona,
 			TipoUser tipoUser) {
 		super();
+		this.Id = Id;
 		this.username = username;
 		this.password = password;
 		this.correo = correo;
@@ -79,6 +81,10 @@ public class Usuario {
 
 	public void setTipoUser(TipoUser tipoUser) {
 		this.tipoUser = tipoUser;
+	}
+
+	public String getId() {
+		return Id;
 	}
 	
 	

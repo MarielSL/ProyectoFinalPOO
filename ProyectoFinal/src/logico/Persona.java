@@ -1,6 +1,7 @@
 package logico;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public abstract class Persona {
 	private String id;
@@ -16,6 +17,7 @@ public abstract class Persona {
 	private boolean licenciaConducir;
 	private boolean estadoEmpleo;
 	private Usuario user;
+	private ArrayList<SolicitudEmpleo> solicitudes;
 	
 	public Persona(String id, String cedula, String nombre, String apellido, LocalDate fechNacim, String telefono,
 			String direccion, Sexo sexo, String ciudad, boolean dispParaMudarse, boolean licenciaConducir,
@@ -34,6 +36,7 @@ public abstract class Persona {
 		this.licenciaConducir = licenciaConducir;
 		this.estadoEmpleo = estadoEmpleo;
 		this.user = user;
+		solicitudes = new ArrayList<>();
 	}
 
 	public String getCedula() {
@@ -134,6 +137,14 @@ public abstract class Persona {
 
 	public String getId() {
 		return id;
+	}
+
+	public ArrayList<SolicitudEmpleo> getSolicitudes() {
+		return solicitudes;
+	}
+
+	public void setSolicitudes(ArrayList<SolicitudEmpleo> solicitudes) {
+		this.solicitudes = solicitudes;
 	}
 	
 	

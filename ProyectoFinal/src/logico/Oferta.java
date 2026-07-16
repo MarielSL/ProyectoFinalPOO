@@ -21,7 +21,7 @@ public class Oferta {
 	
 	public Oferta(String id, Sexo sexo, Persona tipoCandidato, String puesto, int cantPuestos, boolean licencia,
 			boolean dispMudar, EstadoOferta estado, String jornada, String ciudad, float rangoOferta,
-			String descripPuesto, ArrayList<SolicitudEmpleo> solicitudes, Empresa empresa) {
+			String descripPuesto, Empresa empresa) {
 		super();
 		this.id = id;
 		this.sexo = sexo;
@@ -35,7 +35,7 @@ public class Oferta {
 		this.ciudad = ciudad;
 		this.rangoOferta = rangoOferta;
 		this.descripPuesto = descripPuesto;
-		this.solicitudes = solicitudes;
+		solicitudes = new ArrayList<>();
 		this.empresa = empresa;
 	}
 
