@@ -15,7 +15,7 @@ public class BolsaEmpleo {
 	public static int generadorIdUser =0;
 	private static BolsaEmpleo bolsaEmpleo = null;
 	
-	public BolsaEmpleo() {
+	private BolsaEmpleo() {
 		super();
 		usuarios = new ArrayList<>();
 		personas = new ArrayList<>();
@@ -23,7 +23,7 @@ public class BolsaEmpleo {
 		solicitudes = new ArrayList<>();
 		ofertas = new ArrayList<>();
 	}
-	public BolsaEmpleo GetInstancia() {
+	public static BolsaEmpleo getInstancia() {
 		if(bolsaEmpleo == null) {
 			bolsaEmpleo = new BolsaEmpleo();
 		}
