@@ -13,17 +13,19 @@ public class Empresa {
 	private ArrayList<Oferta>lasOfertas;
 	private Usuario user;
 	
-	public Empresa(String rnc, String nombre, String telefono, String direccion, TipoEmpresa tipo, boolean estado,
-			ArrayList<Oferta> lasOfertas, Usuario user) {
+	public Empresa(String rnc, String nombre, String telefono, String direccion, TipoEmpresa tipo) {
 		super();
 		this.rnc = rnc;
 		this.nombre = nombre;
 		this.telefono = telefono;
 		this.direccion = direccion;
 		this.tipo = tipo;
-		this.estado = estado;
-		this.lasOfertas = lasOfertas;
-		this.user = user;
+		this.estado = true;
+		this.lasOfertas = new ArrayList<>();
+	}
+
+	public void agregarOferta(Oferta o) {
+		lasOfertas.add(o);
 	}
 
 	public String getRnc() {
@@ -76,10 +78,6 @@ public class Empresa {
 
 	public ArrayList<Oferta> getLasOfertas() {
 		return lasOfertas;
-	}
-
-	public void setLasOfertas(ArrayList<Oferta> lasOfertas) {
-		this.lasOfertas = lasOfertas;
 	}
 
 	public Usuario getUser() {
