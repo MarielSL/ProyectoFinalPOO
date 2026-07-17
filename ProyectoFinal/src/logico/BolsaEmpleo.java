@@ -10,6 +10,7 @@ public class BolsaEmpleo {
 	private ArrayList<SolicitudEmpleo> solicitudes;
 	private ArrayList<Oferta> ofertas;
 	public static int generadorIdPersona =0;
+	public static int generadorIdEmpresa =0;
 	public static int generadorIdOferta =0;
 	public static int generadorIdSolicitud =0;
 	public static int generadorIdUser =0;
@@ -60,6 +61,121 @@ public class BolsaEmpleo {
 		this.ofertas = ofertas;
 	}
 	
+	public void regUser(Usuario user) {
+		usuarios.add(user);
+		generadorIdUser++;
+	}
 	
+	public void regPersona(Persona persona) {
+		personas.add(persona);
+		generadorIdPersona++;
+	}
 	
+	public void regEmpresa(Empresa empresa) {
+		empresas.add(empresa);
+		generadorIdEmpresa++;
+	}
+	
+	public void refOferta (Oferta oferta) {
+		ofertas.add(oferta);
+		generadorIdOferta++;
+	}
+	
+	public void regSolicitud(SolicitudEmpleo solicitud) {
+		solicitudes.add(solicitud);
+		generadorIdSolicitud++;
+	}
+	
+	private Usuario buscarUser(String Id) {
+		Usuario aux = null;
+		boolean encontrado = false;
+		int ind=0;
+		
+		while(!encontrado && ind<usuarios.size()) {
+			if(usuarios.get(ind).getId().equalsIgnoreCase(Id)) {
+				aux = usuarios.get(ind);
+				encontrado = true;
+			}
+			ind++;
+		}
+		
+		return aux;
+	}
+	
+	private Persona buscarPersona (String Id) {
+		Persona aux = null;
+		boolean encontrado = false;
+		int ind=0;
+		
+		while(!encontrado && ind<personas.size()) {
+			if(personas.get(ind).getId().equalsIgnoreCase(Id)) {
+				aux = personas.get(ind);
+				encontrado = true;
+			}
+			ind++;
+		}
+		
+		return aux;
+	}
+	
+	private Empresa buscarEmpresa (String Id) {
+		Empresa aux = null;
+		boolean encontrado = false;
+		int ind=0;
+		
+		while(!encontrado && ind<empresas.size()) {
+			if(empresas.get(ind).getId().equalsIgnoreCase(Id)) {
+				aux = empresas.get(ind);
+				encontrado = true;
+			}
+			ind++;
+		}
+		
+		return aux;
+	}
+	
+	private Oferta buscarOferta (String Id) {
+		Oferta aux = null;
+		boolean encontrado = false;
+		int ind=0;
+		
+		while(!encontrado && ind<ofertas.size()) {
+			if(ofertas.get(ind).getId().equalsIgnoreCase(Id)) {
+				aux = ofertas.get(ind);
+				encontrado = true;
+			}
+			ind++;
+		}
+		
+		return aux;
+	}
+	
+	private SolicitudEmpleo buscarSolicitud (String Id) {
+		SolicitudEmpleo aux = null;
+		boolean encontrado = false;
+		int ind=0;
+		
+		while(!encontrado && ind<solicitudes.size()) {
+			if(solicitudes.get(ind).getId().equalsIgnoreCase(Id)) {
+				aux = solicitudes.get(ind);
+				encontrado = true;
+			}
+			ind++;
+		}
+		
+		return aux;
+	}
+	
+	public boolean dispUsername(String username) {
+		boolean disp = true;
+		int ind =0;
+		
+		while(disp && ind<usuarios.size()) {
+			if(usuarios.get(ind).getUsername().equals(username)) {
+				disp=false;
+			}
+			ind++;
+		}
+		return disp;
+	}
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Empresa {
 	
+	private String Id;
 	private String rnc;
 	private String nombre;
 	private String telefono;
@@ -13,8 +14,9 @@ public class Empresa {
 	private ArrayList<Oferta>lasOfertas;
 	private Usuario user;
 	
-	public Empresa(String rnc, String nombre, String telefono, String direccion, TipoEmpresa tipo) {
+	public Empresa(String Id, String rnc, String nombre, String telefono, String direccion, TipoEmpresa tipo) {
 		super();
+		this.Id = Id;
 		this.rnc = rnc;
 		this.nombre = nombre;
 		this.telefono = telefono;
@@ -86,6 +88,14 @@ public class Empresa {
 
 	public void setUser(Usuario user) {
 		this.user = user;
+	}
+
+	public String getId() {
+		return Id;
+	}
+
+	public void setLasOfertas(ArrayList<Oferta> lasOfertas) {
+		this.lasOfertas = lasOfertas;
 	}
 	
 }
