@@ -81,7 +81,9 @@ public class BolsaEmpleo {
 		generadorIdOferta++;
 	}
 	
-	public void regSolicitud(SolicitudEmpleo solicitud) {
+	public void regSolicitud(String idOferta, SolicitudEmpleo solicitud) {
+		Oferta aux = buscarOferta(idOferta);
+		aux.getSolicitudes().add(solicitud);
 		solicitudes.add(solicitud);
 		generadorIdSolicitud++;
 	}
@@ -178,4 +180,56 @@ public class BolsaEmpleo {
 		}
 		return disp;
 	}
+	
+	
+	public float calcCoincidencia(String idOferta, String idSolicitud) {
+		float porcentaje = 0;
+		Oferta oferta = buscarOferta(idOferta);
+		SolicitudEmpleo solicitud = buscarSolicitud(idSolicitud);
+		
+		TipoPersona tipoSolicitado = oferta.getTipoCandidato();
+		if((tipoSolicitado == TipoPersona.CUALQUIERA) ||
+			(tipoSolicitado == TipoPersona.UNIVERSITARIO && solicitud.getCandidato() instanceof Universitario) ||
+			(tipoSolicitado == TipoPersona.OBRERO && solicitud.getCandidato() instanceof Obrero) ||
+			(tipoSolicitado == TipoPersona.TECNICO && solicitud.getCandidato() instanceof Tecnico)) {
+			porcentaje += 20;
+		}
+		float expEsperada = oferta.getAniosExp();
+		float expSolicitante = solicitud.getExperiencia();
+		if(expSolicitante >= expEsperada) {
+			porcentaje += 20;
+		}
+		else {
+			porcentaje += (expSolicitante / expEsperada ) * 20;
+		}
+		
+		if(oferta.getJornada().equals(solicitud.getJornada())) {
+			porcentaje+=10;
+		}
+		
+		if(oferta.getPuesto() == (solicitud.getPuestoDeseado())) {
+			porcentaje+=20;
+		}
+		
+		if(!oferta.isLicencia() || oferta.isLicencia() && solicitud.isLicencia()) {
+			porcentaje += 5;
+		}
+		
+		if(solicitud.getModalidad() == oferta.getModalidad()) {
+			porcentaje += 10;
+		}
+		
+		if(solicitud.getCandidato().getCiudad().equalsIgnoreCase(oferta.getCiudad())) {
+			porcentaje += 15;
+		}
+		else {
+			if(solicitud.isDispMudar()) {
+				porcentaje += 15;
+			}
+		}
+
+		return porcentaje;
+	}
+	
+	
 }

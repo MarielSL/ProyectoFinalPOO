@@ -6,22 +6,24 @@ public class Oferta {
 	
 	private String id;
 	private Sexo sexo;
-	private Persona tipoCandidato;
+	private TipoPersona tipoCandidato;
 	private String puesto;
 	private int cantPuestos;
 	private boolean licencia;
 	private boolean dispMudar;
 	private EstadoOferta estado;
-	private String jornada;
+	private Jornada jornada;
 	private String ciudad;
-	private float rangoOferta;
+	private float salario;
 	private String descripPuesto;
+	private int aniosExp;
 	private ArrayList<SolicitudEmpleo> solicitudes;
 	private Empresa empresa;
+	private Modalidad modalidad;
 	
-	public Oferta(String id, Sexo sexo, Persona tipoCandidato, String puesto, int cantPuestos, boolean licencia,
-			boolean dispMudar, EstadoOferta estado, String jornada, String ciudad, float rangoOferta,
-			String descripPuesto, Empresa empresa) {
+	public Oferta(String id, Sexo sexo, TipoPersona tipoCandidato, String puesto, int cantPuestos, boolean licencia,
+			boolean dispMudar, EstadoOferta estado, Jornada jornada, String ciudad, float salario,
+			String descripPuesto, int aniosExp, Empresa empresa, Modalidad modalidad) {
 		super();
 		this.id = id;
 		this.sexo = sexo;
@@ -33,10 +35,12 @@ public class Oferta {
 		this.estado = estado;
 		this.jornada = jornada;
 		this.ciudad = ciudad;
-		this.rangoOferta = rangoOferta;
+		this.salario = salario;
 		this.descripPuesto = descripPuesto;
+		this.aniosExp = aniosExp;
 		solicitudes = new ArrayList<>();
 		this.empresa = empresa;
+		this.modalidad = modalidad;
 	}
 
 	public Sexo getSexo() {
@@ -47,11 +51,11 @@ public class Oferta {
 		this.sexo = sexo;
 	}
 
-	public Persona getTipoCandidato() {
+	public TipoPersona getTipoCandidato() {
 		return tipoCandidato;
 	}
 
-	public void setTipoCandidato(Persona tipoCandidato) {
+	public void setTipoCandidato(TipoPersona tipoCandidato) {
 		this.tipoCandidato = tipoCandidato;
 	}
 
@@ -95,11 +99,11 @@ public class Oferta {
 		this.estado = estado;
 	}
 
-	public String getJornada() {
+	public Jornada getJornada() {
 		return jornada;
 	}
 
-	public void setJornada(String jornada) {
+	public void setJornada(Jornada jornada) {
 		this.jornada = jornada;
 	}
 
@@ -109,14 +113,6 @@ public class Oferta {
 
 	public void setCiudad(String ciudad) {
 		this.ciudad = ciudad;
-	}
-
-	public float getRangoOferta() {
-		return rangoOferta;
-	}
-
-	public void setRangoOferta(float rangoOferta) {
-		this.rangoOferta = rangoOferta;
 	}
 
 	public String getDescripPuesto() {
@@ -145,6 +141,30 @@ public class Oferta {
 
 	public String getId() {
 		return id;
+	}
+
+	public float getSalario() {
+		return salario;
+	}
+
+	public void setSalario(float salario) {
+		this.salario = salario;
+	}
+
+	public int getAniosExp() {
+		return aniosExp;
+	}
+
+	public void setAniosExp(int aniosExp) {
+		this.aniosExp = aniosExp;
+	}
+
+	public Modalidad getModalidad() {
+		return modalidad;
+	}
+
+	public void setModalidad(Modalidad modalidad) {
+		this.modalidad = modalidad;
 	}
 	
 	

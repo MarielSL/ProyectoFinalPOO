@@ -15,12 +15,13 @@ public class SolicitudEmpleo {
 	private Oferta oferta;
 	private float porcentajeCoincidencia;
 	private boolean dispMudar;
-	private String experiencia;
+	private int experiencia;
 	private LocalDate fechaSolicitud;
+	private boolean licencia;
 	
 	public SolicitudEmpleo(String id, String puestoDeseado, String areaInteres, String ubicacionPreferida,
 			Modalidad modalidad, Jornada jornada, EstadoSolicitud estado, Persona candidato, Oferta oferta,
-			float porcentajeCoincidencia, boolean dispMudar, String experiencia, LocalDate fechaSolicitud) {
+			float porcentajeCoincidencia, boolean dispMudar, int experiencia, LocalDate fechaSolicitud, boolean licencia) {
 		super();
 		this.id = id;
 		this.puestoDeseado = puestoDeseado;
@@ -35,6 +36,7 @@ public class SolicitudEmpleo {
 		this.dispMudar = dispMudar;
 		this.experiencia = experiencia;
 		this.fechaSolicitud = fechaSolicitud;
+		this.licencia = licencia;
 	}
 
 	public String getPuestoDeseado() {
@@ -117,11 +119,11 @@ public class SolicitudEmpleo {
 		this.dispMudar = dispMudar;
 	}
 
-	public String getExperiencia() {
+	public int getExperiencia() {
 		return experiencia;
 	}
 
-	public void setExperiencia(String experiencia) {
+	public void setExperiencia(int experiencia) {
 		this.experiencia = experiencia;
 	}
 
@@ -135,6 +137,14 @@ public class SolicitudEmpleo {
 
 	public String getId() {
 		return id;
+	}
+
+	public boolean isLicencia() {
+		return licencia;
+	}
+
+	public void setLicencia(boolean licencia) {
+		this.licencia = licencia;
 	}
 	
 	
