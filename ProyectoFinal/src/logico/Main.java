@@ -8,7 +8,7 @@ public class Main {
 
 		BolsaEmpleo bolsa = BolsaEmpleo.getInstancia();
 
-		Empresa empresa1 = new Empresa("E1", "130-12345-6", "Grupo Ramos", "8095551234", "Santiago", TipoEmpresa.TECNOLOGIA);
+		Empresa empresa1 = new Empresa("E1", "130-12345-6", "Grupo Ramos", "8095551234", "Santiago", TipoEmpresa.TECNOLOGIA,null);
 		bolsa.regEmpresa(empresa1);
 
 		Oferta oferta1 = new Oferta("O1", Sexo.FEMENINO, TipoPersona.UNIVERSITARIO, "Analista de Sistemas", 2, false,

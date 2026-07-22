@@ -14,7 +14,7 @@ public class Empresa {
 	private ArrayList<Oferta>lasOfertas;
 	private Usuario user;
 	
-	public Empresa(String Id, String rnc, String nombre, String telefono, String direccion, TipoEmpresa tipo) {
+	public Empresa(String Id, String rnc, String nombre, String telefono, String direccion, TipoEmpresa tipo, Usuario user) {
 		super();
 		this.Id = Id;
 		this.rnc = rnc;
@@ -24,6 +24,7 @@ public class Empresa {
 		this.tipo = tipo;
 		this.estado = true;
 		this.lasOfertas = new ArrayList<>();
+		this.user = user;
 	}
 
 	public void agregarOferta(Oferta o) {
