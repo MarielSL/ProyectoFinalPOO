@@ -57,7 +57,7 @@ public class LogIn extends JDialog {
 		setForeground(new Color(255, 153, 0));
 		setBackground(new Color(0, 0, 51));
 		setTitle("Iniciar Sesi\u00F3n");
-		setBounds(100, 100, 370, 448);
+		setBounds(100, 100, 720, 524);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -71,7 +71,7 @@ public class LogIn extends JDialog {
 				
 				PanelRedond panel_1 = new PanelRedond(30);
 				panel_1.setBackground(new Color(245, 245, 245));
-				panel_1.setBounds(25, 23, 299, 339);
+				panel_1.setBounds(198, 78, 299, 339);
 				panel.add(panel_1);
 				panel_1.setLayout(null);
 				
@@ -152,7 +152,7 @@ public class LogIn extends JDialog {
 				
 				JLabel lblNewLabel_2 = new JLabel("New label");
 				lblNewLabel_2.setIcon(new ImageIcon(LogIn.class.getResource("/img/Fondo-General.png")));
-				lblNewLabel_2.setBounds(0, 0, 359, 401);
+				lblNewLabel_2.setBounds(0, 0, 700, 480);
 				panel.add(lblNewLabel_2);
 				colocarImagen(lblNewLabel_2,"/img/Fondo-General.png");
 		}
