@@ -8,7 +8,13 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+
+import logico.BolsaEmpleo;
+import logico.Usuario;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Color;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
@@ -22,6 +28,7 @@ import java.awt.RenderingHints;
 import javax.swing.JPasswordField;
 import javax.swing.JEditorPane;
 import javax.swing.ImageIcon;
+import java.awt.SystemColor;
 
 public class LogIn extends JDialog {
 
@@ -69,50 +76,77 @@ public class LogIn extends JDialog {
 				panel_1.setLayout(null);
 				
 				JLabel lblNewLabel = new JLabel("Usuario:");
-				lblNewLabel.setFont(new Font("Book Antiqua", Font.PLAIN, 18));
+				lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, 18));
 				lblNewLabel.setBounds(57, 70, 76, 16);
 				panel_1.add(lblNewLabel);
 				
 				txtUser = new TextFieldRedond(25);
-				txtUser.setBackground(new Color(0, 0, 51));
-				txtUser.setForeground(new Color(255, 255, 255));
-				txtUser.setFont(new Font("Book Antiqua", Font.PLAIN, 18));
+				txtUser.setBackground(SystemColor.controlHighlight);
+				txtUser.setForeground(new Color(0, 0, 51));
+				txtUser.setFont(new Font("Calibri", Font.PLAIN, 18));
 				txtUser.setBounds(57, 99, 173, 26);
 				panel_1.add(txtUser);
 				txtUser.setColumns(10);
 				
 				JLabel lblNewLabel_1 = new JLabel("Password:");
-				lblNewLabel_1.setFont(new Font("Book Antiqua", Font.PLAIN, 18));
-				lblNewLabel_1.setBounds(57, 154, 117, 16);
+				lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));
+				lblNewLabel_1.setBounds(57, 152, 117, 16);
 				panel_1.add(lblNewLabel_1);
 				
 				passwordField = new PasswordFieldRedond(25);
-				passwordField.setBackground(new Color(0, 0, 51));
-				passwordField.setForeground(new Color(255, 255, 255));
-				passwordField.setFont(new Font("Book Antiqua", Font.PLAIN, 18));
+				passwordField.setBackground(SystemColor.controlHighlight);
+				passwordField.setForeground(new Color(0, 0, 51));
+				passwordField.setFont(new Font("Calibri", Font.PLAIN, 18));
 				passwordField.setBounds(57, 178, 173, 26);
 				panel_1.add(passwordField);
 				
 				BotonRedond btnNewButton = new BotonRedond("Login",25);
 				btnNewButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						if(txtUser.getText().trim().isEmpty() || passwordField.getPassword().length == 0) {
+							JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+							return;
+						}
+						if(!(BolsaEmpleo.getInstancia().confirmLogin(txtUser.getText(), passwordField.getText()))) {
+							JOptionPane.showMessageDialog(null,"El usuario no existe, debe de crear una cuenta." , "Advertencia", JOptionPane.WARNING_MESSAGE);
+							return;
+						}
+					
+						if(!(BolsaEmpleo.getInstancia().validUserPassword(txtUser.getText(),passwordField.getText()))) {
+							JOptionPane.showMessageDialog(null,"Contraseña Incorrecta." , "Advertencia", JOptionPane.WARNING_MESSAGE);
+							return;
+						}
+						dispose();
+					
 					}
 				});
 				btnNewButton.setForeground(new Color(0, 0, 51));
 				btnNewButton.setBackground(new Color(255, 153, 51));
-				btnNewButton.setFont(new Font("Book Antiqua", Font.PLAIN, 16));
+				btnNewButton.setFont(new Font("Calibri", Font.PLAIN, 16));
 				btnNewButton.setBounds(22, 271, 97, 25);
 				panel_1.add(btnNewButton);
 				
 				BotonRedond btnNewButton_1 = new BotonRedond("Registrarse",25);
 				btnNewButton_1.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						if(txtUser.getText().trim().isEmpty() || passwordField.getPassword().length == 0) {
+							JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+							return;
+						}
+						if(BolsaEmpleo.getInstancia().verifUsuario(txtUser.getText(), passwordField.getText())) {
+							JOptionPane.showConfirmDialog(null, "Usuario en uso.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+							return;
+						}
+						Usuario newUser = new Usuario("U-"+BolsaEmpleo.generadorIdUser,txtUser.getText(),passwordField.getText(),null,null,null,null);
+						BolsaEmpleo.getInstancia().regUser(newUser);
+						BolsaEmpleo.getInstancia().setLoginUser(newUser);
+						dispose();
 						
 					}
 				});
 				btnNewButton_1.setForeground(new Color(0, 0, 51));
 				btnNewButton_1.setBackground(new Color(255, 153, 51));
-				btnNewButton_1.setFont(new Font("Book Antiqua", Font.PLAIN, 16));
+				btnNewButton_1.setFont(new Font("Calibri", Font.PLAIN, 16));
 				btnNewButton_1.setBounds(147, 271, 126, 25);
 				panel_1.add(btnNewButton_1);
 				
@@ -155,6 +189,4 @@ public class LogIn extends JDialog {
 		    label.setHorizontalAlignment(JLabel.CENTER);
 		    label.setVerticalAlignment(JLabel.CENTER);
 	}
-
-	
 }

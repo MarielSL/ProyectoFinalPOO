@@ -12,6 +12,7 @@ import javax.swing.border.EmptyBorder;
 import logico.BolsaEmpleo;
 import logico.Empresa;
 import logico.TipoEmpresa;
+import logico.TipoUser;
 import logico.Usuario;
 
 import javax.swing.JLabel;
@@ -28,6 +29,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import javax.swing.DefaultComboBoxModel;
+import java.awt.SystemColor;
 
 public class RegEmpresa extends JDialog {
 
@@ -37,6 +39,7 @@ public class RegEmpresa extends JDialog {
 	private TextFieldRedond txtDireccion;
 	private TextFieldRedond txtRnc;
 	private ComboBoxRedond<TipoEmpresa> cbxTipo;
+	private TextFieldRedond txtCorreo;
 
 	/**
 	 * Launch the application.
@@ -63,19 +66,28 @@ public class RegEmpresa extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
-		JButton btnNewButton = new JButton("Registrar");
-		btnNewButton.setFont(new Font("Book Antiqua", Font.PLAIN, 18));
+		BotonRedond btnNewButton = new BotonRedond("Registrar",25);
+		btnNewButton.setFont(new Font("Calibri", Font.PLAIN, 18));
 		btnNewButton.setBackground(new Color(255, 165, 0));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(txtRnc.getText().trim().isEmpty() || txtNombEmpresa.getText().trim().isEmpty()  || txtTelefono.getText().trim().isEmpty() 
-						|| txtDireccion.getText().trim().isEmpty()  || cbxTipo.getSelectedIndex()==-1) {
+						|| txtDireccion.getText().trim().isEmpty()  || cbxTipo.getSelectedIndex()==-1 || txtCorreo.getText().trim().isEmpty()) {
 					JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				if(BolsaEmpleo.getInstancia().isEmpressRep(txtRnc.getText())) {
+					JOptionPane.showMessageDialog(null, "ERROR!: esta empresa ha sido registrada", "Advertenicia", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				Empresa empresa = new Empresa ("E-"+BolsaEmpleo.generadorIdEmpresa, txtRnc.getText(), txtNombEmpresa.getText(), txtTelefono.getText(),
 						txtDireccion.getText(), (TipoEmpresa) cbxTipo.getSelectedItem(), user);
 				BolsaEmpleo.getInstancia().regEmpresa(empresa);
+				Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
+				user.setEmpresa(empresa);
+				user.setCorreo(txtCorreo.getText());
+				user.setTipoUser(TipoUser.EMPRESA);
+				BolsaEmpleo.getInstancia().setLoginUser(user);
 				JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Información", JOptionPane.INFORMATION_MESSAGE);
 				clear();
 			}
@@ -116,7 +128,7 @@ public class RegEmpresa extends JDialog {
 
 		panel.setBackground(new Color(0, 0, 51));
 		panel.setForeground(new Color(0, 0, 51));
-		panel.setBounds(27, 28, 664, 37);
+		panel.setBounds(27, 20, 664, 37);
 		contentPanel.add(panel);
 		panel.setLayout(null);
 
@@ -127,67 +139,67 @@ public class RegEmpresa extends JDialog {
 		lblNewLabel.setFont(new Font("Book Antiqua", Font.BOLD, 20));
 
 		JLabel lblNewLabel_1 = new JLabel("Nombre de la Empresa:");
-		lblNewLabel_1.setFont(new Font("Book Antiqua", Font.PLAIN, 18));
-		lblNewLabel_1.setBounds(27, 94, 214, 31);
+		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblNewLabel_1.setBounds(27, 70, 214, 31);
 		contentPanel.add(lblNewLabel_1);
 
 		txtNombEmpresa = new TextFieldRedond(25);
-		txtNombEmpresa.setForeground(new Color(255, 255, 255));
-		txtNombEmpresa.setBackground(new Color(0, 0, 51));
-		txtNombEmpresa.setFont(new Font("Book Antiqua", Font.PLAIN, 16));
-		txtNombEmpresa.setBounds(27, 129, 214, 26);
+		txtNombEmpresa.setForeground(new Color(0, 0, 51));
+		txtNombEmpresa.setBackground(SystemColor.controlHighlight);
+		txtNombEmpresa.setFont(new Font("Calibri", Font.PLAIN, 15));
+		txtNombEmpresa.setBounds(27, 106, 214, 26);
 		contentPanel.add(txtNombEmpresa);
 		txtNombEmpresa.setColumns(10);
 
 		JLabel lblNewLabel_2 = new JLabel("Tel\u00E9fono:");
-		lblNewLabel_2.setFont(new Font("Book Antiqua", Font.PLAIN, 18));
-		lblNewLabel_2.setBounds(27, 245, 92, 16);
+		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblNewLabel_2.setBounds(27, 281, 92, 16);
 		contentPanel.add(lblNewLabel_2);
 
 		txtTelefono = new TextFieldRedond(25);
-		txtTelefono.setFont(new Font("Book Antiqua", Font.PLAIN, 16));
-		txtTelefono.setForeground(new Color(255, 255, 255));
-		txtTelefono.setBackground(new Color(0, 0, 51));
-		txtTelefono.setBounds(27, 278, 214, 26);
+		txtTelefono.setFont(new Font("Calibri", Font.PLAIN, 15));
+		txtTelefono.setForeground(new Color(0, 0, 51));
+		txtTelefono.setBackground(SystemColor.controlHighlight);
+		txtTelefono.setBounds(27, 310, 214, 26);
 		contentPanel.add(txtTelefono);
 		txtTelefono.setColumns(10);
 
 		JLabel lblNewLabel_3 = new JLabel("Direcci\u00F3n:");
-		lblNewLabel_3.setFont(new Font("Book Antiqua", Font.PLAIN, 18));
-		lblNewLabel_3.setBounds(27, 319, 85, 16);
+		lblNewLabel_3.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblNewLabel_3.setBounds(27, 352, 85, 16);
 		contentPanel.add(lblNewLabel_3);
 
 		txtDireccion = new TextFieldRedond(25);
-		txtDireccion.setForeground(new Color(255, 255, 255));
-		txtDireccion.setBackground(new Color(0, 0, 51));
-		txtDireccion.setFont(new Font("Book Antiqua", Font.PLAIN, 16));
-		txtDireccion.setBounds(27, 350, 214, 26);
+		txtDireccion.setForeground(new Color(0, 0, 51));
+		txtDireccion.setBackground(SystemColor.controlHighlight);
+		txtDireccion.setFont(new Font("Calibri", Font.PLAIN, 15));
+		txtDireccion.setBounds(27, 377, 214, 26);
 		contentPanel.add(txtDireccion);
 		txtDireccion.setColumns(10);
 
 		JLabel lblNewLabel_4 = new JLabel("RNC:");
-		lblNewLabel_4.setFont(new Font("Book Antiqua", Font.PLAIN, 18));
-		lblNewLabel_4.setBounds(27, 170, 56, 16);
+		lblNewLabel_4.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblNewLabel_4.setBounds(27, 206, 56, 16);
 		contentPanel.add(lblNewLabel_4);
 
 		txtRnc = new TextFieldRedond(25);
-		txtRnc.setFont(new Font("Book Antiqua", Font.PLAIN, 16));
-		txtRnc.setForeground(new Color(255, 255, 255));
-		txtRnc.setBackground(new Color(0, 0, 51));
-		txtRnc.setBounds(27, 199, 214, 26);
+		txtRnc.setFont(new Font("Calibri", Font.PLAIN, 15));
+		txtRnc.setForeground(new Color(0, 0, 51));
+		txtRnc.setBackground(SystemColor.controlHighlight);
+		txtRnc.setBounds(27, 235, 214, 26);
 		contentPanel.add(txtRnc);
 		txtRnc.setColumns(10);
 
 		JLabel lblNewLabel_5 = new JLabel("Tipo:");
-		lblNewLabel_5.setFont(new Font("Book Antiqua", Font.PLAIN, 18));
-		lblNewLabel_5.setBounds(375, 101, 56, 16);
+		lblNewLabel_5.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblNewLabel_5.setBounds(375, 75, 56, 16);
 		contentPanel.add(lblNewLabel_5);
 
 		cbxTipo = new ComboBoxRedond<TipoEmpresa>(25);
-		cbxTipo.setForeground(new Color(255, 255, 255));
-		cbxTipo.setFont(new Font("Book Antiqua", Font.PLAIN, 16));
-		cbxTipo.setBackground(new Color(0, 0, 51));
-		cbxTipo.setBounds(375, 127, 214, 26);
+		cbxTipo.setForeground(new Color(0, 0, 51));
+		cbxTipo.setFont(new Font("Calibri", Font.PLAIN, 15));
+		cbxTipo.setBackground(SystemColor.controlHighlight);
+		cbxTipo.setBounds(375, 106, 214, 26);
 		contentPanel.add(cbxTipo);
 		cbxTipo.setModel(new DefaultComboBoxModel<TipoEmpresa>(TipoEmpresa.values()));
 		cbxTipo.setSelectedIndex(-1);
@@ -235,10 +247,23 @@ public class RegEmpresa extends JDialog {
 		});
 
 		JLabel lblNewLabel_6 = new JLabel("New label");
-		lblNewLabel_6.setIcon(new ImageIcon(RegEmpresa.class.getResource("/img/Fondo-Registro.png")));
+		lblNewLabel_6.setIcon(new ImageIcon(RegEmpresa.class.getResource("/img/Fondo-Registro-Completa.png")));
 		lblNewLabel_6.setBounds(0, 0, 716, 442);
 		contentPanel.add(lblNewLabel_6);
-		colocarImagen(lblNewLabel_6,"/img/Fondo-Registro.png");
+		colocarImagen(lblNewLabel_6,"/img/Fondo-Registro-Completa.png");
+		
+		JLabel lblNewLabel_7 = new JLabel("Correo:");
+		lblNewLabel_7.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblNewLabel_7.setBounds(27, 145, 56, 16);
+		contentPanel.add(lblNewLabel_7);
+		
+		txtCorreo = new TextFieldRedond(25);
+		txtCorreo.setFont(new Font("Calibri", Font.PLAIN, 15));
+		txtCorreo.setBackground(SystemColor.controlHighlight);
+		txtCorreo.setForeground(new Color(0, 0, 51));
+		txtCorreo.setBounds(27, 169, 214, 26);
+		contentPanel.add(txtCorreo);
+		txtCorreo.setColumns(10);
 	}
 	
 	private void clear() {

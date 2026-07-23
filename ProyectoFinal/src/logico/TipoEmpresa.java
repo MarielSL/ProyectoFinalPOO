@@ -4,5 +4,7 @@ public enum TipoEmpresa {
     SALUD,
     EDUCACION,
     TURISMO,
-    TECNOLOGIA
+    TECNOLOGIA,
+    CONSTRUCCION,
+    BELLEZA
 }

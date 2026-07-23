@@ -15,6 +15,7 @@ public class BolsaEmpleo {
 	public static int generadorIdSolicitud =0;
 	public static int generadorIdUser =0;
 	private static BolsaEmpleo bolsaEmpleo = null;
+	private Usuario loginUser;
 	
 	private BolsaEmpleo() {
 		super();
@@ -61,6 +62,12 @@ public class BolsaEmpleo {
 		this.ofertas = ofertas;
 	}
 	
+	public Usuario getLoginUser() {
+		return loginUser;
+	}
+	public void setLoginUser(Usuario loginUser) {
+		this.loginUser = loginUser;
+	}
 	public void regUser(Usuario user) {
 		usuarios.add(user);
 		generadorIdUser++;
@@ -230,6 +237,48 @@ public class BolsaEmpleo {
 
 		return porcentaje;
 	}
+
 	
+	public boolean validUserPassword(String IdUser, String password) {
+		boolean valid = false;
+		Usuario aux = buscarUser(IdUser);
+		if(aux.getPassword().equals(password)) {
+			valid = true;
+		}
+		return valid;
+	}
+	
+	public boolean confirmLogin(String text, String text2) {
+		boolean login = false;
+		for (Usuario usuario : usuarios) {
+			if(usuario.getUsername().equals(text) && usuario.getPassword().equals(text2)){
+				loginUser = usuario;
+				login = true;
+			}
+		}
+		return login;
+	}
+	
+	public boolean verifUsuario(String text, String text2) {
+		boolean login = false;
+		for (Usuario usuario : usuarios) {
+			if(usuario.getUsername().equals(text) && usuario.getPassword().equals(text2)){
+				login = true;
+			}
+		}
+		return login;
+	}
+	public boolean isEmpressRep(String rnc) {
+		boolean rep = false;
+		int ind = 0;
+		
+		while(!rep && ind<empresas.size()) {
+			if(empresas.get(ind).getRnc().equals(rnc)) {
+				rep = true;
+			}
+		}
+		
+		return rep;
+	}
 	
 }
