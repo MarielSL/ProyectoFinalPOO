@@ -178,7 +178,7 @@ public class RegistrarOferta extends JDialog {
 
 	private boolean validarPaso1() {
 		if (txtPuesto.getText().trim().isEmpty() || txtDescripcion.getText().trim().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Debe de completar todos los datos", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
 		return true;
