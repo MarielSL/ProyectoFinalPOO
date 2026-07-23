@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +12,6 @@ import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -94,7 +92,7 @@ public class RegistrarSolicitante extends JDialog {
 		
 		JLabel lblTitulo = new JLabel("Reg\u00EDstrate para acceder a las ofertas");
 		lblTitulo.setForeground(new Color(255, 153, 0));
-		lblTitulo.setFont(new Font("Book Antiqua", Font.BOLD, 20));
+		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 20));
 		lblTitulo.setBounds(20, 10, 500, 27);
 		panelTitulo.add(lblTitulo);
 		PanelRedond cardBlanca = new PanelRedond(20);
@@ -143,11 +141,6 @@ public class RegistrarSolicitante extends JDialog {
 			}
 		});
 		panel.add(btnSiguiente);
-		JLabel lblFondo = new JLabel();
-		lblFondo.setIcon(new ImageIcon(RegistrarSolicitante.class.getResource("/img/Fondo-Registro-Completa.png")));
-		lblFondo.setBounds(0, 0, 724, 550);
-		panel.add(lblFondo);
-		colocarImagen(lblFondo, "/img/Fondo-Registro-Completa.png");
 		actualizarDots();
 	}
 
@@ -546,37 +539,5 @@ public class RegistrarSolicitante extends JDialog {
 		cardObrero.add(txtHabilidades);
 		pnlDatosTipo.add(cardObrero, TipoPersona.OBRERO.name());
 		return paso;
-	}
-
-	private void colocarImagen(JLabel label, String ruta) {
-
-		 ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-
-		    int anchoLabel = label.getWidth();
-		    int altoLabel = label.getHeight();
-
-		    int anchoImagen = icono.getIconWidth();
-		    int altoImagen = icono.getIconHeight();
-
-		    double escalaAncho = (double) anchoLabel / anchoImagen;
-		    double escalaAlto = (double) altoLabel / altoImagen;
-
-		    double escala = Math.max(escalaAncho, escalaAlto);
-
-		    int nuevoAncho = (int) (anchoImagen * escala);
-		    int nuevoAlto = (int) (altoImagen * escala);
-
-		    Image imagenEscalada = icono.getImage().getScaledInstance(
-		            nuevoAncho,
-		            nuevoAlto,
-		            Image.SCALE_SMOOTH
-		    );
-
-		    ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-
-		    label.setIcon(iconoEscalado);
-		    label.setText("");
-		    label.setHorizontalAlignment(JLabel.CENTER);
-		    label.setVerticalAlignment(JLabel.CENTER);
 	}
 }
