@@ -152,11 +152,14 @@ public class RegistrarSolicitante extends JDialog {
 		});
 		panel.add(btnSiguiente);
 
+
 		JLabel lblNewLabel = new JLabel("New label");
         lblNewLabel.setIcon(new ImageIcon(RegistrarSolicitante.class.getResource("/img/Fondo-General.png")));
         lblNewLabel.setBounds(0, 0, 724, 513);
         panel.add(lblNewLabel);
         actualizarDots();
+
+
 	}
 
 	private void irSiguiente() {
@@ -616,13 +619,10 @@ public class RegistrarSolicitante extends JDialog {
 
 		return paso;
 	}
-
+/*
 	private void colocarImagen(JLabel label, String ruta) {
 
 		 ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-
-		    int anchoLabel = label.getWidth();
-		    int altoLabel = label.getHeight();
 
 		    int anchoImagen = icono.getIconWidth();
 		    int altoImagen = icono.getIconHeight();
@@ -642,10 +642,6 @@ public class RegistrarSolicitante extends JDialog {
 		    );
 
 		    ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-
-		    label.setIcon(iconoEscalado);
-		    label.setText("");
-		    label.setHorizontalAlignment(JLabel.CENTER);
-		    label.setVerticalAlignment(JLabel.CENTER);
 	}
+	*/
 }
