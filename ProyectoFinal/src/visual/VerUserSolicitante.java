@@ -214,7 +214,12 @@ public class VerUserSolicitante extends JFrame {
 		lblFondo.setIcon(new ImageIcon(VerUserSolicitante.class.getResource("/img/Fondo-Ver Usuario.png")));
 		lblFondo.setBounds(0, -4, 775, 505);
 		contentPane.add(lblFondo);
-		colocarImagen(lblFondo,"/img/Fondo-Ver Usuario.png");
+		if(BolsaEmpleo.getInstancia().getLoginUser() == null ) {
+			colocarImagen(lblFondo,"/img/Fondo-Ver Usuario.png");
+		}
+		else {
+			colocarImagen(lblFondo,BolsaEmpleo.getInstancia().getLoginUser().getFotoPerfil());
+		}
 		
 		loadUsuario();
 	}

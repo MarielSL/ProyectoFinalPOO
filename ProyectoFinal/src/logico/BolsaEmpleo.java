@@ -280,5 +280,26 @@ public class BolsaEmpleo {
 		
 		return rep;
 	}
+	public void modEmpresa(Empresa myEmpresa) {
+		int indexEmpresa = buscarEmpresaIndex(myEmpresa.getId());
+		empresas.set(indexEmpresa, myEmpresa);
+		
+	}
+	
+	private int buscarEmpresaIndex(String idEmpresa) {
+		int index = -1;
+		boolean encontrado = false;
+		int ind = 0;
+		
+		while(!encontrado && ind < empresas.size()) {
+			if(empresas.get(ind).getId().equals(idEmpresa)){
+				index = ind;
+				encontrado = true;
+			}
+			ind++;
+		}
+		
+		return index;
+	}
 	
 }
