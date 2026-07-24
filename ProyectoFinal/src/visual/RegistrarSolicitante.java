@@ -3,6 +3,7 @@ package visual;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.SystemColor;
@@ -32,6 +33,9 @@ import logico.Tecnico;
 import logico.TipoPersona;
 import logico.Universitario;
 import logico.Usuario;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
 
 public class RegistrarSolicitante extends JDialog {
 	private final JPanel contentPanel = new JPanel();
@@ -61,6 +65,9 @@ public class RegistrarSolicitante extends JDialog {
 	private TextFieldRedond txtAreaTecnico;
 	private JSpinner spnAniosExp;
 	private TextFieldRedond txtHabilidades;
+	private JTextField txtUser;
+	private JPasswordField passwordField;
+	private FotoPerfilRedond fotoPerfil;
 
 	public static void main(String[] args) {
 		try {
@@ -91,7 +98,7 @@ public class RegistrarSolicitante extends JDialog {
 		panelTitulo.setBounds(27, 18, 664, 45);
 		panel.add(panelTitulo);
 		panelTitulo.setLayout(null);
-		
+
 		JLabel lblTitulo = new JLabel("Reg\u00EDstrate para acceder a las ofertas");
 		lblTitulo.setForeground(new Color(255, 153, 0));
 		lblTitulo.setFont(new Font("Book Antiqua", Font.BOLD, 20));
@@ -110,7 +117,8 @@ public class RegistrarSolicitante extends JDialog {
 		pnlSteps.add(crearPaso1(), "paso1");
 		pnlSteps.add(crearPaso2(), "paso2");
 		pnlSteps.add(crearPaso3(), "paso3");
-		
+		pnlSteps.add(crearPaso4(), "paso4");
+
 		int xDot = 312;
 		for (int i = 0; i < 3; i++) {
 			JLabel dot = new JLabel("\u25CF", JLabel.CENTER);
@@ -143,37 +151,39 @@ public class RegistrarSolicitante extends JDialog {
 			}
 		});
 		panel.add(btnSiguiente);
-		JLabel lblFondo = new JLabel();
-		lblFondo.setIcon(new ImageIcon(RegistrarSolicitante.class.getResource("/img/Fondo-Registro-Completa.png")));
-		lblFondo.setBounds(0, 0, 724, 550);
-		panel.add(lblFondo);
-		colocarImagen(lblFondo, "/img/Fondo-Registro-Completa.png");
-		actualizarDots();
+
+		JLabel lblNewLabel = new JLabel("New label");
+        lblNewLabel.setIcon(new ImageIcon(RegistrarSolicitante.class.getResource("/img/Fondo-General.png")));
+        lblNewLabel.setBounds(0, 0, 724, 513);
+        panel.add(lblNewLabel);
+        actualizarDots();
 	}
 
 	private void irSiguiente() {
-		
-		if (pasoActual == 1) {
-			if (!validarPaso1())
-				return;
-			stepsLayout.show(pnlSteps, "paso2");
-			pasoActual = 2;
-			btnAtras.setVisible(true);
-			
-		} else if (pasoActual == 2) {
-			if (!validarPaso2())
-				return;
-			stepsLayout.show(pnlSteps, "paso3");
-			pasoActual = 3;
-			btnSiguiente.setText("Finalizar");
-			
-		} else {
-			if (!validarPaso3())
-				return;
-			registrarSolicitante();
-			return;
-		}
-		actualizarDots();
+	    if (pasoActual == 1) {
+	        if (!validarPaso1()) return;
+	        stepsLayout.show(pnlSteps, "paso2");
+	        pasoActual = 2;
+	        btnAtras.setVisible(true);
+
+	    } else if (pasoActual == 2) {
+	        if (!validarPaso2()) return;
+	        stepsLayout.show(pnlSteps, "paso3");
+	        pasoActual = 3;
+
+	    } else if (pasoActual == 3) {
+	        if (!validarPaso3()) return;
+	        stepsLayout.show(pnlSteps, "paso4");
+	        pasoActual = 4;
+	    } else if (pasoActual == 4) {
+	    	if(!validarPaso4()) return;
+	        btnSiguiente.setText("Finalizar");
+
+	    } else {
+	        registrarSolicitante();
+	        return;
+	    }
+	    actualizarDots();
 	}
 
 	private void irAtras() {
@@ -181,11 +191,17 @@ public class RegistrarSolicitante extends JDialog {
 			stepsLayout.show(pnlSteps, "paso2");
 			pasoActual = 2;
 			btnSiguiente.setText("Continuar");
-			
-		} else if (pasoActual == 2) {
+
+		}
+		if (pasoActual == 2) {
 			stepsLayout.show(pnlSteps, "paso1");
 			pasoActual = 1;
 			btnAtras.setVisible(false);
+		}
+		if(pasoActual == 4) {
+			stepsLayout.show(pnlSteps, "paso4");
+			pasoActual = 3;
+			btnSiguiente.setText("Continuar");
 		}
 		actualizarDots();
 	}
@@ -217,7 +233,7 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	private boolean validarPaso3() {
-		
+
 		if (cbxTipo.getSelectedIndex() == -1) {
 			JOptionPane.showMessageDialog(null, "Debe seleccionar el tipo de solicitante.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
@@ -235,38 +251,59 @@ public class RegistrarSolicitante extends JDialog {
 			JOptionPane.showMessageDialog(null, "Debe indicar las habilidades.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-		
+
 		return true;
 	}
 
+	private boolean validarPaso4 () {
+		if(txtUser.getText().trim().isEmpty() || passwordField.getPassword().length == 0) {
+			JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+
+		if(BolsaEmpleo.getInstancia().verifUsuario(txtUser.getText(), passwordField.getText())) {
+			JOptionPane.showConfirmDialog(null, "Usuario en uso.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+
+		Usuario newUser = new Usuario("U-"+BolsaEmpleo.generadorIdUser,txtUser.getText(),passwordField.getText(),null,null,null,null,null);
+		BolsaEmpleo.getInstancia().regUser(newUser);
+		BolsaEmpleo.getInstancia().setLoginUser(newUser);
+		dispose();
+		return true;
+
+	}
+
 	private void registrarSolicitante() {
-		
+
 		Date fechaSeleccionada = (Date) spnFechaNacim.getValue();
 		LocalDate fechaNacim = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		String id = "P-" + BolsaEmpleo.generadorIdPersona;
 		TipoPersona tipo = (TipoPersona) cbxTipo.getSelectedItem();
 		Persona persona;
-		
+
 		if (tipo == TipoPersona.UNIVERSITARIO) {
 			persona = new Universitario(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtCarrera.getText());
-		
+
 		} else if (tipo == TipoPersona.TECNICO) {
 			persona = new Tecnico(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtAreaTecnico.getText(), (Integer) spnAniosExp.getValue());
-		
+
 		} else {
 			persona = new Obrero(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtHabilidades.getText());
-		
+
 		}
-		
+
 		BolsaEmpleo.getInstancia().regPersona(persona);
-		
+
 		if (user != null) {
 			user.setCorreo(txtCorreo.getText());
 			user.setPersona(persona);
 		}
-		
+
 		JOptionPane.showMessageDialog(null, "Se ha registrado el solicitante.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
 		clear();
+		dispose();
+		//Aca se le agrega el setVisible del menu para los solicitantes
 	}
 
 	private void clear() {
@@ -545,6 +582,38 @@ public class RegistrarSolicitante extends JDialog {
 		txtHabilidades.setBounds(0, 25, 500, 30);
 		cardObrero.add(txtHabilidades);
 		pnlDatosTipo.add(cardObrero, TipoPersona.OBRERO.name());
+
+		return paso;
+	}
+
+	private JPanel crearPaso4() {
+		JPanel paso = new JPanel();
+		paso.setOpaque(false);
+		paso.setLayout(null);
+
+		JLabel lblNewLabel = new JLabel("Usuario:");
+		lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblNewLabel.setBounds(25, 49, 91, 16);
+		paso.add(lblNewLabel);
+
+		txtUser = new TextFieldRedond(25);
+		txtUser.setBounds(25, 84, 248, 22);
+		paso.add(txtUser);
+		txtUser.setColumns(10);
+
+		JLabel lblNewLabel_1 = new JLabel("Contrase\u00F1a:");
+		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblNewLabel_1.setBounds(25, 176, 137, 16);
+		paso.add(lblNewLabel_1);
+
+		passwordField = new PasswordFieldRedond(25);
+		passwordField.setBounds(25, 199, 248, 22);
+		paso.add(passwordField);
+
+		fotoPerfil = new FotoPerfilRedond(120);
+		fotoPerfil.setBounds(422, 77, 120, 155);
+		paso.add(fotoPerfil);
+
 		return paso;
 	}
 

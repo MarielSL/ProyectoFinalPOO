@@ -9,10 +9,12 @@ public class Usuario {
 	private Empresa empresa;
 	private Persona persona;
 	private TipoUser tipoUser;
+	private String fotoPerfil;
+
 	
 	
 	public Usuario(String Id,String username, String password, String correo, Empresa empresa, Persona persona,
-			TipoUser tipoUser) {
+			TipoUser tipoUser, String fotoPerfil) {
 		super();
 		this.Id = Id;
 		this.username = username;
@@ -21,6 +23,7 @@ public class Usuario {
 		this.empresa = empresa;
 		this.persona = persona;
 		this.tipoUser = tipoUser;
+		this.fotoPerfil = fotoPerfil;
 	}
 
 
@@ -85,6 +88,14 @@ public class Usuario {
 
 	public String getId() {
 		return Id;
+	}
+	
+	public String getFotoPerfil() {
+	    return fotoPerfil;
+	}
+
+	public void setFotoPerfil(String fotoPerfil) {
+	    this.fotoPerfil = fotoPerfil;
 	}
 	
 	

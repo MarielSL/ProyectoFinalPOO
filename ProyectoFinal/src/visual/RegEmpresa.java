@@ -30,6 +30,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.SystemColor;
+import javax.swing.JPasswordField;
 
 public class RegEmpresa extends JDialog {
 
@@ -40,6 +41,9 @@ public class RegEmpresa extends JDialog {
 	private TextFieldRedond txtRnc;
 	private ComboBoxRedond<TipoEmpresa> cbxTipo;
 	private TextFieldRedond txtCorreo;
+	private TextFieldRedond txtUser;
+	private JPasswordField passwordField;
+	private FotoPerfilRedond fotoPerfil;
 
 	/**
 	 * Launch the application.
@@ -59,42 +63,55 @@ public class RegEmpresa extends JDialog {
 	 */
 	public RegEmpresa(Usuario user) {
 		setTitle("Registrar Empresa");
-		setBounds(100, 100, 734, 489);
+		setBounds(100, 100, 880, 561);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
+		contentPanel.setOpaque(false);
 
 		BotonRedond btnNewButton = new BotonRedond("Registrar",25);
 		btnNewButton.setFont(new Font("Calibri", Font.PLAIN, 18));
 		btnNewButton.setBackground(new Color(255, 165, 0));
 		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(txtRnc.getText().trim().isEmpty() || txtNombEmpresa.getText().trim().isEmpty()  || txtTelefono.getText().trim().isEmpty() 
-						|| txtDireccion.getText().trim().isEmpty()  || cbxTipo.getSelectedIndex()==-1 || txtCorreo.getText().trim().isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-				if(BolsaEmpleo.getInstancia().isEmpressRep(txtRnc.getText())) {
-					JOptionPane.showMessageDialog(null, "ERROR!: esta empresa ha sido registrada", "Advertenicia", JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-				Empresa empresa = new Empresa ("E-"+BolsaEmpleo.generadorIdEmpresa, txtRnc.getText(), txtNombEmpresa.getText(), txtTelefono.getText(),
-						txtDireccion.getText(), (TipoEmpresa) cbxTipo.getSelectedItem(), user);
-				BolsaEmpleo.getInstancia().regEmpresa(empresa);
-				Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
-				user.setEmpresa(empresa);
-				user.setCorreo(txtCorreo.getText());
-				user.setTipoUser(TipoUser.EMPRESA);
-				BolsaEmpleo.getInstancia().setLoginUser(user);
-				JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Información", JOptionPane.INFORMATION_MESSAGE);
-				clear();
-			}
+		    public void actionPerformed(ActionEvent e) {
+		        if(txtRnc.getText().trim().isEmpty() || txtNombEmpresa.getText().trim().isEmpty()  || txtTelefono.getText().trim().isEmpty() 
+		                || txtDireccion.getText().trim().isEmpty()  || cbxTipo.getSelectedIndex()==-1 || txtCorreo.getText().trim().isEmpty()
+		                || passwordField.getText().trim().isEmpty() || txtUser.getText().trim().isEmpty()) {
+		            JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+		            return;
+		        }
+		        if(BolsaEmpleo.getInstancia().isEmpressRep(txtRnc.getText())) {
+		            JOptionPane.showMessageDialog(null, "ERROR!: esta empresa ha sido registrada", "Advertenicia", JOptionPane.WARNING_MESSAGE);
+		            return;
+		        }
 
+		        Empresa empresa = new Empresa ("E-"+BolsaEmpleo.generadorIdEmpresa, txtRnc.getText(), txtNombEmpresa.getText(), txtTelefono.getText(),
+		                txtDireccion.getText(), (TipoEmpresa) cbxTipo.getSelectedItem(), user);
+		        BolsaEmpleo.getInstancia().regEmpresa(empresa);
 
+		        if(BolsaEmpleo.getInstancia().verifUsuario(txtUser.getText(), passwordField.getText())) {
+		            JOptionPane.showMessageDialog(null, "Usuario en uso.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+		            return;
+		        }
+
+		        Usuario nuevoUsuario = new Usuario("U-"+BolsaEmpleo.generadorIdUser, txtUser.getText(), passwordField.getText(), null, null, null, null, null);
+		        nuevoUsuario.setEmpresa(empresa);
+		        nuevoUsuario.setCorreo(txtCorreo.getText());
+		        nuevoUsuario.setTipoUser(TipoUser.EMPRESA);
+		        nuevoUsuario.setFotoPerfil(fotoPerfil.getRutaFotoPerfil());
+		        BolsaEmpleo.getInstancia().regUser(nuevoUsuario);
+		        BolsaEmpleo.getInstancia().setLoginUser(nuevoUsuario);
+
+		        JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Información", JOptionPane.INFORMATION_MESSAGE);
+		        clear();
+		        // aca ponerle el set visible de la siguiente pestaña en abrir
+		        dispose();
+		    }
 		});
-		btnNewButton.setBounds(577, 398, 114, 31);
+
+		btnNewButton.setBounds(736, 470, 114, 31);
 		contentPanel.add(btnNewButton);
 
 		JPanel panel = new JPanel() {
@@ -128,19 +145,19 @@ public class RegEmpresa extends JDialog {
 
 		panel.setBackground(new Color(0, 0, 51));
 		panel.setForeground(new Color(0, 0, 51));
-		panel.setBounds(27, 20, 664, 37);
+		panel.setBounds(27, 20, 787, 49);
 		contentPanel.add(panel);
 		panel.setLayout(null);
 
 		JLabel lblNewLabel = new JLabel("Registrate para publicar tus vacantes");
-		lblNewLabel.setBounds(12, -13, 344, 63);
+		lblNewLabel.setBounds(12, 0, 344, 63);
 		panel.add(lblNewLabel);
 		lblNewLabel.setForeground(new Color(255, 153, 51));
 		lblNewLabel.setFont(new Font("Book Antiqua", Font.BOLD, 20));
 
 		JLabel lblNewLabel_1 = new JLabel("Nombre de la Empresa:");
 		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_1.setBounds(27, 70, 214, 31);
+		lblNewLabel_1.setBounds(27, 82, 214, 31);
 		contentPanel.add(lblNewLabel_1);
 
 		txtNombEmpresa = new TextFieldRedond(25);
@@ -153,7 +170,7 @@ public class RegEmpresa extends JDialog {
 
 		JLabel lblNewLabel_2 = new JLabel("Tel\u00E9fono:");
 		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_2.setBounds(27, 281, 92, 16);
+		lblNewLabel_2.setBounds(27, 292, 92, 16);
 		contentPanel.add(lblNewLabel_2);
 
 		txtTelefono = new TextFieldRedond(25);
@@ -166,7 +183,7 @@ public class RegEmpresa extends JDialog {
 
 		JLabel lblNewLabel_3 = new JLabel("Direcci\u00F3n:");
 		lblNewLabel_3.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_3.setBounds(27, 352, 85, 16);
+		lblNewLabel_3.setBounds(27, 362, 85, 16);
 		contentPanel.add(lblNewLabel_3);
 
 		txtDireccion = new TextFieldRedond(25);
@@ -179,7 +196,7 @@ public class RegEmpresa extends JDialog {
 
 		JLabel lblNewLabel_4 = new JLabel("RNC:");
 		lblNewLabel_4.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_4.setBounds(27, 206, 56, 16);
+		lblNewLabel_4.setBounds(27, 217, 56, 16);
 		contentPanel.add(lblNewLabel_4);
 
 		txtRnc = new TextFieldRedond(25);
@@ -192,7 +209,7 @@ public class RegEmpresa extends JDialog {
 
 		JLabel lblNewLabel_5 = new JLabel("Tipo:");
 		lblNewLabel_5.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_5.setBounds(375, 75, 56, 16);
+		lblNewLabel_5.setBounds(375, 89, 56, 16);
 		contentPanel.add(lblNewLabel_5);
 
 		cbxTipo = new ComboBoxRedond<TipoEmpresa>(25);
@@ -245,16 +262,10 @@ public class RegEmpresa extends JDialog {
 				return popup;
 			}
 		});
-
-		JLabel lblNewLabel_6 = new JLabel("New label");
-		lblNewLabel_6.setIcon(new ImageIcon(RegEmpresa.class.getResource("/img/Fondo-Registro-Completa.png")));
-		lblNewLabel_6.setBounds(0, 0, 716, 442);
-		contentPanel.add(lblNewLabel_6);
-		colocarImagen(lblNewLabel_6,"/img/Fondo-Registro-Completa.png");
 		
 		JLabel lblNewLabel_7 = new JLabel("Correo:");
 		lblNewLabel_7.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_7.setBounds(27, 145, 56, 16);
+		lblNewLabel_7.setBounds(27, 154, 56, 16);
 		contentPanel.add(lblNewLabel_7);
 		
 		txtCorreo = new TextFieldRedond(25);
@@ -264,44 +275,79 @@ public class RegEmpresa extends JDialog {
 		txtCorreo.setBounds(27, 169, 214, 26);
 		contentPanel.add(txtCorreo);
 		txtCorreo.setColumns(10);
+		
+		JLabel lblUsuario = new JLabel("Usuario:");
+		lblUsuario.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblUsuario.setBounds(375, 292, 134, 16);
+		contentPanel.add(lblUsuario);
+		
+		txtUser = new TextFieldRedond(25);
+		txtUser.setForeground(new Color(0, 0, 51));
+		txtUser.setFont(new Font("Calibri", Font.PLAIN, 15));
+		txtUser.setColumns(10);
+		txtUser.setBackground(SystemColor.controlHighlight);
+		txtUser.setBounds(375, 310, 214, 26);
+		contentPanel.add(txtUser);
+		
+		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
+		lblContrasea.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblContrasea.setBounds(375, 362, 134, 16);
+		contentPanel.add(lblContrasea);
+		
+		passwordField = new PasswordFieldRedond(25);
+		passwordField.setBackground(SystemColor.controlHighlight);
+		passwordField.setBounds(375, 375, 214, 26);
+		contentPanel.add(passwordField);
+		
+		
+		fotoPerfil = new FotoPerfilRedond(120);
+		fotoPerfil.setBounds(655, 106, 120, 155); 
+		contentPanel.add(fotoPerfil);
+		
+	
+		
+		JLabel lblFondo = new JLabel();
+		lblFondo.setBounds(0, 0, 862, 514); 
+		colocarImagen(lblFondo, "/img/Fondo-Registro-Completa.png");
+		contentPanel.add(lblFondo);
+		
+		
+		
+		
 	}
 	
 	private void clear() {
 		txtRnc.setText("");
+		txtCorreo.setText("");
 		txtNombEmpresa.setText("");
 		txtTelefono.setText("");
 		txtDireccion.setText("");
 		cbxTipo.setSelectedIndex(-1);
+		txtUser.setText("");
+		passwordField.setText("");
 	}
+
 	private void colocarImagen(JLabel label, String ruta) {
+	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	    
+	    int anchoImagen = icono.getIconWidth();
+	    int altoImagen = icono.getIconHeight();
+	    
+	    int anchoLabel = label.getWidth();
+	    int altoLabel = label.getHeight();
+	    
+	    double escalaAncho = (double) anchoLabel / anchoImagen;
+	    double escalaAlto = (double) altoLabel / altoImagen;
+	    
+	    double escala = Math.max(escalaAncho, escalaAlto);
+	    int nuevoAncho = (int) (anchoImagen * escala);
+	    int nuevoAlto = (int) (altoImagen * escala);
+	    
+	    Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+	    ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+	    label.setIcon(iconoEscalado);
 
-		 ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-
-		    int anchoLabel = label.getWidth();
-		    int altoLabel = label.getHeight();
-
-		    int anchoImagen = icono.getIconWidth();
-		    int altoImagen = icono.getIconHeight();
-
-		    double escalaAncho = (double) anchoLabel / anchoImagen;
-		    double escalaAlto = (double) altoLabel / altoImagen;
-
-		    double escala = Math.max(escalaAncho, escalaAlto);
-
-		    int nuevoAncho = (int) (anchoImagen * escala);
-		    int nuevoAlto = (int) (altoImagen * escala);
-
-		    Image imagenEscalada = icono.getImage().getScaledInstance(
-		            nuevoAncho,
-		            nuevoAlto,
-		            Image.SCALE_SMOOTH
-		    );
-
-		    ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-
-		    label.setIcon(iconoEscalado);
-		    label.setText("");
-		    label.setHorizontalAlignment(JLabel.CENTER);
-		    label.setVerticalAlignment(JLabel.CENTER);
 	}
+	
+
 }

@@ -129,17 +129,8 @@ public class LogIn extends JDialog {
 				BotonRedond btnNewButton_1 = new BotonRedond("Registrarse",25);
 				btnNewButton_1.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(txtUser.getText().trim().isEmpty() || passwordField.getPassword().length == 0) {
-							JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-							return;
-						}
-						if(BolsaEmpleo.getInstancia().verifUsuario(txtUser.getText(), passwordField.getText())) {
-							JOptionPane.showConfirmDialog(null, "Usuario en uso.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-							return;
-						}
-						Usuario newUser = new Usuario("U-"+BolsaEmpleo.generadorIdUser,txtUser.getText(),passwordField.getText(),null,null,null,null);
-						BolsaEmpleo.getInstancia().regUser(newUser);
-						BolsaEmpleo.getInstancia().setLoginUser(newUser);
+						TipoUser nuevoUsuario = new TipoUser();
+						nuevoUsuario.setVisible(true);
 						dispose();
 						
 					}
