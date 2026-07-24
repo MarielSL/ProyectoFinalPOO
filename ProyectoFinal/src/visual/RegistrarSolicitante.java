@@ -43,7 +43,7 @@ public class RegistrarSolicitante extends JDialog {
 	private CardLayout stepsLayout;
 	private JPanel pnlSteps;
 	private int pasoActual = 1;
-	private JLabel[] dots = new JLabel[3];
+	private JLabel[] dots = new JLabel[4];
 	private BotonRedond btnAtras;
 	private BotonRedond btnSiguiente;
 	private TextFieldRedond txtCedula;
@@ -119,8 +119,8 @@ public class RegistrarSolicitante extends JDialog {
 		pnlSteps.add(crearPaso3(), "paso3");
 		pnlSteps.add(crearPaso4(), "paso4");
 
-		int xDot = 312;
-		for (int i = 0; i < 3; i++) {
+		int xDot = 304;
+		for (int i = 0; i < 4; i++) {
 			JLabel dot = new JLabel("\u25CF", JLabel.CENTER);
 			dot.setFont(new Font("Calibri", Font.PLAIN, 22));
 			dot.setBounds(xDot, 420, 20, 20);
@@ -190,27 +190,23 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	private void irAtras() {
-		if (pasoActual == 3) {
+		if (pasoActual == 4) {
+			stepsLayout.show(pnlSteps, "paso3");
+			pasoActual = 3;
+			btnSiguiente.setText("Continuar");
+		} else if (pasoActual == 3) {
 			stepsLayout.show(pnlSteps, "paso2");
 			pasoActual = 2;
-			btnSiguiente.setText("Continuar");
-
-		}
-		if (pasoActual == 2) {
+		} else if (pasoActual == 2) {
 			stepsLayout.show(pnlSteps, "paso1");
 			pasoActual = 1;
 			btnAtras.setVisible(false);
-		}
-		if(pasoActual == 4) {
-			stepsLayout.show(pnlSteps, "paso4");
-			pasoActual = 3;
-			btnSiguiente.setText("Continuar");
 		}
 		actualizarDots();
 	}
 
 	private void actualizarDots() {
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 4; i++) {
 			if (i + 1 == pasoActual) {
 				dots[i].setForeground(new Color(255, 153, 0));
 			} else {
@@ -594,27 +590,34 @@ public class RegistrarSolicitante extends JDialog {
 		paso.setOpaque(false);
 		paso.setLayout(null);
 
-		JLabel lblNewLabel = new JLabel("Usuario:");
+		JLabel lblNewLabel = new JLabel("Usuario");
+		lblNewLabel.setForeground(new Color(0, 0, 51));
 		lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel.setBounds(25, 49, 91, 16);
+		lblNewLabel.setBounds(0, 0, 200, 20);
 		paso.add(lblNewLabel);
 
 		txtUser = new TextFieldRedond(25);
-		txtUser.setBounds(25, 84, 248, 22);
+		txtUser.setForeground(new Color(0, 0, 51));
+		txtUser.setBackground(SystemColor.controlHighlight);
+		txtUser.setFont(new Font("Calibri", Font.PLAIN, 18));
+		txtUser.setBounds(0, 25, 294, 30);
 		paso.add(txtUser);
-		txtUser.setColumns(10);
 
-		JLabel lblNewLabel_1 = new JLabel("Contrase\u00F1a:");
+		JLabel lblNewLabel_1 = new JLabel("Contrase\u00F1a");
+		lblNewLabel_1.setForeground(new Color(0, 0, 51));
 		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_1.setBounds(25, 176, 137, 16);
+		lblNewLabel_1.setBounds(0, 75, 200, 20);
 		paso.add(lblNewLabel_1);
 
 		passwordField = new PasswordFieldRedond(25);
-		passwordField.setBounds(25, 199, 248, 22);
+		passwordField.setForeground(new Color(0, 0, 51));
+		passwordField.setBackground(SystemColor.controlHighlight);
+		passwordField.setFont(new Font("Calibri", Font.PLAIN, 18));
+		passwordField.setBounds(0, 100, 294, 30);
 		paso.add(passwordField);
 
-		fotoPerfil = new FotoPerfilRedond(120);
-		fotoPerfil.setBounds(422, 77, 120, 155);
+		fotoPerfil = new FotoPerfilRedond(114);
+		fotoPerfil.setBounds(330, 20, 114, 153);
 		paso.add(fotoPerfil);
 
 		return paso;
