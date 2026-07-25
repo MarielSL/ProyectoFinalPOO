@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import java.awt.Font;
 import javax.swing.JButton;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -33,6 +34,7 @@ public class VerUserEmpresa extends JFrame {
 	private TextFieldRedond txtCorreo;
 	private BotonRedond btnNewButton;
 	private JLabel lblFotoFondo;
+	private Dimension dim;
 
 	/**
 	 * Launch the application.
@@ -57,6 +59,8 @@ public class VerUserEmpresa extends JFrame {
 		setTitle("Ver Usuario");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 793, 548);
+		dim = getToolkit().getScreenSize();
+		setSize(dim.width, dim.height-55);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -65,7 +69,7 @@ public class VerUserEmpresa extends JFrame {
 
 		fotoPerfil = new JLabel("New label");
 		fotoPerfil.setIcon(new ImageIcon(VerUserEmpresa.class.getResource("/img/User Icon.png")));
-		fotoPerfil.setBounds(23, 25, 166, 157);
+		fotoPerfil.setBounds(119, 108, 230, 230);
 		contentPane.add(fotoPerfil);
 		if(BolsaEmpleo.getInstancia().getLoginUser() == null) {
 			colocarImagen(fotoPerfil,"/img/User Icon.png");
@@ -75,100 +79,107 @@ public class VerUserEmpresa extends JFrame {
 		}
 
 		JLabel lblNewLabel = new JLabel("Usuario");
-		lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel.setBounds(235, 59, 79, 16);
+		lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblNewLabel.setBounds(462, 155, 81, 17);
 		contentPane.add(lblNewLabel);
 
 		JLabel lblNewLabel_1 = new JLabel("RNC");
-		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_1.setBounds(456, 59, 56, 16);
+		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblNewLabel_1.setBounds(792, 156, 56, 16);
 		contentPane.add(lblNewLabel_1);
 
 		txtUser = new TextFieldRedond(25);
+		txtUser.setFont(new Font("Calibri", Font.PLAIN, 20));
 		txtUser.setEditable(false);
 		txtUser.setBackground(SystemColor.controlHighlight);
 		txtUser.setForeground(new Color(0, 0, 51));
-		txtUser.setBounds(235, 85, 166, 26);
+		txtUser.setBounds(462, 193, 214, 30);
 		contentPane.add(txtUser);
 		txtUser.setColumns(10);
 		txtUser.setFocusable(false);
 
 		txtRnc = new TextFieldRedond(25);
+		txtRnc.setFont(new Font("Calibri", Font.PLAIN, 20));
 		txtRnc.setEditable(false);
 		txtRnc.setBackground(SystemColor.controlHighlight);
 		txtRnc.setForeground(new Color(0, 0, 51));
-		txtRnc.setBounds(456, 85, 166, 26);
+		txtRnc.setBounds(792, 193, 185, 30);
 		contentPane.add(txtRnc);
 		txtRnc.setColumns(10);
 		txtRnc.setFocusable(false);
 
 		JLabel lblNewLabel_2 = new JLabel("Nombre");
-		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_2.setBounds(23, 216, 85, 16);
+		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblNewLabel_2.setBounds(1122, 155, 85, 16);
 		contentPane.add(lblNewLabel_2);
 
 		txtNombre = new TextFieldRedond(25);
+		txtNombre.setFont(new Font("Calibri", Font.PLAIN, 20));
 		txtNombre.setEditable(false);
 		txtNombre.setBackground(SystemColor.controlHighlight);
 		txtNombre.setForeground(new Color(0, 0, 51));
-		txtNombre.setBounds(23, 242, 188, 26);
+		txtNombre.setBounds(1122, 193, 251, 30);
 		contentPane.add(txtNombre);
 		txtNombre.setColumns(10);
 		txtNombre.setFocusable(false);
 
-		JLabel lblNewLabel_3 = new JLabel("Tipo");
-		lblNewLabel_3.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_3.setBounds(259, 216, 56, 16);
+		JLabel lblNewLabel_3 = new JLabel("Sector Laboral");
+		lblNewLabel_3.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblNewLabel_3.setBounds(119, 639, 127, 16);
 		contentPane.add(lblNewLabel_3);
 
 		txtTipo = new TextFieldRedond(25);
+		txtTipo.setFont(new Font("Calibri", Font.PLAIN, 20));
 		txtTipo.setEditable(false);
 		txtTipo.setBackground(SystemColor.controlHighlight);
 		txtTipo.setForeground(new Color(0, 0, 51));
-		txtTipo.setBounds(259, 242, 196, 26);
+		txtTipo.setBounds(119, 674, 200, 30);
 		contentPane.add(txtTipo);
 		txtTipo.setColumns(10);
 		txtTipo.setFocusable(false);
 
 		JLabel lblNewLabel_4 = new JLabel("Tel\u00E9fono");
-		lblNewLabel_4.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_4.setBounds(23, 306, 106, 16);
+		lblNewLabel_4.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblNewLabel_4.setBounds(119, 432, 100, 26);
 		contentPane.add(lblNewLabel_4);
 
 		txtTelefono = new TextFieldRedond(25);
+		txtTelefono.setFont(new Font("Calibri", Font.PLAIN, 20));
 		txtTelefono.setEditable(false);
 		txtTelefono.setBackground(SystemColor.controlHighlight);
 		txtTelefono.setForeground(new Color(0, 0, 51));
 		txtTelefono.setText("");
-		txtTelefono.setBounds(23, 332, 188, 26);
+		txtTelefono.setBounds(119, 467, 194, 30);
 		contentPane.add(txtTelefono);
 		txtTelefono.setColumns(10);
 		txtTelefono.setFocusable(false);
 
 		JLabel lblNewLabel_5 = new JLabel("Correo");
-		lblNewLabel_5.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_5.setBounds(259, 306, 56, 16);
+		lblNewLabel_5.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblNewLabel_5.setBounds(462, 437, 81, 16);
 		contentPane.add(lblNewLabel_5);
 
 		JLabel lblNewLabel_6 = new JLabel("Direcci\u00F3n");
-		lblNewLabel_6.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_6.setBounds(23, 390, 106, 16);
+		lblNewLabel_6.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblNewLabel_6.setBounds(462, 639, 106, 16);
 		contentPane.add(lblNewLabel_6);
 
 		txtDireccion = new TextFieldRedond(25);
+		txtDireccion.setFont(new Font("Calibri", Font.PLAIN, 20));
 		txtDireccion.setEditable(false);
 		txtDireccion.setBackground(SystemColor.controlHighlight);
 		txtDireccion.setForeground(new Color(0, 0, 51));
-		txtDireccion.setBounds(23, 414, 291, 26);
+		txtDireccion.setBounds(462, 674, 337, 30);
 		contentPane.add(txtDireccion);
 		txtDireccion.setColumns(10);
 		txtDireccion.setFocusable(false);
 
 		txtCorreo = new TextFieldRedond(25);
+		txtCorreo.setFont(new Font("Calibri", Font.PLAIN, 20));
 		txtCorreo.setEditable(false);
 		txtCorreo.setBackground(SystemColor.controlHighlight);
 		txtCorreo.setForeground(new Color(0, 0, 51));
-		txtCorreo.setBounds(259, 332, 196, 26);
+		txtCorreo.setBounds(459, 467, 340, 30);
 		contentPane.add(txtCorreo);
 		txtCorreo.setColumns(10);
 		txtCorreo.setFocusable(false);
@@ -188,14 +199,14 @@ public class VerUserEmpresa extends JFrame {
 			}
 		});
 		btnNewButton.setBackground(new Color(255, 153, 0));
-		btnNewButton.setFont(new Font("Calibri", Font.PLAIN, 18));
+		btnNewButton.setFont(new Font("Calibri", Font.PLAIN, 20));
 		btnNewButton.setForeground(new Color(0, 0, 51));
-		btnNewButton.setBounds(648, 451, 114, 31);
+		btnNewButton.setBounds(1707, 891, 159, 47);
 		contentPane.add(btnNewButton);
 
 		lblFotoFondo = new JLabel("New label");
 		lblFotoFondo.setIcon(new ImageIcon(VerUserEmpresa.class.getResource("/img/Fondo-Ver Usuario.png")));
-		lblFotoFondo.setBounds(0, 0, 775, 501);
+		lblFotoFondo.setBounds(12, 0, 1902, 978);
 		contentPane.add(lblFotoFondo);
 		colocarImagen(lblFotoFondo,"/img/Fondo-Ver Usuario.png");
 		
