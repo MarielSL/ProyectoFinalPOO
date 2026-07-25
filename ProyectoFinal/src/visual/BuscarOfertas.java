@@ -82,7 +82,7 @@ public class BuscarOfertas extends JFrame {
 		panel.setLayout(null);
 
 		{
-			PanelRedond panelBuscar = new PanelRedond(20);
+			PanelConSombra panelBuscar = new PanelConSombra(20);
 			panelBuscar.setBackground(new Color(0, 0, 51));
 			panelBuscar.setBounds(27, 18, 860, 60);
 			panel.add(panelBuscar);

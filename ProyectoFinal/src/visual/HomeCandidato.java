@@ -148,7 +148,7 @@ public class HomeCandidato extends JFrame {
 		int anchoTarjeta = (anchoContenido - 48) / 3;
 
 		{
-			PanelRedond panelPendientes = new PanelRedond(18);
+			PanelConSombra panelPendientes = new PanelConSombra(18);
 			panelPendientes.setBackground(new Color(255, 224, 178));
 			panelPendientes.setBounds(margen, 110, anchoTarjeta, 90);
 			panel.add(panelPendientes);
@@ -168,7 +168,7 @@ public class HomeCandidato extends JFrame {
 		}
 
 		{
-			PanelRedond panelAceptadas = new PanelRedond(18);
+			PanelConSombra panelAceptadas = new PanelConSombra(18);
 			panelAceptadas.setBackground(new Color(198, 239, 206));
 			panelAceptadas.setBounds(margen + anchoTarjeta + 24, 110, anchoTarjeta, 90);
 			panel.add(panelAceptadas);
@@ -188,7 +188,7 @@ public class HomeCandidato extends JFrame {
 		}
 
 		{
-			PanelRedond panelRechazadas = new PanelRedond(18);
+			PanelConSombra panelRechazadas = new PanelConSombra(18);
 			panelRechazadas.setBackground(new Color(255, 205, 210));
 			panelRechazadas.setBounds(margen + (anchoTarjeta + 24) * 2, 110, anchoTarjeta, 90);
 			panel.add(panelRechazadas);

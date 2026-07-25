@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.JButton;
 
 public class BotonConSombra extends JButton {
@@ -15,12 +18,28 @@ public class BotonConSombra extends JButton {
 	private Color colorHover;
 
 	public BotonConSombra(String texto, int radio) {
-		super(texto);
-		this.radio = radio;
-		setContentAreaFilled(false);
-		setFocusPainted(false);
-		setBorderPainted(false);
-		setOpaque(false);
+	    super(texto);
+	    this.radio = radio;
+	    setContentAreaFilled(false);
+	    setFocusPainted(false);
+	    setBorderPainted(false);
+	    setOpaque(false);
+
+	    addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseEntered(MouseEvent e) {
+	            if (colorHover != null) {
+	                setBackground(colorHover);
+	            }
+	        }
+
+	        @Override
+	        public void mouseExited(MouseEvent e) {
+	            if (colorNormal != null) {
+	                setBackground(colorNormal);
+	            }
+	        }
+	    });
 	}
 	@Override
 	public void setBackground(Color bg) {
@@ -70,5 +89,9 @@ public class BotonConSombra extends JButton {
 
 		g2.dispose();
 		super.paintComponent(g);
+	}
+	
+	public void setColorHover(Color colorHover) {
+	    this.colorHover = colorHover;
 	}
 }

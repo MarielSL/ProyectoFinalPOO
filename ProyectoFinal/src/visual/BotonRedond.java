@@ -75,4 +75,8 @@ public class BotonRedond extends JButton {
 		g2.dispose();
 		super.paintComponent(g);
 	}
+	
+	public void setColorHover(Color colorHover) {
+	    this.colorHover = colorHover;
+	}
 }

@@ -63,46 +63,45 @@ public class LogIn extends JDialog {
 		contentPanel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
-		setIconImage(new ImageIcon(getClass().getResource("/img/login icon.png")).getImage());
 		{
 			JPanel panel = new JPanel();
 			panel.setBackground(new Color(255, 255, 255));
 			contentPanel.add(panel, BorderLayout.CENTER);
-			panel.setLayout(null);
+				panel.setLayout(null);
 				
 				PanelRedond panel_1 = new PanelRedond(30);
+				panel_1.setBounds(198, 32, 299, 385);
 				panel_1.setBackground(new Color(245, 245, 245));
-				panel_1.setBounds(198, 78, 299, 339);
 				panel.add(panel_1);
 				panel_1.setLayout(null);
 				
 				JLabel lblNewLabel = new JLabel("Usuario:");
 				lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, 18));
-				lblNewLabel.setBounds(57, 70, 76, 16);
+				lblNewLabel.setBounds(58, 95, 76, 16);
 				panel_1.add(lblNewLabel);
 				
 				txtUser = new TextFieldRedond(25);
 				txtUser.setBackground(SystemColor.controlHighlight);
 				txtUser.setForeground(new Color(0, 0, 51));
 				txtUser.setFont(new Font("Calibri", Font.PLAIN, 18));
-				txtUser.setBounds(57, 99, 173, 26);
+				txtUser.setBounds(58, 124, 173, 26);
 				panel_1.add(txtUser);
 				txtUser.setColumns(10);
 				
 				JLabel lblNewLabel_1 = new JLabel("Password:");
 				lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));
-				lblNewLabel_1.setBounds(57, 152, 117, 16);
+				lblNewLabel_1.setBounds(58, 177, 117, 16);
 				panel_1.add(lblNewLabel_1);
 				
 				passwordField = new PasswordFieldRedond(25);
 				passwordField.setBackground(SystemColor.controlHighlight);
 				passwordField.setForeground(new Color(0, 0, 51));
 				passwordField.setFont(new Font("Calibri", Font.PLAIN, 18));
-				passwordField.setBounds(57, 178, 173, 26);
+				passwordField.setBounds(58, 203, 173, 26);
 				panel_1.add(passwordField);
 				
-				BotonRedond btnNewButton = new BotonRedond("Login",25);
-				btnNewButton.addActionListener(new ActionListener() {
+				BotonConSombra btnLogin = new BotonConSombra("Login",25);
+				btnLogin.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if(txtUser.getText().trim().isEmpty() || passwordField.getPassword().length == 0) {
 							JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
@@ -121,14 +120,14 @@ public class LogIn extends JDialog {
 					
 					}
 				});
-				btnNewButton.setForeground(new Color(0, 0, 51));
-				btnNewButton.setBackground(new Color(255, 153, 51));
-				btnNewButton.setFont(new Font("Calibri", Font.PLAIN, 16));
-				btnNewButton.setBounds(22, 271, 97, 25);
-				panel_1.add(btnNewButton);
+				btnLogin.setForeground(new Color(0, 0, 51));
+				btnLogin.setBackground(new Color(255, 153, 51));
+				btnLogin.setFont(new Font("Calibri", Font.PLAIN, 16));
+				btnLogin.setBounds(22, 271, 97, 55);
+				panel_1.add(btnLogin);
 				
-				BotonRedond btnNewButton_1 = new BotonRedond("Registrarse",25);
-				btnNewButton_1.addActionListener(new ActionListener() {
+				BotonConSombra btnRegistrarse = new BotonConSombra("Registrarse",25);
+				btnRegistrarse.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						TipoUser nuevoUsuario = new TipoUser();
 						nuevoUsuario.setVisible(true);
@@ -136,17 +135,15 @@ public class LogIn extends JDialog {
 						
 					}
 				});
-				btnNewButton_1.setForeground(new Color(0, 0, 51));
-				btnNewButton_1.setBackground(new Color(255, 153, 51));
-				btnNewButton_1.setFont(new Font("Calibri", Font.PLAIN, 16));
-				btnNewButton_1.setBounds(147, 271, 126, 25);
-				panel_1.add(btnNewButton_1);
+				btnRegistrarse.setForeground(new Color(0, 0, 51));
+				btnRegistrarse.setBackground(new Color(255, 153, 51));
+				btnRegistrarse.setFont(new Font("Calibri", Font.PLAIN, 16));
+				btnRegistrarse.setBounds(156, 271, 117, 55);
+				panel_1.add(btnRegistrarse);
 				
-				JLabel lblNewLabel_2 = new JLabel("New label");
-				lblNewLabel_2.setIcon(new ImageIcon(LogIn.class.getResource("/img/Fondo-General.png")));
-				lblNewLabel_2.setBounds(0, 0, 700, 480);
-				panel.add(lblNewLabel_2);
-				colocarImagen(lblNewLabel_2,"/img/Fondo-General.png");
+				JPanel panel_2 = new JPanel();
+				panel_2.setBounds(0, 0, 299, 61);
+				panel_1.add(panel_2);
 		}
 		
 	}
@@ -154,11 +151,11 @@ public class LogIn extends JDialog {
 
 		 ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
 
-		    int anchoLabel = label.getWidth();
-		    int altoLabel = label.getHeight();
-
 		    int anchoImagen = icono.getIconWidth();
 		    int altoImagen = icono.getIconHeight();
+		    
+		    int anchoLabel = label.getWidth();
+		    int altoLabel = label.getHeight();
 
 		    double escalaAncho = (double) anchoLabel / anchoImagen;
 		    double escalaAlto = (double) altoLabel / altoImagen;
@@ -175,10 +172,5 @@ public class LogIn extends JDialog {
 		    );
 
 		    ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-
-		    label.setIcon(iconoEscalado);
-		    label.setText("");
-		    label.setHorizontalAlignment(JLabel.CENTER);
-		    label.setVerticalAlignment(JLabel.CENTER);
 	}
 }
