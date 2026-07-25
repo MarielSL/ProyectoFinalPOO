@@ -11,6 +11,8 @@ public class BotonConSombra extends JButton {
 	private int radio;
 	private static final int SOMBRA_OFFSET = 5;
 	private static final int SOMBRA_GROSOR = 8;
+	private Color colorNormal;
+	private Color colorHover;
 
 	public BotonConSombra(String texto, int radio) {
 		super(texto);
@@ -19,6 +21,21 @@ public class BotonConSombra extends JButton {
 		setFocusPainted(false);
 		setBorderPainted(false);
 		setOpaque(false);
+	}
+	@Override
+	public void setBackground(Color bg) {
+		super.setBackground(bg);
+		if (colorNormal == null || !bg.equals(colorHover)) {
+			colorNormal = bg;
+			colorHover = oscurecer(bg, 0.85f);
+		}
+	}
+
+	private Color oscurecer(Color color, float factor) {
+		int r = Math.max((int) (color.getRed() * factor), 0);
+		int g = Math.max((int) (color.getGreen() * factor), 0);
+		int b = Math.max((int) (color.getBlue() * factor), 0);
+		return new Color(r, g, b);
 	}
 
 	@Override
@@ -29,7 +46,6 @@ public class BotonConSombra extends JButton {
 				RenderingHints.VALUE_ANTIALIAS_ON
 				);
 
-		// Capas de sombra difuminada, debajo del botón
 		for (int i = SOMBRA_GROSOR; i > 0; i--) {
 			g2.setColor(new Color(0, 0, 0, 0.04f));
 			g2.fillRoundRect(
@@ -42,7 +58,6 @@ public class BotonConSombra extends JButton {
 					);
 		}
 
-		// Cuerpo del botón, encima de la sombra
 		g2.setColor(getBackground());
 		g2.fillRoundRect(
 				0,
