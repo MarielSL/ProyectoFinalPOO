@@ -175,10 +175,10 @@ public class VerSolicitudesAplicadas extends JFrame {
 		table = new JTable();
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
-				{null, null, null, null, null},
+				{null, null, null, null, null, null},
 			},
 			new String[] {
-				"Nombre", "Empresa", "Ubicaci\u00F3n", "Jornada", "Estado"
+				"Nombre", "Empresa", "Ubicaci\u00F3n", "Jornada", "Fecha de Aplicaci\u00F3n", "Estado"
 			}
 		));
 		table.getColumnModel().getColumn(0).setPreferredWidth(200);
@@ -186,6 +186,7 @@ public class VerSolicitudesAplicadas extends JFrame {
 		table.getColumnModel().getColumn(2).setPreferredWidth(200);
 		table.getColumnModel().getColumn(3).setPreferredWidth(200);
 		table.getColumnModel().getColumn(4).setPreferredWidth(200);
+		table.getColumnModel().getColumn(5).setPreferredWidth(200);
 		table.setFont(new Font("Calibri", Font.PLAIN, 20));
 		scrollPane.setViewportView(table);
 		

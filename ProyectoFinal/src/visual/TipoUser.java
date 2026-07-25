@@ -3,10 +3,13 @@ package visual;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
+import javax.swing.AbstractButton;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLayeredPane;
 import javax.swing.JLabel;
@@ -37,6 +40,7 @@ public class TipoUser extends JDialog {
 	public TipoUser() {
 		setTitle("Tipo de Usuario");
 		setBounds(100, 100, 671, 424);
+		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		setIconImage(new ImageIcon(getClass().getResource("/img/Sample_User_Icon.png")).getImage());
 		{
@@ -67,11 +71,15 @@ public class TipoUser extends JDialog {
 				lblNewLabel.setBounds(153, 13, 93, 29);
 				panel_2.add(lblNewLabel);
 				
-				BotonRedond btnNewButton = new BotonRedond("Empresa", 25);
-				btnNewButton.setFont(new Font("Calibri", Font.PLAIN, 18));
-				btnNewButton.setForeground(new Color(0, 0, 51));
-				btnNewButton.setBackground(new Color(255, 153, 0));
-				btnNewButton.addActionListener(new ActionListener() {
+				BotonRedond btnEmpresa = new BotonRedond("Empresa", 25);
+				colocarIconoBoton(btnEmpresa, "/img/icono_empresa.png", 25, 25);
+				btnEmpresa.setVerticalTextPosition(SwingConstants.TOP);       
+				btnEmpresa.setHorizontalTextPosition(SwingConstants.CENTER); 
+				btnEmpresa.setIconTextGap(6);
+				btnEmpresa.setFont(new Font("Calibri", Font.PLAIN, 18));
+				btnEmpresa.setForeground(new Color(0, 0, 51));
+				btnEmpresa.setBackground(new Color(255, 153, 0));
+				btnEmpresa.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						RegEmpresa regEmpresa = new RegEmpresa(null);
 				        regEmpresa.setVisible(true);
@@ -79,22 +87,26 @@ public class TipoUser extends JDialog {
 						
 					}
 				});
-				btnNewButton.setBounds(116, 136, 119, 49);
-				panel_1.add(btnNewButton);
+				btnEmpresa.setBounds(116, 136, 138, 71);
+				panel_1.add(btnEmpresa);
 				
-				BotonRedond btnNewButton_1 = new BotonRedond("Solicitante", 25);
-				btnNewButton_1.addActionListener(new ActionListener() {
+				BotonRedond btnSolicitante = new BotonRedond("Solicitante", 25);
+				colocarIconoBoton(btnSolicitante, "/img/icono_solicitante.png", 25, 25);
+				btnSolicitante.setVerticalTextPosition(SwingConstants.TOP);       
+				btnSolicitante.setHorizontalTextPosition(SwingConstants.CENTER); 
+				btnSolicitante.setIconTextGap(6);
+				btnSolicitante.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						RegistrarSolicitante regSoliictante = new RegistrarSolicitante(null);
 						regSoliictante.setVisible(true);
 						dispose();
 					}
 				});
-				btnNewButton_1.setFont(new Font("Calibri", Font.PLAIN, 18));
-				btnNewButton_1.setForeground(new Color(0, 0, 51));
-				btnNewButton_1.setBackground(new Color(255, 153, 0));
-				btnNewButton_1.setBounds(308, 135, 119, 50);
-				panel_1.add(btnNewButton_1);
+				btnSolicitante.setFont(new Font("Calibri", Font.PLAIN, 18));
+				btnSolicitante.setForeground(new Color(0, 0, 51));
+				btnSolicitante.setBackground(new Color(255, 153, 0));
+				btnSolicitante.setBounds(308, 135, 138, 71);
+				panel_1.add(btnSolicitante);
 				
 				
 				JLabel lblNewLabel_2 = new JLabel("New label");
@@ -136,5 +148,11 @@ public class TipoUser extends JDialog {
 		    label.setText("");
 		    label.setHorizontalAlignment(JLabel.CENTER);
 		    label.setVerticalAlignment(JLabel.CENTER);
+	}
+	
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	    boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }
