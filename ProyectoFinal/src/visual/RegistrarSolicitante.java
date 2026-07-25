@@ -68,6 +68,7 @@ public class RegistrarSolicitante extends JDialog {
 	private JTextField txtUser;
 	private JPasswordField passwordField;
 	private FotoPerfilRedond fotoPerfil;
+	private Persona mySolicitante = null;
 
 	public static void main(String[] args) {
 		try {
@@ -79,9 +80,15 @@ public class RegistrarSolicitante extends JDialog {
 		}
 	}
 
-	public RegistrarSolicitante(Usuario user) {
-		this.user = user;
-		setTitle("Registrar Solicitante");
+	public RegistrarSolicitante(Persona persona) {
+		persona = mySolicitante;
+		if(mySolicitante == null) {
+			setTitle("Registrar Solicitante");
+		}
+		else {
+			setTitle("Modificar Solicitante");
+		}
+		
 		setBounds(100, 100, 734, 560);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -151,42 +158,94 @@ public class RegistrarSolicitante extends JDialog {
 			}
 		});
 		panel.add(btnSiguiente);
-
+		loadSolicitante();
 
 		JLabel lblNewLabel = new JLabel("New label");
-        lblNewLabel.setIcon(new ImageIcon(RegistrarSolicitante.class.getResource("/img/Fondo-General.png")));
-        lblNewLabel.setBounds(0, 0, 724, 513);
-        panel.add(lblNewLabel);
-        actualizarDots();
+		lblNewLabel.setIcon(new ImageIcon(RegistrarSolicitante.class.getResource("/img/Fondo-General.png")));
+		lblNewLabel.setBounds(0, 0, 724, 513);
+		panel.add(lblNewLabel);
+		actualizarDots();
 
 
 	}
 
+	private void loadSolicitante() {
+		
+		if(mySolicitante == null) {
+			return;
+		}
+		
+		txtNombre.setText(mySolicitante.getNombre());
+		txtApellido.setText(mySolicitante.getApellido());
+		
+		if(mySolicitante instanceof Universitario) {
+			Universitario aux = (Universitario) mySolicitante;
+			txtCarrera.setText(aux.getCarrera());
+			cbxTipo.setSelectedItem(TipoPersona.UNIVERSITARIO);
+		}
+		
+		if(mySolicitante instanceof Tecnico) {
+			Tecnico aux = (Tecnico) mySolicitante;
+			txtAreaTecnico.setText(aux.getTecnico());
+			spnAniosExp.setValue(aux.getAniosExp());
+			cbxTipo.setSelectedItem(TipoPersona.TECNICO);
+		}
+		
+		if(mySolicitante instanceof Obrero) {
+			Obrero aux = (Obrero) mySolicitante;
+			txtHabilidades.setText(aux.getHabilidades());
+			cbxTipo.setSelectedItem(TipoPersona.OBRERO);
+		}
+		
+		txtCedula.setText(mySolicitante.getCedula());
+		txtCiudad.setText(mySolicitante.getCiudad());
+		txtCorreo.setText(mySolicitante.getUser().getCorreo());
+		txtDireccion.setText(mySolicitante.getDireccion());
+		txtTelefono.setText(mySolicitante.getTelefono());
+		txtUser.setText(mySolicitante.getUser().getUsername());
+		passwordField.setText(mySolicitante.getUser().getPassword());
+		cbxSexo.setSelectedItem(mySolicitante.getSexo());
+		spnFechaNacim.setValue(mySolicitante.getFechNacim());
+		
+		if(mySolicitante.isDispParaMudarse()) {
+			chkMudarse.setSelected(true);
+		}
+		
+		if(mySolicitante.isLicenciaConducir()) {
+			chkLicencia.setSelected(true);
+		}
+		
+		if(mySolicitante.isEstadoEmpleo()) {
+			chkEmpleado.setSelected(true);
+		}
+		
+	}
+
 	private void irSiguiente() {
-	    if (pasoActual == 1) {
-	        if (!validarPaso1()) return;
-	        stepsLayout.show(pnlSteps, "paso2");
-	        pasoActual = 2;
-	        btnAtras.setVisible(true);
+		if (pasoActual == 1) {
+			if (!validarPaso1()) return;
+			stepsLayout.show(pnlSteps, "paso2");
+			pasoActual = 2;
+			btnAtras.setVisible(true);
 
-	    } else if (pasoActual == 2) {
-	        if (!validarPaso2()) return;
-	        stepsLayout.show(pnlSteps, "paso3");
-	        pasoActual = 3;
+		} else if (pasoActual == 2) {
+			if (!validarPaso2()) return;
+			stepsLayout.show(pnlSteps, "paso3");
+			pasoActual = 3;
 
-	    } else if (pasoActual == 3) {
-	        if (!validarPaso3()) return;
-	        stepsLayout.show(pnlSteps, "paso4");
-	        pasoActual = 4;
-	    } else if (pasoActual == 4) {
-	    	if(!validarPaso4()) return;
-	        btnSiguiente.setText("Finalizar");
+		} else if (pasoActual == 3) {
+			if (!validarPaso3()) return;
+			stepsLayout.show(pnlSteps, "paso4");
+			pasoActual = 4;
+		} else if (pasoActual == 4) {
+			if(!validarPaso4()) return;
+			btnSiguiente.setText("Finalizar");
 
-	    } else {
-	        registrarSolicitante();
-	        return;
-	    }
-	    actualizarDots();
+		} else {
+			registrarSolicitante();
+			return;
+		}
+		actualizarDots();
 	}
 
 	private void irAtras() {
@@ -274,37 +333,80 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	private void registrarSolicitante() {
-
 		Date fechaSeleccionada = (Date) spnFechaNacim.getValue();
 		LocalDate fechaNacim = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		String id = "P-" + BolsaEmpleo.generadorIdPersona;
 		TipoPersona tipo = (TipoPersona) cbxTipo.getSelectedItem();
-		Persona persona;
 
-		if (tipo == TipoPersona.UNIVERSITARIO) {
-			persona = new Universitario(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtCarrera.getText());
+		if(mySolicitante == null) {
+			String id = "P-" + BolsaEmpleo.generadorIdPersona;
+			Persona persona;
+			if (tipo == TipoPersona.UNIVERSITARIO) {
+				persona = new Universitario(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtCarrera.getText());
 
-		} else if (tipo == TipoPersona.TECNICO) {
-			persona = new Tecnico(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtAreaTecnico.getText(), (Integer) spnAniosExp.getValue());
+			} else if (tipo == TipoPersona.TECNICO) {
+				persona = new Tecnico(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtAreaTecnico.getText(), (Integer) spnAniosExp.getValue());
 
-		} else {
-			persona = new Obrero(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtHabilidades.getText());
+			} else {
+				persona = new Obrero(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtHabilidades.getText());
+
+			}
+
+			BolsaEmpleo.getInstancia().regPersona(persona);
+
+			if (user != null) {
+				user.setCorreo(txtCorreo.getText());
+				user.setPersona(persona);
+			}
+
+			JOptionPane.showMessageDialog(null, "Se ha registrado el solicitante.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
+			clear();
+			dispose();
+			//Aca se le agrega el setVisible del menu para los solicitantes
 
 		}
+		else {
+			mySolicitante.setNombre(txtNombre.getText());
+			mySolicitante.setApellido(txtApellido.getText());
+			mySolicitante.setCedula(txtCedula.getText());
+			mySolicitante.setCiudad(txtCiudad.getText());
+			mySolicitante.setDireccion(txtDireccion.getText());
+			mySolicitante.setDispParaMudarse(chkMudarse.isSelected());
+			mySolicitante.setEstadoEmpleo(chkEmpleado.isSelected());
+			mySolicitante.setFechNacim(fechaNacim);
+			mySolicitante.setLicenciaConducir(chkLicencia.isSelected());
+			mySolicitante.setSexo((Sexo) cbxSexo.getSelectedItem());
+			mySolicitante.setTelefono(txtTelefono.getText());
+			
+			BolsaEmpleo.getInstancia().getLoginUser().setCorreo(txtCorreo.getText());
+			BolsaEmpleo.getInstancia().getLoginUser().setUsername(txtUser.getText());
+			BolsaEmpleo.getInstancia().getLoginUser().setPassword(passwordField.getText());
+			
+			
+			if(tipo == TipoPersona.UNIVERSITARIO) {
+				Universitario uni = (Universitario) mySolicitante;
+				uni.setCarrera(txtCarrera.getText());
+				BolsaEmpleo.getInstancia().modSolicitante(uni);
+			}
+			
+			if(tipo == TipoPersona.TECNICO) {
+				Tecnico tecnico = (Tecnico) mySolicitante;
+				tecnico.setAniosExp((int) spnAniosExp.getValue());
+				tecnico.setTecnico(txtAreaTecnico.getText());
+				BolsaEmpleo.getInstancia().modSolicitante(tecnico);
+			}
+			if(tipo == TipoPersona.OBRERO) {
+				Obrero obrero = (Obrero) mySolicitante;
+				obrero.setHabilidades(txtHabilidades.getText());
+				BolsaEmpleo.getInstancia().modSolicitante(obrero);
 
-		BolsaEmpleo.getInstancia().regPersona(persona);
-
-		if (user != null) {
-			user.setCorreo(txtCorreo.getText());
-			user.setPersona(persona);
+			}
+			BolsaEmpleo.getInstancia().modUsuario(BolsaEmpleo.getInstancia().getLoginUser());
+			VerUserSolicitante verUser = new VerUserSolicitante();
+			verUser.setVisible(true);
+			dispose();
 		}
-
-		JOptionPane.showMessageDialog(null, "Se ha registrado el solicitante.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
-		clear();
-		dispose();
-		//Aca se le agrega el setVisible del menu para los solicitantes
+		
 	}
-
 	private void clear() {
 		txtCedula.setText("");
 		txtNombre.setText("");
@@ -452,17 +554,20 @@ public class RegistrarSolicitante extends JDialog {
 		lblCiudad.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblCiudad.setBounds(330, 0, 200, 20);
 		paso.add(lblCiudad);
+
 		txtCiudad = new TextFieldRedond(25);
 		txtCiudad.setForeground(new Color(0, 0, 51));
 		txtCiudad.setBackground(SystemColor.controlHighlight);
 		txtCiudad.setFont(new Font("Calibri", Font.PLAIN, 18));
 		txtCiudad.setBounds(330, 25, 294, 30);
 		paso.add(txtCiudad);
+
 		JLabel lblDisp = new JLabel("Disponibilidad");
 		lblDisp.setForeground(new Color(0, 0, 51));
 		lblDisp.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblDisp.setBounds(0, 85, 200, 20);
 		paso.add(lblDisp);
+
 		chkMudarse = new JCheckBox("Disponible para mudarse");
 		chkMudarse.setForeground(new Color(0, 0, 51));
 		chkMudarse.setFont(new Font("Calibri", Font.PLAIN, 18));
@@ -622,7 +727,9 @@ public class RegistrarSolicitante extends JDialog {
 
 		return paso;
 	}
-/*
+
+
+	/*1
 	private void colocarImagen(JLabel label, String ruta) {
 
 		 ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
@@ -646,5 +753,5 @@ public class RegistrarSolicitante extends JDialog {
 
 		    ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 	}
-	*/
+	 */
 }

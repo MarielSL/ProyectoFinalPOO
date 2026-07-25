@@ -195,8 +195,7 @@ public class BolsaEmpleo {
 		SolicitudEmpleo solicitud = buscarSolicitud(idSolicitud);
 		
 		TipoPersona tipoSolicitado = oferta.getTipoCandidato();
-		if((tipoSolicitado == TipoPersona.CUALQUIERA) ||
-			(tipoSolicitado == TipoPersona.UNIVERSITARIO && solicitud.getCandidato() instanceof Universitario) ||
+		if( (tipoSolicitado == TipoPersona.UNIVERSITARIO && solicitud.getCandidato() instanceof Universitario) ||
 			(tipoSolicitado == TipoPersona.OBRERO && solicitud.getCandidato() instanceof Obrero) ||
 			(tipoSolicitado == TipoPersona.TECNICO && solicitud.getCandidato() instanceof Tecnico)) {
 			porcentaje += 20;
@@ -293,6 +292,50 @@ public class BolsaEmpleo {
 		
 		while(!encontrado && ind < empresas.size()) {
 			if(empresas.get(ind).getId().equals(idEmpresa)){
+				index = ind;
+				encontrado = true;
+			}
+			ind++;
+		}
+		
+		return index;
+	}
+	
+	public void modUsuario(Usuario user) {
+		int indexUser = buscarUsuarioindex(user.getId());
+		usuarios.set(indexUser, user);
+		
+	}
+	
+	private int buscarUsuarioindex(String idUsuario) {
+		int index = -1;
+		boolean encontrado = false;
+		int ind = 0;
+		
+		while(!encontrado && ind < usuarios.size()) {
+			if(usuarios.get(ind).getId().equals(idUsuario)){
+				index = ind;
+				encontrado = true;
+			}
+			ind++;
+		}
+		
+		return index;
+	}
+	
+	public void modSolicitante(Persona solicitante) {
+		int indexSolicitante = buscarSolicitanteIndex(solicitante.getId());
+		personas.set(indexSolicitante, solicitante);
+		
+	}
+	
+	private int buscarSolicitanteIndex(String idSolicitante) {
+		int index = -1;
+		boolean encontrado = false;
+		int ind = 0;
+		
+		while(!encontrado && ind < personas.size()) {
+			if(personas.get(ind).getId().equals(idSolicitante)){
 				index = ind;
 				encontrado = true;
 			}

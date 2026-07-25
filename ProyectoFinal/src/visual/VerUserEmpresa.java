@@ -176,7 +176,15 @@ public class VerUserEmpresa extends JFrame {
 		btnNewButton = new BotonRedond("Modificar",30);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				if(BolsaEmpleo.getInstancia().getLoginUser()==null) {
+					RegEmpresa regEmpresa = new RegEmpresa(null);
+					regEmpresa.setVisible(true);
+					dispose();
+					return;
+				}
+				RegEmpresa regEmpresa = new RegEmpresa(BolsaEmpleo.getInstancia().getLoginUser().getEmpresa());
+				regEmpresa.setVisible(true);
+				dispose();
 			}
 		});
 		btnNewButton.setBackground(new Color(255, 153, 0));
