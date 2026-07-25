@@ -70,34 +70,34 @@ public class LogIn extends JDialog {
 				panel.setLayout(null);
 				
 				PanelRedond panel_1 = new PanelRedond(30);
-				panel_1.setBounds(198, 32, 299, 385);
+				panel_1.setBounds(198, 93, 299, 324);
 				panel_1.setBackground(new Color(245, 245, 245));
 				panel.add(panel_1);
 				panel_1.setLayout(null);
 				
 				JLabel lblNewLabel = new JLabel("Usuario:");
 				lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, 18));
-				lblNewLabel.setBounds(58, 95, 76, 16);
+				lblNewLabel.setBounds(64, 52, 76, 16);
 				panel_1.add(lblNewLabel);
 				
 				txtUser = new TextFieldRedond(25);
 				txtUser.setBackground(SystemColor.controlHighlight);
 				txtUser.setForeground(new Color(0, 0, 51));
 				txtUser.setFont(new Font("Calibri", Font.PLAIN, 18));
-				txtUser.setBounds(58, 124, 173, 26);
+				txtUser.setBounds(64, 81, 173, 26);
 				panel_1.add(txtUser);
 				txtUser.setColumns(10);
 				
 				JLabel lblNewLabel_1 = new JLabel("Password:");
 				lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));
-				lblNewLabel_1.setBounds(58, 177, 117, 16);
+				lblNewLabel_1.setBounds(64, 134, 117, 16);
 				panel_1.add(lblNewLabel_1);
 				
 				passwordField = new PasswordFieldRedond(25);
 				passwordField.setBackground(SystemColor.controlHighlight);
 				passwordField.setForeground(new Color(0, 0, 51));
 				passwordField.setFont(new Font("Calibri", Font.PLAIN, 18));
-				passwordField.setBounds(58, 203, 173, 26);
+				passwordField.setBounds(64, 160, 173, 26);
 				panel_1.add(passwordField);
 				
 				BotonConSombra btnLogin = new BotonConSombra("Login",25);
@@ -123,7 +123,7 @@ public class LogIn extends JDialog {
 				btnLogin.setForeground(new Color(0, 0, 51));
 				btnLogin.setBackground(new Color(255, 153, 51));
 				btnLogin.setFont(new Font("Calibri", Font.PLAIN, 16));
-				btnLogin.setBounds(22, 271, 97, 55);
+				btnLogin.setBounds(23, 228, 97, 55);
 				panel_1.add(btnLogin);
 				
 				BotonConSombra btnRegistrarse = new BotonConSombra("Registrarse",25);
@@ -138,39 +138,35 @@ public class LogIn extends JDialog {
 				btnRegistrarse.setForeground(new Color(0, 0, 51));
 				btnRegistrarse.setBackground(new Color(255, 153, 51));
 				btnRegistrarse.setFont(new Font("Calibri", Font.PLAIN, 16));
-				btnRegistrarse.setBounds(156, 271, 117, 55);
+				btnRegistrarse.setBounds(157, 228, 117, 55);
 				panel_1.add(btnRegistrarse);
 				
-				JPanel panel_2 = new JPanel();
-				panel_2.setBounds(0, 0, 299, 61);
-				panel_1.add(panel_2);
+				JLabel lblNewLabel_2 = new JLabel("New label");
+				lblNewLabel_2.setBounds(0, 0, 700, 480);
+				panel.add(lblNewLabel_2);
+				colocarImagen(lblNewLabel_2,"/img/Fondo-General.png");
 		}
 		
 	}
 	private void colocarImagen(JLabel label, String ruta) {
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
 
-		 ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		int anchoImagen = icono.getIconWidth();
+		int altoImagen = icono.getIconHeight();
 
-		    int anchoImagen = icono.getIconWidth();
-		    int altoImagen = icono.getIconHeight();
-		    
-		    int anchoLabel = label.getWidth();
-		    int altoLabel = label.getHeight();
+		int anchoLabel = label.getWidth();
+		int altoLabel = label.getHeight();
 
-		    double escalaAncho = (double) anchoLabel / anchoImagen;
-		    double escalaAlto = (double) altoLabel / altoImagen;
+		double escalaAncho = (double) anchoLabel / anchoImagen;
+		double escalaAlto = (double) altoLabel / altoImagen;
 
-		    double escala = Math.max(escalaAncho, escalaAlto);
+		double escala = Math.max(escalaAncho, escalaAlto);
+		int nuevoAncho = (int) (anchoImagen * escala);
+		int nuevoAlto = (int) (altoImagen * escala);
 
-		    int nuevoAncho = (int) (anchoImagen * escala);
-		    int nuevoAlto = (int) (altoImagen * escala);
+		Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+		label.setIcon(iconoEscalado);
 
-		    Image imagenEscalada = icono.getImage().getScaledInstance(
-		            nuevoAncho,
-		            nuevoAlto,
-		            Image.SCALE_SMOOTH
-		    );
-
-		    ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 	}
 }
