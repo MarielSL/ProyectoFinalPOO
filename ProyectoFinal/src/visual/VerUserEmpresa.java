@@ -57,7 +57,7 @@ public class VerUserEmpresa extends JFrame {
 	 */
 	public VerUserEmpresa() {
 		setTitle("Ver Usuario");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 793, 548);
 		dim = getToolkit().getScreenSize();
 		setSize(dim.width, dim.height-55);
