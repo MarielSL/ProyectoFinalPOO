@@ -103,7 +103,7 @@ public class VerSolicitudesAplicadas extends JFrame {
 		txtBuscar.setColumns(10);
 		
 		cbxEstado = new ComboBoxRedond(25);
-		cbxEstado.setFont(new Font("Calibri", Font.PLAIN, 20));
+		cbxEstado.setFont(new Font("Calibri", Font.PLAIN, 18));
 		cbxEstado.setForeground(new Color(0, 0, 51));
 		cbxEstado.setEditable(true);
 		cbxEstado.setBackground(new Color(255, 255, 255));
@@ -114,26 +114,14 @@ public class VerSolicitudesAplicadas extends JFrame {
 		panel_3.add(cbxEstado);
 		cbxEstado.addActionListener(e -> filtrarPorEstado());
 		
-		PanelRedond panel_1 = new PanelRedond(25);
-		panel_1.setBackground(new Color(0, 0, 51));
-		panel_1.setBounds(382, 13, 1452, 97);
-		panel.add(panel_1);
-		panel_1.setLayout(null);
-		
-		JLabel lblNewLabel = new JLabel("Mis Solicitudes");
-		lblNewLabel.setFont(new Font("Calibri", Font.BOLD | Font.ITALIC, 25));
-		lblNewLabel.setForeground(new Color(255, 153, 0));
-		lblNewLabel.setBounds(33, 26, 290, 38);
-		panel_1.add(lblNewLabel);
-		
-		PanelConSombra panel_2 = new PanelConSombra(20);
+		PanelConSombra panel_2 = new PanelConSombra(0);
 		panel_2.setBackground(new Color(255, 255, 255));
-		panel_2.setBounds(12, 13, 329, 983);
+		panel_2.setBounds(0, 0, 341, 996);
 		panel.add(panel_2);
 		panel_2.setLayout(null);
 
 		JLabel lblNewLabel_1 = new JLabel();
-		lblNewLabel_1.setBounds(12, 23, 280, 90);
+		lblNewLabel_1.setBounds(38, 27, 238, 80);
 		panel_2.add(lblNewLabel_1);
 		colocarImagen(lblNewLabel_1, "/img/HireLink_logo_full.png");
 		
@@ -164,10 +152,19 @@ public class VerSolicitudesAplicadas extends JFrame {
 		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 20));
 		lblNewLabel_2.setBounds(12, 129, 98, 16);
 		panel_2.add(lblNewLabel_2);
-	
 		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBackground(new Color(0, 0, 51));
+		panel_1.setBounds(0, 0, 1834, 65);
+		panel.add(panel_1);
+		panel_1.setLayout(null);
 		
-				
+		JLabel lblNewLabel = new JLabel("Mis Solicitudes");
+		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblNewLabel.setForeground(new Color(255, 153, 0));
+		lblNewLabel.setBounds(415, 16, 290, 35);
+		panel_1.add(lblNewLabel);
+		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(382, 222, 1452, 757);
 		panel.add(scrollPane);

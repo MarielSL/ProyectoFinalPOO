@@ -115,9 +115,9 @@ public class RegEmpresa extends JDialog {
 					BolsaEmpleo.getInstancia().setLoginUser(nuevoUsuario);
 					BolsaEmpleo.getInstancia().regEmpresa(empresa);
 
-					JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Información", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
 					clear();
-					// aca ponerle el set visible de la siguiente pestaña en abrir
+					// aca ponerle el set visible de la siguiente pesta\u00F1a en abrir
 					dispose();
 				}
 				else {
@@ -151,46 +151,18 @@ public class RegEmpresa extends JDialog {
 		btnGuardar.setBounds(736, 470, 114, 31);
 		contentPanel.add(btnGuardar);
 
-		JPanel panel = new JPanel() {
-
-			@Override
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-
-				Graphics2D g2 = (Graphics2D) g.create();
-
-				g2.setRenderingHint(
-						RenderingHints.KEY_ANTIALIASING,
-						RenderingHints.VALUE_ANTIALIAS_ON
-						);
-
-				g2.setColor(getBackground());
-
-				g2.fillRoundRect(
-						0,
-						0,
-						getWidth(),
-						getHeight(),
-						30,
-						30
-						);
-
-				g2.dispose();
-			}
-		};
-		panel.setOpaque(false);
-
+		JPanel panel = new JPanel();
 		panel.setBackground(new Color(0, 0, 51));
 		panel.setForeground(new Color(0, 0, 51));
-		panel.setBounds(27, 20, 586, 49);
+		panel.setBounds(0, 0, 860, 65);
 		contentPanel.add(panel);
 		panel.setLayout(null);
 
 		JLabel lblNewLabel = new JLabel("Registrate para publicar tus vacantes");
-		lblNewLabel.setBounds(12, -5, 344, 63);
+		lblNewLabel.setBounds(20, 16, 600, 35);
 		panel.add(lblNewLabel);
 		lblNewLabel.setForeground(new Color(255, 153, 51));
-		lblNewLabel.setFont(new Font("Book Antiqua", Font.BOLD, 20));
+		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 24));
 
 		JLabel lblNewLabel_1 = new JLabel("Nombre de la Empresa:");
 		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));

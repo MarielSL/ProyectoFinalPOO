@@ -84,13 +84,13 @@ public class RegistrarOferta extends JDialog {
 		panelTitulo.setLayout(null);
 		lblTitulo1 = new JLabel("Publica una nueva oportunidad laboral");
 		lblTitulo1.setForeground(new Color(255, 153, 0));
-		lblTitulo1.setFont(new Font("Calibri", Font.BOLD, 41));
-		lblTitulo1.setBounds(129, 15, 571, 35);
+		lblTitulo1.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblTitulo1.setBounds(108, 16, 571, 35);
 		panelTitulo.add(lblTitulo1);
 		
 		lblIcon = new JLabel("New label");
 		lblIcon.setIcon(new ImageIcon(RegistrarOferta.class.getResource("/img/briefcase.png")));
-		lblIcon.setBounds(46, 7, 50, 50);
+		lblIcon.setBounds(46, 13, 36, 38);
 		panelTitulo.add(lblIcon);
 		PanelRedond cardBlanca = new PanelRedond(20);
 		cardBlanca.setBackground(new Color(255, 255, 255));

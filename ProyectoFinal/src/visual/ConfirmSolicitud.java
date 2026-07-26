@@ -67,9 +67,9 @@ public class ConfirmSolicitud extends JDialog {
 		panel.setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("\u00BFDesea Postularse a esta Oferta?");
-		lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, 30));
+		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 24));
 		lblNewLabel.setForeground(new Color(255, 153, 0));
-		lblNewLabel.setBounds(53, 13, 412, 27);
+		lblNewLabel.setBounds(92, 13, 334, 27);
 		panel.add(lblNewLabel);
 		
 		lblPuesto = new JLabel("Puesto de Trabajo: ");
@@ -95,7 +95,7 @@ public class ConfirmSolicitud extends JDialog {
 		txtCoincidencia.setForeground(new Color(0, 0, 51));
 		txtCoincidencia.setBackground(SystemColor.controlHighlight);
 		txtCoincidencia.setHorizontalAlignment(SwingConstants.CENTER);
-		txtCoincidencia.setFont(new Font("Calibri", Font.PLAIN, 25));
+		txtCoincidencia.setFont(new Font("Calibri", Font.PLAIN, 22));
 		txtCoincidencia.setBounds(62, 254, 378, 35);
 		contentPanel.add(txtCoincidencia);
 		txtCoincidencia.setColumns(10);

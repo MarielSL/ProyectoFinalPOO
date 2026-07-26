@@ -82,9 +82,9 @@ public class BuscarOfertas extends JFrame {
 		panel.setLayout(null);
 
 		{
-			PanelConSombra panelBuscar = new PanelConSombra(20);
+			PanelConSombra panelBuscar = new PanelConSombra(0);
 			panelBuscar.setBackground(new Color(0, 0, 51));
-			panelBuscar.setBounds(27, 18, 860, 60);
+			panelBuscar.setBounds(0, 0, 917, 78);
 			panel.add(panelBuscar);
 			panelBuscar.setLayout(null);
 
@@ -92,21 +92,21 @@ public class BuscarOfertas extends JFrame {
 			txtPuesto.setForeground(new Color(0, 0, 51));
 			txtPuesto.setBackground(new Color(255, 255, 255));
 			txtPuesto.setFont(new Font("Calibri", Font.PLAIN, 18));
-			txtPuesto.setBounds(20, 15, 280, 30);
+			txtPuesto.setBounds(20, 23, 280, 30);
 			panelBuscar.add(txtPuesto);
 
 			cbxCiudad = new ComboBoxRedond<String>(25);
 			cbxCiudad.setForeground(new Color(0, 0, 51));
 			cbxCiudad.setFont(new Font("Calibri", Font.PLAIN, 18));
 			cbxCiudad.setBackground(new Color(255, 255, 255));
-			cbxCiudad.setBounds(320, 15, 220, 30);
+			cbxCiudad.setBounds(320, 23, 220, 30);
 			panelBuscar.add(cbxCiudad);
 
 			btnBuscar = new BotonRedond("Buscar", 25);
 			btnBuscar.setFont(new Font("Calibri", Font.PLAIN, 18));
 			btnBuscar.setBackground(new Color(255, 153, 0));
 			btnBuscar.setForeground(new Color(0, 0, 51));
-			btnBuscar.setBounds(700, 15, 140, 30);
+			btnBuscar.setBounds(700, 23, 140, 30);
 			btnBuscar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					buscar();

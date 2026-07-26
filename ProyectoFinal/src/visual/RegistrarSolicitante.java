@@ -100,16 +100,16 @@ public class RegistrarSolicitante extends JDialog {
 		panel.setBounds(0, 0, 724, 550);
 		contentPanel.add(panel);
 		panel.setLayout(null);
-		PanelRedond panelTitulo = new PanelRedond(30);
+		JPanel panelTitulo = new JPanel();
 		panelTitulo.setBackground(new Color(0, 0, 51));
-		panelTitulo.setBounds(27, 18, 664, 45);
+		panelTitulo.setBounds(0, 0, 717, 65);
 		panel.add(panelTitulo);
 		panelTitulo.setLayout(null);
 
 		JLabel lblTitulo = new JLabel("Reg\u00EDstrate para acceder a las ofertas");
 		lblTitulo.setForeground(new Color(255, 153, 0));
-		lblTitulo.setFont(new Font("Book Antiqua", Font.BOLD, 20));
-		lblTitulo.setBounds(20, 10, 500, 27);
+		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblTitulo.setBounds(20, 16, 650, 35);
 		panelTitulo.add(lblTitulo);
 		PanelRedond cardBlanca = new PanelRedond(20);
 		cardBlanca.setBackground(new Color(255, 255, 255));
