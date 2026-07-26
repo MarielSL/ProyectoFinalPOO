@@ -4,10 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -48,6 +50,8 @@ public class RegistrarOferta extends JDialog {
 	private ComboBoxRedond<Modalidad> cbxModalidad;
 	private TextFieldRedond txtCiudad;
 	private JSpinner spnSalario;
+	private JLabel lblTitulo1;
+	private JLabel lblIcon;
 
 	public static void main(String[] args) {
 		try {
@@ -73,16 +77,21 @@ public class RegistrarOferta extends JDialog {
 		panel.setBounds(0, 0, 724, 550);
 		contentPanel.add(panel);
 		panel.setLayout(null);
-		PanelRedond panelTitulo = new PanelRedond(30);
+		JPanel panelTitulo = new JPanel();
 		panelTitulo.setBackground(new Color(0, 0, 51));
-		panelTitulo.setBounds(27, 18, 664, 45);
+		panelTitulo.setBounds(0, 0, 717, 65);
 		panel.add(panelTitulo);
 		panelTitulo.setLayout(null);
-		JLabel lblTitulo = new JLabel("Publica una nueva oportunidad laboral");
-		lblTitulo.setForeground(new Color(255, 153, 0));
-		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 20));
-		lblTitulo.setBounds(20, 10, 500, 27);
-		panelTitulo.add(lblTitulo);
+		lblTitulo1 = new JLabel("Publica una nueva oportunidad laboral");
+		lblTitulo1.setForeground(new Color(255, 153, 0));
+		lblTitulo1.setFont(new Font("Calibri", Font.BOLD, 41));
+		lblTitulo1.setBounds(129, 15, 571, 35);
+		panelTitulo.add(lblTitulo1);
+		
+		lblIcon = new JLabel("New label");
+		lblIcon.setIcon(new ImageIcon(RegistrarOferta.class.getResource("/img/briefcase.png")));
+		lblIcon.setBounds(46, 7, 50, 50);
+		panelTitulo.add(lblIcon);
 		PanelRedond cardBlanca = new PanelRedond(20);
 		cardBlanca.setBackground(new Color(255, 255, 255));
 		cardBlanca.setBounds(27, 75, 664, 330);
@@ -114,6 +123,7 @@ public class RegistrarOferta extends JDialog {
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				irAtras();
+				actualizarTitulo(pasoActual);
 			}
 		});
 		panel.add(btnAtras);
@@ -125,10 +135,31 @@ public class RegistrarOferta extends JDialog {
 		btnSiguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				irSiguiente();
+				actualizarTitulo(pasoActual);
 			}
 		});
 		panel.add(btnSiguiente);
 		actualizarDots();
+		actualizarTitulo(pasoActual);
+
+		
+	}
+
+	private void actualizarTitulo(int paso) {
+		if(paso == 1) {
+			lblTitulo1.setText("Datos del Puesto");
+			colocarImagen(lblIcon, "/img/edit (1).png");
+
+		}
+		if(paso==2) {
+			lblTitulo1.setText("Requisistos del Candidato");
+			colocarImagen(lblIcon, "/img/user.png");
+			
+		}
+		if(paso == 3) {
+			lblTitulo1.setText("Condiciones del Trabajo");
+			colocarImagen(lblIcon, "/img/briefcase.png");
+		}
 	}
 
 	private void irSiguiente() {
@@ -383,5 +414,36 @@ public class RegistrarOferta extends JDialog {
 		spnSalario.setBounds(330, 100, 150, 30);
 		paso.add(spnSalario);
 		return paso;
+	}
+	private void colocarImagen(JLabel label, String ruta) {
+
+		 ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+
+		    int anchoLabel = label.getWidth();
+		    int altoLabel = label.getHeight();
+
+		    int anchoImagen = icono.getIconWidth();
+		    int altoImagen = icono.getIconHeight();
+
+		    double escalaAncho = (double) anchoLabel / anchoImagen;
+		    double escalaAlto = (double) altoLabel / altoImagen;
+
+		    double escala = Math.max(escalaAncho, escalaAlto);
+
+		    int nuevoAncho = (int) (anchoImagen * escala);
+		    int nuevoAlto = (int) (altoImagen * escala);
+
+		    Image imagenEscalada = icono.getImage().getScaledInstance(
+		            nuevoAncho,
+		            nuevoAlto,
+		            Image.SCALE_SMOOTH
+		    );
+
+		    ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+
+		    label.setIcon(iconoEscalado);
+		    label.setText("");
+		    label.setHorizontalAlignment(JLabel.CENTER);
+		    label.setVerticalAlignment(JLabel.CENTER);
 	}
 }
