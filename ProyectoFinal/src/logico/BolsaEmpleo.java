@@ -92,6 +92,7 @@ public class BolsaEmpleo {
 		Oferta aux = buscarOferta(idOferta);
 		aux.getSolicitudes().add(solicitud);
 		solicitudes.add(solicitud);
+		loginUser.getPersona().getSolicitudes().add(solicitud);
 		generadorIdSolicitud++;
 	}
 	
@@ -189,7 +190,7 @@ public class BolsaEmpleo {
 	}
 	
 	
-	public float calcCoincidencia(String idOferta, String idSolicitud) {
+	/*public float calcCoincidencia(String idOferta, String idSolicitud) {
 		float porcentaje = 0;
 		Oferta oferta = buscarOferta(idOferta);
 		SolicitudEmpleo solicitud = buscarSolicitud(idSolicitud);
@@ -236,7 +237,7 @@ public class BolsaEmpleo {
 
 		return porcentaje;
 	}
-
+*/
 	
 	public boolean validUserPassword(String IdUser, String password) {
 		boolean valid = false;

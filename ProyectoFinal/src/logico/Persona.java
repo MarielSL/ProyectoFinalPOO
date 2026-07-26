@@ -18,10 +18,11 @@ public abstract class Persona {
 	private boolean estadoEmpleo;
 	private Usuario user;
 	private ArrayList<SolicitudEmpleo> solicitudes;
+	private int yearsExp;
 	
 	public Persona(String id, String cedula, String nombre, String apellido, LocalDate fechNacim, String telefono,
 			String direccion, Sexo sexo, String ciudad, boolean dispParaMudarse, boolean licenciaConducir,
-			boolean estadoEmpleo, Usuario user) {
+			boolean estadoEmpleo, Usuario user, int yearsExp) {
 		super();
 		this.id = id;
 		this.cedula = cedula;
@@ -37,6 +38,7 @@ public abstract class Persona {
 		this.estadoEmpleo = estadoEmpleo;
 		this.user = user;
 		solicitudes = new ArrayList<>();
+		this.yearsExp = yearsExp;
 	}
 
 	public String getCedula() {
@@ -145,6 +147,14 @@ public abstract class Persona {
 
 	public void setSolicitudes(ArrayList<SolicitudEmpleo> solicitudes) {
 		this.solicitudes = solicitudes;
+	}
+
+	public int getYearsExp() {
+		return yearsExp;
+	}
+
+	public void setYearsExp(int yearsExp) {
+		this.yearsExp = yearsExp;
 	}
 	
 	

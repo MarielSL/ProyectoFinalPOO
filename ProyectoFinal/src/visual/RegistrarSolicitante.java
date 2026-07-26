@@ -63,12 +63,12 @@ public class RegistrarSolicitante extends JDialog {
 	private JPanel pnlDatosTipo;
 	private TextFieldRedond txtCarrera;
 	private TextFieldRedond txtAreaTecnico;
-	private JSpinner spnAniosExp;
 	private TextFieldRedond txtHabilidades;
 	private JTextField txtUser;
 	private JPasswordField passwordField;
 	private FotoPerfilRedond fotoPerfil;
 	private Persona mySolicitante = null;
+	private JSpinner spnExp;
 
 	public static void main(String[] args) {
 		try {
@@ -187,7 +187,6 @@ public class RegistrarSolicitante extends JDialog {
 		if(mySolicitante instanceof Tecnico) {
 			Tecnico aux = (Tecnico) mySolicitante;
 			txtAreaTecnico.setText(aux.getTecnico());
-			spnAniosExp.setValue(aux.getAniosExp());
 			cbxTipo.setSelectedItem(TipoPersona.TECNICO);
 		}
 		
@@ -206,6 +205,7 @@ public class RegistrarSolicitante extends JDialog {
 		passwordField.setText(mySolicitante.getUser().getPassword());
 		cbxSexo.setSelectedItem(mySolicitante.getSexo());
 		spnFechaNacim.setValue(mySolicitante.getFechNacim());
+		spnExp.setValue(mySolicitante.getYearsExp());
 		
 		if(mySolicitante.isDispParaMudarse()) {
 			chkMudarse.setSelected(true);
@@ -341,13 +341,13 @@ public class RegistrarSolicitante extends JDialog {
 			String id = "P-" + BolsaEmpleo.generadorIdPersona;
 			Persona persona;
 			if (tipo == TipoPersona.UNIVERSITARIO) {
-				persona = new Universitario(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtCarrera.getText());
+				persona = new Universitario(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user,(int) spnExp.getValue(), txtCarrera.getText());
 
 			} else if (tipo == TipoPersona.TECNICO) {
-				persona = new Tecnico(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtAreaTecnico.getText(), (Integer) spnAniosExp.getValue());
+				persona = new Tecnico(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, (int) spnExp.getValue(),txtAreaTecnico.getText());
 
 			} else {
-				persona = new Obrero(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, txtHabilidades.getText());
+				persona = new Obrero(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user,(int) spnExp.getValue(), txtHabilidades.getText());
 
 			}
 
@@ -376,6 +376,7 @@ public class RegistrarSolicitante extends JDialog {
 			mySolicitante.setLicenciaConducir(chkLicencia.isSelected());
 			mySolicitante.setSexo((Sexo) cbxSexo.getSelectedItem());
 			mySolicitante.setTelefono(txtTelefono.getText());
+			mySolicitante.setYearsExp((int) spnExp.getValue());
 			
 			BolsaEmpleo.getInstancia().getLoginUser().setCorreo(txtCorreo.getText());
 			BolsaEmpleo.getInstancia().getLoginUser().setUsername(txtUser.getText());
@@ -390,7 +391,6 @@ public class RegistrarSolicitante extends JDialog {
 			
 			if(tipo == TipoPersona.TECNICO) {
 				Tecnico tecnico = (Tecnico) mySolicitante;
-				tecnico.setAniosExp((int) spnAniosExp.getValue());
 				tecnico.setTecnico(txtAreaTecnico.getText());
 				BolsaEmpleo.getInstancia().modSolicitante(tecnico);
 			}
@@ -422,12 +422,12 @@ public class RegistrarSolicitante extends JDialog {
 		cbxTipo.setSelectedIndex(-1);
 		txtCarrera.setText("");
 		txtAreaTecnico.setText("");
-		spnAniosExp.setValue(0);
 		txtHabilidades.setText("");
 		stepsLayout.show(pnlSteps, "paso1");
 		pasoActual = 1;
 		btnAtras.setVisible(false);
 		btnSiguiente.setText("Continuar");
+		spnExp.setValue(0);
 		actualizarDots();
 	}
 
@@ -602,7 +602,7 @@ public class RegistrarSolicitante extends JDialog {
 		cbxTipo.setForeground(new Color(0, 0, 51));
 		cbxTipo.setFont(new Font("Calibri", Font.PLAIN, 18));
 		cbxTipo.setBackground(SystemColor.controlHighlight);
-		cbxTipo.setBounds(0, 25, 294, 30);
+		cbxTipo.setBounds(0, 25, 225, 30);
 		cbxTipo.setModel(new DefaultComboBoxModel<TipoPersona>(new TipoPersona[] { TipoPersona.UNIVERSITARIO, TipoPersona.TECNICO, TipoPersona.OBRERO }));
 		cbxTipo.setSelectedIndex(-1);
 		cbxTipo.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
@@ -661,15 +661,6 @@ public class RegistrarSolicitante extends JDialog {
 		txtAreaTecnico.setFont(new Font("Calibri", Font.PLAIN, 18));
 		txtAreaTecnico.setBounds(0, 25, 294, 30);
 		cardTecnico.add(txtAreaTecnico);
-		JLabel lblAnios = new JLabel("A\u00F1os de experiencia");
-		lblAnios.setForeground(new Color(0, 0, 51));
-		lblAnios.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblAnios.setBounds(330, 0, 220, 20);
-		cardTecnico.add(lblAnios);
-		spnAniosExp = new JSpinner(new SpinnerNumberModel(0, 0, 50, 1));
-		spnAniosExp.setFont(new Font("Calibri", Font.PLAIN, 18));
-		spnAniosExp.setBounds(330, 25, 100, 30);
-		cardTecnico.add(spnAniosExp);
 		pnlDatosTipo.add(cardTecnico, TipoPersona.TECNICO.name());
 		JPanel cardObrero = new JPanel();
 		cardObrero.setOpaque(false);
@@ -686,6 +677,18 @@ public class RegistrarSolicitante extends JDialog {
 		txtHabilidades.setBounds(0, 25, 500, 30);
 		cardObrero.add(txtHabilidades);
 		pnlDatosTipo.add(cardObrero, TipoPersona.OBRERO.name());
+		
+		JLabel lblNewLabel_2 = new JLabel("A\u00F1os de Experiencia");
+		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblNewLabel_2.setBounds(352, 2, 175, 16);
+		paso.add(lblNewLabel_2);
+		
+		spnExp = new JSpinner();
+		spnExp.setForeground(new Color(0, 0, 51));
+		spnExp.setBackground(SystemColor.controlHighlight);
+		spnExp.setFont(new Font("Calibri", Font.PLAIN, 18));
+		spnExp.setBounds(352, 25, 85, 30);
+		paso.add(spnExp);
 
 		return paso;
 	}
@@ -698,60 +701,33 @@ public class RegistrarSolicitante extends JDialog {
 		JLabel lblNewLabel = new JLabel("Usuario");
 		lblNewLabel.setForeground(new Color(0, 0, 51));
 		lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel.setBounds(0, 0, 200, 20);
+		lblNewLabel.setBounds(0, 40, 200, 20);
 		paso.add(lblNewLabel);
 
 		txtUser = new TextFieldRedond(25);
 		txtUser.setForeground(new Color(0, 0, 51));
 		txtUser.setBackground(SystemColor.controlHighlight);
 		txtUser.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtUser.setBounds(0, 25, 294, 30);
+		txtUser.setBounds(0, 73, 294, 30);
 		paso.add(txtUser);
 
 		JLabel lblNewLabel_1 = new JLabel("Contrase\u00F1a");
 		lblNewLabel_1.setForeground(new Color(0, 0, 51));
 		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_1.setBounds(0, 75, 200, 20);
+		lblNewLabel_1.setBounds(0, 128, 200, 20);
 		paso.add(lblNewLabel_1);
 
 		passwordField = new PasswordFieldRedond(25);
 		passwordField.setForeground(new Color(0, 0, 51));
 		passwordField.setBackground(SystemColor.controlHighlight);
 		passwordField.setFont(new Font("Calibri", Font.PLAIN, 18));
-		passwordField.setBounds(0, 100, 294, 30);
+		passwordField.setBounds(0, 161, 294, 30);
 		paso.add(passwordField);
 
 		fotoPerfil = new FotoPerfilRedond(114);
-		fotoPerfil.setBounds(330, 20, 114, 153);
+		fotoPerfil.setBounds(353, 40, 200, 206);
 		paso.add(fotoPerfil);
 
 		return paso;
 	}
-
-
-	/*1
-	private void colocarImagen(JLabel label, String ruta) {
-
-		 ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-
-		    int anchoImagen = icono.getIconWidth();
-		    int altoImagen = icono.getIconHeight();
-
-		    double escalaAncho = (double) anchoLabel / anchoImagen;
-		    double escalaAlto = (double) altoLabel / altoImagen;
-
-		    double escala = Math.max(escalaAncho, escalaAlto);
-
-		    int nuevoAncho = (int) (anchoImagen * escala);
-		    int nuevoAlto = (int) (altoImagen * escala);
-
-		    Image imagenEscalada = icono.getImage().getScaledInstance(
-		            nuevoAncho,
-		            nuevoAlto,
-		            Image.SCALE_SMOOTH
-		    );
-
-		    ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-	}
-	 */
 }

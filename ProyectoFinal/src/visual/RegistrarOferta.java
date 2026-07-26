@@ -210,7 +210,9 @@ public class RegistrarOferta extends JDialog {
 		float salario = ((Number) spnSalario.getValue()).floatValue();
 		Oferta oferta = new Oferta(id, sexo, tipoCandidato, txtPuesto.getText(), (Integer) spnCantPuestos.getValue(), chkLicencia.isSelected(), chkMudarse.isSelected(), EstadoOferta.PENDIENTE, jornada, txtCiudad.getText(), salario, txtDescripcion.getText(), aniosExp, empresa, modalidad);
 		BolsaEmpleo.getInstancia().refOferta(oferta);
-		empresa.agregarOferta(oferta);
+		if(empresa != null) {
+			empresa.agregarOferta(oferta);
+		}
 		JOptionPane.showMessageDialog(null, "Se ha publicado la oferta.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
 		clear();
 	}

@@ -5,15 +5,13 @@ import java.time.LocalDate;
 public class Tecnico extends Persona {
 
 	private String tecnico;
-	private int aniosExp;
 	
 	public Tecnico(String id, String cedula, String nombre, String apellido, LocalDate fechNacim, String telefono,
 			String direccion, Sexo sexo, String ciudad, boolean dispParaMudarse, boolean licenciaConducir,
-			boolean estadoEmpleo, Usuario user, String tecnico, int aniosExp) {
+			boolean estadoEmpleo, Usuario user,int yearsExp, String tecnico) {
 		super(id, cedula, nombre, apellido, fechNacim, telefono, direccion, sexo, ciudad, dispParaMudarse,
-				licenciaConducir, estadoEmpleo, user);
+				licenciaConducir, estadoEmpleo, user, yearsExp);
 		this.tecnico = tecnico;
-		this.aniosExp = aniosExp;
 	}
 
 	public String getTecnico() {
@@ -24,14 +22,7 @@ public class Tecnico extends Persona {
 		this.tecnico = tecnico;
 	}
 
-	public int getAniosExp() {
-		return aniosExp;
-	}
 
-	public void setAniosExp(int aniosExp) {
-		this.aniosExp = aniosExp;
-	}
-	
 	
 	
 	

@@ -30,7 +30,6 @@ public class FotoPerfilRedond extends JPanel {
         btnCambiar.setFont(new Font("Calibri", Font.PLAIN, 12));
         btnCambiar.setBackground(new Color(255, 153, 0));
         btnCambiar.setForeground(new Color(0, 0, 51));
-        btnCambiar.setBounds(0, diametro + 5, diametro, 28);
         btnCambiar.addActionListener(e -> seleccionarFoto());
         add(btnCambiar);
     }
@@ -85,7 +84,7 @@ public class FotoPerfilRedond extends JPanel {
         }
     }
 
-    /** Carga una imagen ya existente desde una ruta absoluta (por ejemplo, al editar un perfil). */
+    // Carga una imagen ya existente desde una ruta absoluta (por ejemplo, al editar un perfil). 
     public void cargarImagen(String rutaAbsoluta) {
         if (rutaAbsoluta == null) return;
         File archivo = new File(rutaAbsoluta);
@@ -98,5 +97,17 @@ public class FotoPerfilRedond extends JPanel {
 
     public String getRutaFotoPerfil() {
         return rutaFotoPerfil;
+    }
+    
+    
+    public void doLayout() {
+        super.doLayout();
+
+        int anchoBoton = getWidth() / 2;
+        int altoBoton = 28;
+        int x = (getWidth() - anchoBoton) / 2;
+        int y = getHeight() - altoBoton;
+
+        btnCambiar.setBounds(x, y, anchoBoton, altoBoton);
     }
 }
