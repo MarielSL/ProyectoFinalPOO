@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.JButton;
 
 public class BotonConSombra extends JButton {
@@ -16,6 +15,7 @@ public class BotonConSombra extends JButton {
 	private static final int SOMBRA_GROSOR = 8;
 	private Color colorNormal;
 	private Color colorHover;
+	private boolean hoverPersonalizado = false; 
 
 	public BotonConSombra(String texto, int radio) {
 	    super(texto);
@@ -24,7 +24,6 @@ public class BotonConSombra extends JButton {
 	    setFocusPainted(false);
 	    setBorderPainted(false);
 	    setOpaque(false);
-
 	    addMouseListener(new MouseAdapter() {
 	        @Override
 	        public void mouseEntered(MouseEvent e) {
@@ -32,7 +31,6 @@ public class BotonConSombra extends JButton {
 	                setBackground(colorHover);
 	            }
 	        }
-
 	        @Override
 	        public void mouseExited(MouseEvent e) {
 	            if (colorNormal != null) {
@@ -41,12 +39,15 @@ public class BotonConSombra extends JButton {
 	        }
 	    });
 	}
+
 	@Override
 	public void setBackground(Color bg) {
 		super.setBackground(bg);
 		if (colorNormal == null || !bg.equals(colorHover)) {
 			colorNormal = bg;
-			colorHover = oscurecer(bg, 0.85f);
+			if (!hoverPersonalizado) {
+				colorHover = oscurecer(bg, 0.85f);
+			}
 		}
 	}
 
@@ -64,7 +65,6 @@ public class BotonConSombra extends JButton {
 				RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON
 				);
-
 		for (int i = SOMBRA_GROSOR; i > 0; i--) {
 			g2.setColor(new Color(0, 0, 0, 0.04f));
 			g2.fillRoundRect(
@@ -76,7 +76,6 @@ public class BotonConSombra extends JButton {
 					radio
 					);
 		}
-
 		g2.setColor(getBackground());
 		g2.fillRoundRect(
 				0,
@@ -86,12 +85,12 @@ public class BotonConSombra extends JButton {
 				radio,
 				radio
 				);
-
 		g2.dispose();
 		super.paintComponent(g);
 	}
-	
+
 	public void setColorHover(Color colorHover) {
 	    this.colorHover = colorHover;
+	    this.hoverPersonalizado = true; 
 	}
 }
