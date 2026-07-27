@@ -18,6 +18,7 @@ import java.awt.Image;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class TipoUser extends JDialog {
 
@@ -38,6 +39,7 @@ public class TipoUser extends JDialog {
 	 * Create the dialog.
 	 */
 	public TipoUser() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(TipoUser.class.getResource("/img/AppIconoFull.png")));
 		setTitle("Tipo de Usuario");
 		setBounds(100, 100, 671, 424);
 		setLocationRelativeTo(null);

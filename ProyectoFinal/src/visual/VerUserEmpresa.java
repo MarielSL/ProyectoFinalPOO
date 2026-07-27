@@ -22,6 +22,7 @@ import java.awt.Dimension;
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class VerUserEmpresa extends JFrame {
 
@@ -58,6 +59,7 @@ public class VerUserEmpresa extends JFrame {
 	 * Create the frame.
 	 */
 	public VerUserEmpresa() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(VerUserEmpresa.class.getResource("/img/AppIconoFull.png")));
 		setTitle("Ver Usuario");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 793, 548);

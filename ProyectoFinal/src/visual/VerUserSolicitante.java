@@ -23,6 +23,7 @@ import java.awt.Dimension;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class VerUserSolicitante extends JFrame {
 
@@ -63,6 +64,7 @@ public class VerUserSolicitante extends JFrame {
 	 * Create the frame.
 	 */
 	public VerUserSolicitante() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(VerUserSolicitante.class.getResource("/img/AppIconoFull.png")));
 		setForeground(new Color(0, 0, 51));
 		setFont(new Font("Calibri", Font.PLAIN, Escalador.t(16)));
 		setTitle("Ver Usuario");

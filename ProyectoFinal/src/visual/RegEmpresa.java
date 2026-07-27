@@ -31,6 +31,7 @@ import java.awt.RenderingHints;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.SystemColor;
 import javax.swing.JPasswordField;
+import java.awt.Toolkit;
 
 public class RegEmpresa extends JDialog {
 
@@ -64,6 +65,7 @@ public class RegEmpresa extends JDialog {
 	 * Create the dialog.
 	 */
 	public RegEmpresa(Empresa empresa ) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegEmpresa.class.getResource("/img/AppIconoFull.png")));
 		myEmpresa = empresa;
 		if(myEmpresa == null) {
 			setTitle("Registrar Empresa");

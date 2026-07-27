@@ -36,6 +36,7 @@ import java.awt.CardLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class VerPostulante extends JFrame {
 
@@ -91,6 +92,7 @@ public class VerPostulante extends JFrame {
 	 * Create the frame.
 	 */
 	public VerPostulante(Persona solicitante, Oferta oferta,SolicitudEmpleo solicitud) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(VerPostulante.class.getResource("/img/AppIconoFull.png")));
 		Utilidades.aplicarIcono(this);
 		setTitle("Ver Postulante");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

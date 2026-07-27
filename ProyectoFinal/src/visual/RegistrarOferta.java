@@ -31,6 +31,7 @@ import logico.Modalidad;
 import logico.Oferta;
 import logico.Sexo;
 import logico.TipoPersona;
+import java.awt.Toolkit;
 
 public class RegistrarOferta extends JDialog {
 	private final JPanel contentPanel = new JPanel();
@@ -67,6 +68,7 @@ public class RegistrarOferta extends JDialog {
 	}
 
 	public RegistrarOferta(Empresa empresa) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarOferta.class.getResource("/img/AppIconoFull.png")));
 		this.empresa = empresa;
 		setTitle("Publicar Oferta");
 		setBounds(100, 100, 734, 560);

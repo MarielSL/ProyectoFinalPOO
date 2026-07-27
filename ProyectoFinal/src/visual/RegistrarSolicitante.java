@@ -36,6 +36,7 @@ import logico.Usuario;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
+import java.awt.Toolkit;
 
 public class RegistrarSolicitante extends JDialog {
 	private final JPanel contentPanel = new JPanel();
@@ -81,6 +82,7 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	public RegistrarSolicitante(Persona persona) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarSolicitante.class.getResource("/img/AppIconoFull.png")));
 		persona = mySolicitante;
 		if(mySolicitante == null) {
 			setTitle("Registrar Solicitante");

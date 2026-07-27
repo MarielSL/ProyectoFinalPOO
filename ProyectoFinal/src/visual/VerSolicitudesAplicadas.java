@@ -39,6 +39,7 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class VerSolicitudesAplicadas extends JFrame {
 
@@ -70,6 +71,7 @@ public class VerSolicitudesAplicadas extends JFrame {
 	 * Create the frame.
 	 */
 	public VerSolicitudesAplicadas() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(VerSolicitudesAplicadas.class.getResource("/img/AppIconoFull.png")));
 		setTitle("Mis Solicitudes");
 		Utilidades.aplicarIcono(this);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
