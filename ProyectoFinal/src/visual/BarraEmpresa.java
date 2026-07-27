@@ -14,6 +14,8 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Color;
 import javax.swing.SwingConstants;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class BarraEmpresa extends JDialog {
 
@@ -77,6 +79,13 @@ public class BarraEmpresa extends JDialog {
 			panel.add(lblEmpresa);
 			
 			BotonConSombra btnDashboard = new BotonConSombra("Dashboard",25);
+			btnDashboard.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					HomeEmpresa emp = new HomeEmpresa();
+					emp.setVisible(true);
+					dispose();
+				}
+			});
 			btnDashboard.setBackground(new Color(255, 255, 255));
 			btnDashboard.setHorizontalAlignment(SwingConstants.LEFT);
 			btnDashboard.setColorHover(new Color(135,206,250));
@@ -85,6 +94,13 @@ public class BarraEmpresa extends JDialog {
 			panel.add(btnDashboard);
 			
 			BotonConSombra btnMisOfertas = new BotonConSombra("Dashboard", 25);
+			btnMisOfertas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					VerOfertasEmpresa emp = new VerOfertasEmpresa();
+					emp.setVisible(true);
+					dispose();
+				}
+			});
 			btnMisOfertas.setBackground(new Color(255, 255, 255));
 			btnMisOfertas.setHorizontalAlignment(SwingConstants.LEFT);
 			btnMisOfertas.setText("Mis Ofertas");

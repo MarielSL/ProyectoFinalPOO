@@ -14,6 +14,8 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Color;
 import javax.swing.SwingConstants;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class BarraSolicitante extends JDialog {
 
@@ -77,6 +79,13 @@ public class BarraSolicitante extends JDialog {
 		panel.add(separator_1);
 		
 		BotonConSombra btnDashboard = new BotonConSombra("Dashboard",25);
+		btnDashboard.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				HomeCandidato soli = new HomeCandidato();
+				soli.setVisible(true);
+				dispose();
+			}
+		});
 		btnDashboard.setFont(new Font("Calibri", Font.PLAIN, 20));
 		btnDashboard.setHorizontalAlignment(SwingConstants.LEFT);
 		btnDashboard.setBounds(109, 223, 189, 49);
@@ -84,6 +93,13 @@ public class BarraSolicitante extends JDialog {
 		panel.add(btnDashboard);
 		
 		BotonConSombra btnMisSolicitudes = new BotonConSombra("Mis Solicitudes",25);
+		btnMisSolicitudes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VerSolicitudesAplicadas soli = new VerSolicitudesAplicadas();
+				soli.setVisible(true);
+				dispose();
+			}
+		});
 		btnMisSolicitudes.setHorizontalAlignment(SwingConstants.LEFT);
 		btnMisSolicitudes.setFont(new Font("Calibri", Font.PLAIN, 20));
 		btnMisSolicitudes.setBounds(109, 310, 189, 49);
@@ -91,6 +107,13 @@ public class BarraSolicitante extends JDialog {
 		panel.add(btnMisSolicitudes);
 		
 		BotonConSombra btnBuscarOfertas = new BotonConSombra("Buscar Ofertas",25);
+		btnBuscarOfertas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BuscarOfertas soli = new BuscarOfertas(null);
+				soli.setVisible(true);
+				dispose();
+			}
+		});
 		btnBuscarOfertas.setHorizontalAlignment(SwingConstants.LEFT);
 		btnBuscarOfertas.setFont(new Font("Calibri", Font.PLAIN, 20));
 		btnBuscarOfertas.setBounds(109, 403, 189, 49);

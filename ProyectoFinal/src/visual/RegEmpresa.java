@@ -119,7 +119,8 @@ public class RegEmpresa extends JDialog {
 
 					JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
 					clear();
-					// aca ponerle el set visible de la siguiente pesta\u00F1a en abrir
+					HomeEmpresa emp = new HomeEmpresa();
+					emp.setVisible(true);
 					dispose();
 				}
 				else {
@@ -312,10 +313,9 @@ public class RegEmpresa extends JDialog {
 
 
 		fotoPerfil = new FotoPerfilRedond(120);
-		fotoPerfil.setBounds(654, 20, 120, 155); 
+		fotoPerfil.setBounds(655, 78, 142, 186); 
 		contentPanel.add(fotoPerfil);
-
-
+		
 
 		JLabel lblFondo = new JLabel();
 		lblFondo.setBounds(0, 0, 862, 514); 

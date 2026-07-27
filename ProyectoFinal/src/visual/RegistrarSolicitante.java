@@ -157,6 +157,12 @@ public class RegistrarSolicitante extends JDialog {
 		btnSiguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				irSiguiente();
+				if(pasoActual == 4) {
+					HomeCandidato home = new HomeCandidato();
+					home.setVisible(true);
+					dispose();
+					
+				}
 			}
 		});
 		panel.add(btnSiguiente);

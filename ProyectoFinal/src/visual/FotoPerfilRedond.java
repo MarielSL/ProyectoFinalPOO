@@ -20,7 +20,6 @@ public class FotoPerfilRedond extends JPanel {
         setOpaque(false);
         setPreferredSize(new Dimension(diametro, diametro + 35));
 
-        // Imagen por defecto
         java.net.URL urlDefault = getClass().getResource("/img/avatar-default.png");
         if (urlDefault != null) {
             imagen = new ImageIcon(urlDefault).getImage();
@@ -29,6 +28,7 @@ public class FotoPerfilRedond extends JPanel {
         btnCambiar = new BotonRedond("Añadir Foto", 15);
         btnCambiar.setFont(new Font("Calibri", Font.PLAIN, 12));
         btnCambiar.setBackground(new Color(255, 153, 0));
+        
         btnCambiar.setForeground(new Color(0, 0, 51));
         btnCambiar.addActionListener(e -> seleccionarFoto());
         add(btnCambiar);
@@ -84,7 +84,7 @@ public class FotoPerfilRedond extends JPanel {
         }
     }
 
-    // Carga una imagen ya existente desde una ruta absoluta (por ejemplo, al editar un perfil). 
+
     public void cargarImagen(String rutaAbsoluta) {
         if (rutaAbsoluta == null) return;
         File archivo = new File(rutaAbsoluta);
@@ -102,9 +102,11 @@ public class FotoPerfilRedond extends JPanel {
     
     public void doLayout() {
         super.doLayout();
+        
+        
 
-        int anchoBoton = getWidth() / 2;
-        int altoBoton = 28;
+        int anchoBoton = getWidth() ;
+        int altoBoton = 40;
         int x = (getWidth() - anchoBoton) / 2;
         int y = getHeight() - altoBoton;
 
