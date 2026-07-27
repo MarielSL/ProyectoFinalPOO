@@ -1,55 +1,396 @@
 package visual;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import logico.BolsaEmpleo;
+import logico.Empresa;
+import logico.EstadoOferta;
+import logico.EstadoSolicitud;
+import logico.Oferta;
+import logico.SolicitudEmpleo;
 
-public class HomeEmpresa extends JDialog {
+public class HomeEmpresa extends JFrame {
 
-	private final JPanel contentPanel = new JPanel();
+	private JPanel contentPane;
+	private Dimension dim;
+	private Empresa empresa;
+	private JTable table;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		try {
-			HomeEmpresa dialog = new HomeEmpresa();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					HomeEmpresa frame = new HomeEmpresa();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	/**
-	 * Create the dialog.
+	 * Create the frame.
 	 */
 	public HomeEmpresa() {
+		if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
+			empresa = BolsaEmpleo.getInstancia().getLoginUser().getEmpresa();
+		}
+		setTitle("Inicio");
+		Utilidades.aplicarIcono(this);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setLayout(new FlowLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(new BorderLayout(0, 0));
+
+		dim = getToolkit().getScreenSize();
+		setSize(dim.width, dim.height);
+		setLocationRelativeTo(null);
+
+		JLayeredPane layeredPane = new JLayeredPane();
+		contentPane.add(layeredPane);
+		layeredPane.setLayout(new BorderLayout(0, 0));
+
+		JPanel panel = new JPanel();
+		layeredPane.add(panel, BorderLayout.CENTER);
+		panel.setBackground(new Color(245, 245, 245));
+		panel.setLayout(null);
+
+		int margen = 40;
+		int anchoContenido = dim.width - (margen * 2);
+
 		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+			PanelRedond panelMenu = new PanelRedond(25);
+			panelMenu.setBackground(new Color(0, 0, 51));
+			panelMenu.setBounds(margen, 20, anchoContenido, 70);
+			panel.add(panelMenu);
+			panelMenu.setLayout(null);
+
+			String[] textosMenu = { "Inicio", "Publicar oferta", "Mis ofertas", "Ver perfil" };
+			int[] anchosMenu = { 70, 150, 110, 90 };
+			int espacioEntreItems = 40;
+
+			int anchoTotalMenu = 0;
+			for (int i = 0; i < anchosMenu.length; i++) {
+				anchoTotalMenu += anchosMenu[i];
 			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
+			anchoTotalMenu += espacioEntreItems * (anchosMenu.length - 1);
+
+			int xMenu = anchoContenido - anchoTotalMenu - 40;
+
+			JLabel lblInicio = new JLabel(textosMenu[0]);
+			lblInicio.setHorizontalAlignment(SwingConstants.CENTER);
+			lblInicio.setFont(new Font("Calibri", Font.PLAIN, 18));
+			lblInicio.setForeground(Color.WHITE);
+			lblInicio.setBounds(680, 26, anchosMenu[0], 20);
+			panelMenu.add(lblInicio);
+			xMenu += anchosMenu[0] + espacioEntreItems;
+
+			JLabel lblPublicarOferta = new JLabel(textosMenu[1]);
+			lblPublicarOferta.setFont(new Font("Calibri", Font.PLAIN, 18));
+			lblPublicarOferta.setForeground(Color.WHITE);
+			lblPublicarOferta.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			lblPublicarOferta.setBounds(781, 26, 118, 20);
+			lblPublicarOferta.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					if (empresa != null) {
+						RegistrarOferta registrarOferta = new RegistrarOferta(empresa);
+						registrarOferta.setVisible(true);
+					}
+				}
+			});
+			panelMenu.add(lblPublicarOferta);
+			xMenu += anchosMenu[1] + espacioEntreItems;
+
+			JLabel lblMisOfertas = new JLabel(textosMenu[2]);
+			lblMisOfertas.setFont(new Font("Calibri", Font.PLAIN, 18));
+			lblMisOfertas.setForeground(Color.WHITE);
+			lblMisOfertas.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			lblMisOfertas.setBounds(938, 26, 90, 20);
+			panelMenu.add(lblMisOfertas);
+			xMenu += anchosMenu[2] + espacioEntreItems;
+
+			JLabel lblVerPerfil = new JLabel(textosMenu[3]);
+			lblVerPerfil.setFont(new Font("Calibri", Font.PLAIN, 18));
+			lblVerPerfil.setForeground(Color.WHITE);
+			lblVerPerfil.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			lblVerPerfil.setBounds(1080, 26, anchosMenu[3], 20);
+			lblVerPerfil.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					VerUserEmpresa verUserEmpresa = new VerUserEmpresa();
+					verUserEmpresa.setVisible(true);
+				}
+			});
+			panelMenu.add(lblVerPerfil);
+		}
+
+		int anchoTarjeta = (anchoContenido - 48) / 3;
+
+		{
+			PanelConSombra panelOfertasActivas = new PanelConSombra(18);
+			panelOfertasActivas.setBackground(new Color(255, 224, 178));
+			panelOfertasActivas.setBounds(margen, 110, anchoTarjeta, 90);
+			panel.add(panelOfertasActivas);
+			panelOfertasActivas.setLayout(null);
+
+			JLabel lblOfertasActivas = new JLabel("ofertas activas");
+			lblOfertasActivas.setFont(new Font("Calibri", Font.PLAIN, 15));
+			lblOfertasActivas.setForeground(new Color(204, 102, 0));
+			lblOfertasActivas.setBounds(20, 14, anchoTarjeta - 40, 20);
+			panelOfertasActivas.add(lblOfertasActivas);
+
+			JLabel lblOfertasActivasNum = new JLabel(String.valueOf(contarOfertasActivas()));
+			lblOfertasActivasNum.setFont(new Font("Calibri", Font.BOLD, 30));
+			lblOfertasActivasNum.setForeground(new Color(204, 102, 0));
+			lblOfertasActivasNum.setBounds(20, 38, anchoTarjeta - 40, 36);
+			panelOfertasActivas.add(lblOfertasActivasNum);
+		}
+
+		{
+			PanelConSombra panelSolicitudesPendientes = new PanelConSombra(18);
+			panelSolicitudesPendientes.setBackground(new Color(195, 220, 255));
+			panelSolicitudesPendientes.setBounds(margen + anchoTarjeta + 24, 110, anchoTarjeta, 90);
+			panel.add(panelSolicitudesPendientes);
+			panelSolicitudesPendientes.setLayout(null);
+
+			JLabel lblSolicitudesPendientes = new JLabel("Solicitudes pendientes");
+			lblSolicitudesPendientes.setFont(new Font("Calibri", Font.PLAIN, 15));
+			lblSolicitudesPendientes.setForeground(new Color(65, 95, 170));
+			lblSolicitudesPendientes.setBounds(20, 14, anchoTarjeta - 40, 20);
+			panelSolicitudesPendientes.add(lblSolicitudesPendientes);
+
+			JLabel lblSolicitudesPendientesNum = new JLabel(String.valueOf(contarSolicitudesPendientes()));
+			lblSolicitudesPendientesNum.setFont(new Font("Calibri", Font.BOLD, 30));
+			lblSolicitudesPendientesNum.setForeground(new Color(65, 95, 170));
+			lblSolicitudesPendientesNum.setBounds(20, 38, anchoTarjeta - 40, 36);
+			panelSolicitudesPendientes.add(lblSolicitudesPendientesNum);
+		}
+
+		{
+			PanelConSombra panelContratados = new PanelConSombra(18);
+			panelContratados.setBackground(new Color(255, 205, 210));
+			panelContratados.setBounds(margen + (anchoTarjeta + 24) * 2, 110, anchoTarjeta, 90);
+			panel.add(panelContratados);
+			panelContratados.setLayout(null);
+
+			JLabel lblContratados = new JLabel("Contratados este mes");
+			lblContratados.setFont(new Font("Calibri", Font.PLAIN, 15));
+			lblContratados.setForeground(new Color(198, 40, 40));
+			lblContratados.setBounds(20, 14, anchoTarjeta - 40, 20);
+			panelContratados.add(lblContratados);
+
+			JLabel lblContratadosNum = new JLabel(String.valueOf(contarContratadosEsteMes()));
+			lblContratadosNum.setFont(new Font("Calibri", Font.BOLD, 30));
+			lblContratadosNum.setForeground(new Color(198, 40, 40));
+			lblContratadosNum.setBounds(20, 38, anchoTarjeta - 40, 36);
+			panelContratados.add(lblContratadosNum);
+		}
+
+		{
+			int yTabla = 220;
+			int altoTabla = dim.height - yTabla - 60;
+
+			PanelConSombra panelSolicitudesRecientes = new PanelConSombra(20);
+			panelSolicitudesRecientes.setBackground(Color.WHITE);
+			panelSolicitudesRecientes.setBounds(margen, yTabla, anchoContenido, altoTabla);
+			panel.add(panelSolicitudesRecientes);
+			panelSolicitudesRecientes.setLayout(null);
+
+			JLabel lblSolicitudesRecientes = new JLabel("Solicitudes recientes");
+			lblSolicitudesRecientes.setFont(new Font("Calibri", Font.BOLD, 20));
+			lblSolicitudesRecientes.setForeground(new Color(0, 0, 51));
+			lblSolicitudesRecientes.setBounds(24, 20, 400, 28);
+			panelSolicitudesRecientes.add(lblSolicitudesRecientes);
+
+			table = new JTable();
+			table.setModel(crearModeloSolicitudesRecientes());
+			table.setFont(new Font("Calibri", Font.PLAIN, 16));
+			table.setRowHeight(38);
+			table.setForeground(new Color(50, 50, 50));
+			table.setSelectionBackground(new Color(240, 240, 245));
+			table.setShowGrid(false);
+			table.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 15));
+			table.getTableHeader().setForeground(new Color(0, 0, 51));
+			table.getColumnModel().getColumn(3).setCellRenderer(new RenderEstado());
+
+			JScrollPane scrollSolicitudes = new JScrollPane(table);
+			scrollSolicitudes.setBorder(null);
+			scrollSolicitudes.setBounds(24, 60, anchoContenido - 48, altoTabla - 90);
+			panelSolicitudesRecientes.add(scrollSolicitudes);
 		}
 	}
 
+	private int contarOfertasActivas() {
+		if (empresa == null) {
+			return 0;
+		}
+		int contador = 0;
+		for (Oferta oferta : empresa.getLasOfertas()) {
+			if (oferta.getEstado() == EstadoOferta.PENDIENTE) {
+				contador++;
+			}
+		}
+		return contador;
+	}
+
+	private int contarSolicitudesPendientes() {
+		if (empresa == null) {
+			return 0;
+		}
+		int contador = 0;
+		for (Oferta oferta : empresa.getLasOfertas()) {
+			for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
+				if (solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
+					contador++;
+				}
+			}
+		}
+		return contador;
+	}
+
+	private int contarContratadosEsteMes() {
+		if (empresa == null) {
+			return 0;
+		}
+		int contador = 0;
+		LocalDate hoy = LocalDate.now();
+		for (Oferta oferta : empresa.getLasOfertas()) {
+			for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
+				if (solicitud.getEstado() == EstadoSolicitud.ACEPTADA && solicitud.getFechaSolicitud().getMonthValue() == hoy.getMonthValue() && solicitud.getFechaSolicitud().getYear() == hoy.getYear()) {
+					contador++;
+				}
+			}
+		}
+		return contador;
+	}
+
+	private ArrayList<SolicitudEmpleo> obtenerSolicitudesRecientes() {
+		ArrayList<SolicitudEmpleo> todas = new ArrayList<SolicitudEmpleo>();
+		if (empresa == null) {
+			return todas;
+		}
+		for (Oferta oferta : empresa.getLasOfertas()) {
+			for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
+				todas.add(solicitud);
+			}
+		}
+		for (int i = 0; i < todas.size() - 1; i++) {
+			for (int j = 0; j < todas.size() - 1 - i; j++) {
+				if (todas.get(j).getFechaSolicitud().isBefore(todas.get(j + 1).getFechaSolicitud())) {
+					SolicitudEmpleo temporal = todas.get(j);
+					todas.set(j, todas.get(j + 1));
+					todas.set(j + 1, temporal);
+				}
+			}
+		}
+		ArrayList<SolicitudEmpleo> recientes = new ArrayList<SolicitudEmpleo>();
+		int limite = Math.min(5, todas.size());
+		for (int i = 0; i < limite; i++) {
+			recientes.add(todas.get(i));
+		}
+		return recientes;
+	}
+
+	private DefaultTableModel crearModeloSolicitudesRecientes() {
+		DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Nombre", "Oferta", "Fecha", "Estado" }) {
+			public boolean isCellEditable(int fila, int columna) {
+				return false;
+			}
+		};
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
+		for (SolicitudEmpleo solicitud : obtenerSolicitudesRecientes()) {
+			String nombreCandidato = solicitud.getCandidato().getNombre() + " " + solicitud.getCandidato().getApellido();
+			String estadoTexto = formatearEstado(solicitud.getEstado());
+			modelo.addRow(new Object[] { nombreCandidato, solicitud.getOferta().getPuesto(), solicitud.getFechaSolicitud().format(formato), estadoTexto });
+		}
+		return modelo;
+	}
+
+	private String formatearEstado(EstadoSolicitud estado) {
+		if (estado == EstadoSolicitud.PENDIENTE) {
+			return "Pendiente";
+		}
+		if (estado == EstadoSolicitud.ACEPTADA) {
+			return "Aceptada";
+		}
+		if (estado == EstadoSolicitud.RECHAZADA) {
+			return "Rechazada";
+		}
+		return "En Revisi\u00F3n";
+	}
+
+	private class RenderEstado extends JLabel implements TableCellRenderer {
+
+		public RenderEstado() {
+			setOpaque(false);
+			setHorizontalAlignment(SwingConstants.CENTER);
+			setFont(new Font("Calibri", Font.BOLD, 14));
+		}
+
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+				boolean hasFocus, int row, int column) {
+			String estado = "";
+			if (value != null) {
+				estado = value.toString();
+			}
+			setText(estado);
+
+			if (estado.equals("Aceptada")) {
+				setBackground(new Color(198, 239, 206));
+				setForeground(new Color(46, 125, 50));
+			} else if (estado.equals("Rechazada")) {
+				setBackground(new Color(255, 205, 210));
+				setForeground(new Color(198, 40, 40));
+			} else {
+				setBackground(new Color(255, 224, 178));
+				setForeground(new Color(204, 102, 0));
+			}
+
+			return this;
+		}
+
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g.create();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setColor(getBackground());
+
+			int margenVertical = 6;
+			int margenHorizontal = 10;
+			g2.fillRoundRect(margenHorizontal, margenVertical,
+				getWidth() - margenHorizontal * 2, getHeight() - margenVertical * 2, 16, 16);
+			g2.dispose();
+
+			super.paintComponent(g);
+		}
+	}
 }
