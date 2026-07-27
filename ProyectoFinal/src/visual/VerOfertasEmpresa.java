@@ -31,12 +31,17 @@ import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.JComboBox;
 import logico.EstadoSolicitud;
+import visual.ComboBoxRedond;
+import visual.PanelConSombra;
+import visual.TextFieldConSombra;
+import visual.Utilidades;
+
 import java.awt.Window.Type;
 import javax.swing.JSplitPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
-public class VerSolicitudesAplicadas extends JFrame {
+public class VerOfertasEmpresa extends JFrame {
 
 	private JPanel contentPane;
 	private Dimension dim;
@@ -53,7 +58,7 @@ public class VerSolicitudesAplicadas extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					VerSolicitudesAplicadas frame = new VerSolicitudesAplicadas();
+					VerOfertasEmpresa frame = new VerOfertasEmpresa();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -65,7 +70,7 @@ public class VerSolicitudesAplicadas extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public VerSolicitudesAplicadas() {
+	public VerOfertasEmpresa() {
 		setTitle("Mis Solicitudes");
 		Utilidades.aplicarIcono(this);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -98,7 +103,7 @@ public class VerSolicitudesAplicadas extends JFrame {
 		txtBuscar.setBackground(new Color(255, 255, 255));
 		txtBuscar.setForeground(new Color(204, 204, 204));
 		txtBuscar.setText("Buscar");
-		txtBuscar.setBounds(1119, 13, 214, 40);
+		txtBuscar.setBounds(1473, 13, 214, 40);
 		panel_3.add(txtBuscar);
 		txtBuscar.setColumns(10);
 		
@@ -107,7 +112,7 @@ public class VerSolicitudesAplicadas extends JFrame {
 		cbxEstado.setForeground(new Color(0, 0, 51));
 		cbxEstado.setEditable(true);
 		cbxEstado.setBackground(new Color(255, 255, 255));
-		cbxEstado.setModel(new DefaultComboBoxModel(new String[] {"Todas", "Aceptadas", "Rechazadas", "Pendientes", "En Revisi\u00F3n"}));
+		cbxEstado.setModel(new DefaultComboBoxModel(new String[] {"Todas", "Activas", "En pausa", "Cerradas"}));
 		cbxEstado.setSelectedIndex(0);
 		
 		cbxEstado.setBounds(66, 20, 294, 22);
@@ -120,9 +125,9 @@ public class VerSolicitudesAplicadas extends JFrame {
 		panel.add(panel_1);
 		panel_1.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("Mis Solicitudes");
+		JLabel lblNewLabel = new JLabel("Mis Ofertas");
 		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 30));
-		lblNewLabel.setForeground(new Color(255, 153, 0));
+		lblNewLabel.setForeground(new Color(30, 144, 255));
 		lblNewLabel.setBounds(29, 32, 290, 35);
 		panel_1.add(lblNewLabel);
 		
@@ -136,7 +141,7 @@ public class VerSolicitudesAplicadas extends JFrame {
 				{null, null, null, null, null, null},
 			},
 			new String[] {
-				"Nombre", "Empresa", "Ubicaci\u00F3n", "Jornada", "Fecha de Aplicaci\u00F3n", "Estado"
+				"Puesto", "Modalidad", "Fecha de Publicaci\u00F3n", "Postulantes", "Jornada", "Estado"
 			}
 		));
 		table.getColumnModel().getColumn(0).setPreferredWidth(200);
@@ -153,11 +158,11 @@ public class VerSolicitudesAplicadas extends JFrame {
 		
 		PanelConSombra panel_2 = new PanelConSombra(25);
 		panel_2.setBackground(new Color(234, 241, 253));
-		panel_2.setBounds(131, 216, 303, 121);
+		panel_2.setBounds(136, 216, 303, 121);
 		panel.add(panel_2);
 		panel_2.setLayout(null);
 		
-		JLabel lblNewLabel_1 = new JLabel("Total Aplicadas");
+		JLabel lblNewLabel_1 = new JLabel("Total ofertas");
 		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 20));
 		lblNewLabel_1.setBounds(95, 25, 185, 31);
 		panel_2.add(lblNewLabel_1);
@@ -173,12 +178,12 @@ public class VerSolicitudesAplicadas extends JFrame {
 		panel_2.add(lblNewLabel_2);
 		
 		PanelConSombra panelConSombra = new PanelConSombra(25);
-		panelConSombra.setBounds(575, 216, 303, 121);
+		panelConSombra.setBounds(1014, 216, 303, 121);
 		panelConSombra.setBackground(new Color(255, 243, 220));
 		panel.add(panelConSombra);
 		panelConSombra.setLayout(null);
 		
-		JLabel lblEnRevisin = new JLabel("En revisi\u00F3n");
+		JLabel lblEnRevisin = new JLabel("En pausa");
 		lblEnRevisin.setFont(new Font("Calibri", Font.PLAIN, 20));
 		lblEnRevisin.setBounds(91, 25, 185, 31);
 		panelConSombra.add(lblEnRevisin);
@@ -190,16 +195,16 @@ public class VerSolicitudesAplicadas extends JFrame {
 		
 		JLabel label_3 = new JLabel("Icono ");
 		label_3.setBounds(12, 25, 60, 60);
-		colocarImagen(label_3,"/img/revision_naranja.png");
+		colocarImagen(label_3,"/img/pausa_naranja.png");
 		panelConSombra.add(label_3);
 		
 		PanelConSombra panelConSombra_1 = new PanelConSombra(25);
-		panelConSombra_1.setBounds(1014, 216, 303, 121);
+		panelConSombra_1.setBounds(575, 216, 303, 121);
 		panelConSombra_1.setBackground(new Color(230, 247, 232));
 		panel.add(panelConSombra_1);
 		panelConSombra_1.setLayout(null);
 		
-		JLabel lblAceptadas = new JLabel("Aceptadas");
+		JLabel lblAceptadas = new JLabel("Activas");
 		lblAceptadas.setFont(new Font("Calibri", Font.PLAIN, 20));
 		lblAceptadas.setBounds(95, 25, 185, 31);
 		panelConSombra_1.add(lblAceptadas);
@@ -209,10 +214,11 @@ public class VerSolicitudesAplicadas extends JFrame {
 		label_1.setBounds(95, 69, 185, 31);
 		panelConSombra_1.add(label_1);
 		
-		JLabel label_4 = new JLabel("Icono ");
-		label_4.setBounds(16, 25, 60, 60);
-		colocarImagen(label_4,"/img/check.png");
-		panelConSombra_1.add(label_4);
+		JLabel lblIcono = new JLabel("icono");
+		lblIcono.setBounds(16, 25, 60, 60);
+		colocarImagen(lblIcono,"/img/check.png");
+		panelConSombra_1.add(lblIcono);
+		
 		
 		PanelConSombra panelConSombra_2 = new PanelConSombra(25);
 		panelConSombra_2.setBounds(1453, 216, 303, 121);
@@ -220,7 +226,7 @@ public class VerSolicitudesAplicadas extends JFrame {
 		panel.add(panelConSombra_2);
 		panelConSombra_2.setLayout(null);
 		
-		JLabel lblRechazadas = new JLabel("Rechazadas");
+		JLabel lblRechazadas = new JLabel("Cerradas");
 		lblRechazadas.setFont(new Font("Calibri", Font.PLAIN, 20));
 		lblRechazadas.setBounds(106, 25, 185, 31);
 		panelConSombra_2.add(lblRechazadas);
