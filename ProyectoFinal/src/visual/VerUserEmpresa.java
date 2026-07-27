@@ -3,7 +3,9 @@ package visual;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.awt.Insets;
 
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -66,6 +68,24 @@ public class VerUserEmpresa extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		BotonRedond btnMenu = new BotonRedond("",25);
+		btnMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BarraEmpresa menu = new BarraEmpresa();
+				menu.setVisible(true);
+			}
+		});
+		btnMenu.setBackground(new Color(0, 0, 51));
+		btnMenu.setColorHover(new Color(0, 51, 102));
+		btnMenu.setBounds(12, 0, 73, 65);
+		colocarIconoBoton(btnMenu,"/img/menu.png",42,35);
+		btnMenu.setMargin(new Insets(0, 0, 0, 0));
+		btnMenu.setBorderPainted(false);
+		btnMenu.setContentAreaFilled(false);
+		btnMenu.setFocusPainted(false);
+		btnMenu.setOpaque(false);
+		contentPane.add(btnMenu);
 
 		fotoPerfil = new JLabel("New label");
 		fotoPerfil.setIcon(new ImageIcon(VerUserEmpresa.class.getResource("/img/User Icon.png")));
@@ -259,5 +279,11 @@ public class VerUserEmpresa extends JFrame {
 		label.setText("");
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
+	}
+	
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	    boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }

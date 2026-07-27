@@ -3,11 +3,16 @@ package visual;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
+import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+
+import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -87,19 +92,37 @@ public class BuscarOfertas extends JFrame {
 			panelBuscar.setBounds(0, 0, 917, 78);
 			panel.add(panelBuscar);
 			panelBuscar.setLayout(null);
+			
+			BotonRedond btnMenu = new BotonRedond("",25);
+			btnMenu.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					BarraSolicitante menu = new BarraSolicitante();
+					menu.setVisible(true);
+				}
+			});
+			btnMenu.setBackground(new Color(0, 0, 51));
+			btnMenu.setColorHover(new Color(0, 51, 102));
+			btnMenu.setBounds(12, 0, 73, 65);
+			colocarIconoBoton(btnMenu,"/img/menu.png",42,35);
+			btnMenu.setMargin(new Insets(0, 0, 0, 0));
+			btnMenu.setBorderPainted(false);
+			btnMenu.setContentAreaFilled(false);
+			btnMenu.setFocusPainted(false);
+			btnMenu.setOpaque(false);
+			panelBuscar.add(btnMenu);
 
 			txtPuesto = new TextFieldRedond(25);
 			txtPuesto.setForeground(new Color(0, 0, 51));
 			txtPuesto.setBackground(new Color(255, 255, 255));
 			txtPuesto.setFont(new Font("Calibri", Font.PLAIN, 18));
-			txtPuesto.setBounds(20, 23, 280, 30);
+			txtPuesto.setBounds(126, 23, 280, 30);
 			panelBuscar.add(txtPuesto);
 
 			cbxCiudad = new ComboBoxRedond<String>(25);
 			cbxCiudad.setForeground(new Color(0, 0, 51));
 			cbxCiudad.setFont(new Font("Calibri", Font.PLAIN, 18));
 			cbxCiudad.setBackground(new Color(255, 255, 255));
-			cbxCiudad.setBounds(320, 23, 220, 30);
+			cbxCiudad.setBounds(434, 22, 220, 30);
 			panelBuscar.add(cbxCiudad);
 
 			btnBuscar = new BotonRedond("Buscar", 25);
@@ -351,5 +374,11 @@ public class BuscarOfertas extends JFrame {
 		scrollListado.setBounds(27, 175, LIST_FULL, 435);
 		pnlDetalle.setVisible(false);
 		actualizarListado();
+	}
+	
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	    boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }

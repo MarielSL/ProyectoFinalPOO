@@ -5,9 +5,12 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
@@ -82,15 +85,34 @@ public class RegistrarOferta extends JDialog {
 		panelTitulo.setBounds(0, 0, 717, 65);
 		panel.add(panelTitulo);
 		panelTitulo.setLayout(null);
+		
+		BotonRedond btnMenu = new BotonRedond("",25);
+		btnMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BarraEmpresa menu = new BarraEmpresa();
+				menu.setVisible(true);
+			}
+		});
+		btnMenu.setBackground(new Color(0, 0, 51));
+		btnMenu.setColorHover(new Color(0, 51, 102));
+		btnMenu.setBounds(12, 0, 73, 65);
+		colocarIconoBoton(btnMenu,"/img/menu.png",42,35);
+		btnMenu.setMargin(new Insets(0, 0, 0, 0));
+		btnMenu.setBorderPainted(false);
+		btnMenu.setContentAreaFilled(false);
+		btnMenu.setFocusPainted(false);
+		btnMenu.setOpaque(false);
+		panelTitulo.add(btnMenu);
+		
 		lblTitulo1 = new JLabel("Publica una nueva oportunidad laboral");
 		lblTitulo1.setForeground(new Color(255, 153, 0));
 		lblTitulo1.setFont(new Font("Calibri", Font.BOLD, 24));
-		lblTitulo1.setBounds(108, 16, 571, 35);
+		lblTitulo1.setBounds(146, 17, 571, 35);
 		panelTitulo.add(lblTitulo1);
 		
 		lblIcon = new JLabel("New label");
 		lblIcon.setIcon(new ImageIcon(RegistrarOferta.class.getResource("/img/briefcase.png")));
-		lblIcon.setBounds(46, 13, 36, 38);
+		lblIcon.setBounds(98, 16, 36, 38);
 		panelTitulo.add(lblIcon);
 		PanelRedond cardBlanca = new PanelRedond(20);
 		cardBlanca.setBackground(new Color(255, 255, 255));
@@ -445,5 +467,11 @@ public class RegistrarOferta extends JDialog {
 		    label.setText("");
 		    label.setHorizontalAlignment(JLabel.CENTER);
 		    label.setVerticalAlignment(JLabel.CENTER);
+	}
+	
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	    boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }

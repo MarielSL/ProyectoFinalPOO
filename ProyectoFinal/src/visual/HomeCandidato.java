@@ -9,12 +9,18 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -100,6 +106,24 @@ public class HomeCandidato extends JFrame {
 			panelNav.setBounds(margen, 20, anchoContenido, 70);
 			panel.add(panelNav);
 			panelNav.setLayout(null);
+			
+			BotonRedond btnMenu = new BotonRedond("",25);
+			btnMenu.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					BarraSolicitante menu = new BarraSolicitante();
+					menu.setVisible(true);
+				}
+			});
+			btnMenu.setBackground(new Color(0, 0, 51));
+			btnMenu.setColorHover(new Color(0, 51, 102));
+			btnMenu.setBounds(12, 0, 73, 65);
+			colocarIconoBoton(btnMenu,"/img/menu.png",42,35);
+			btnMenu.setMargin(new Insets(0, 0, 0, 0));
+			btnMenu.setBorderPainted(false);
+			btnMenu.setContentAreaFilled(false);
+			btnMenu.setFocusPainted(false);
+			btnMenu.setOpaque(false);
+			panelNav.add(btnMenu);
 
 			JLabel lblInicio = new JLabel("Inicio");
 			lblInicio.setHorizontalAlignment(SwingConstants.CENTER);
@@ -378,5 +402,11 @@ public class HomeCandidato extends JFrame {
 
 			super.paintComponent(g);
 		}
+	}
+	
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	    boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }

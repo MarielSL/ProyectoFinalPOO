@@ -16,12 +16,14 @@ import java.awt.Color;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.swing.JTable;
 import javax.swing.JScrollBar;
+import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -35,6 +37,8 @@ import java.awt.Window.Type;
 import javax.swing.JSplitPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class VerSolicitudesAplicadas extends JFrame {
 
@@ -123,8 +127,27 @@ public class VerSolicitudesAplicadas extends JFrame {
 		JLabel lblNewLabel = new JLabel("Mis Solicitudes");
 		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblNewLabel.setForeground(new Color(255, 153, 0));
-		lblNewLabel.setBounds(29, 32, 290, 35);
+		lblNewLabel.setBounds(123, 31, 290, 35);
 		panel_1.add(lblNewLabel);
+		
+		BotonRedond btnMenu = new BotonRedond("",25);
+		btnMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BarraSolicitante menu = new BarraSolicitante();
+				menu.setVisible(true);
+			}
+		});
+		btnMenu.setBackground(new Color(0, 0, 51));
+		btnMenu.setColorHover(new Color(0, 51, 102));
+		btnMenu.setBounds(38, 15, 73, 51);
+		colocarIconoBoton(btnMenu,"/img/menu.png",42,35);
+		btnMenu.setMargin(new Insets(0, 0, 0, 0));
+		btnMenu.setBorderPainted(false);
+		btnMenu.setContentAreaFilled(false);
+		btnMenu.setFocusPainted(false);
+		btnMenu.setOpaque(false);
+		panel_1.add(btnMenu);
+		
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(56, 373, 1778, 606);
@@ -283,4 +306,11 @@ public class VerSolicitudesAplicadas extends JFrame {
 			ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 			label.setIcon(iconoEscalado);
 	}
+	
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	    boton.setIcon(new ImageIcon(imagenEscalada));
+	}
+	
 }
