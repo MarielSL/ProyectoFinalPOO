@@ -190,54 +190,44 @@ public class BolsaEmpleo {
 	}
 	
 	
-	/*public float calcCoincidencia(String idOferta, String idSolicitud) {
+	public float calcCoincidencia(Oferta oferta, Persona solicitante) {
 		float porcentaje = 0;
-		Oferta oferta = buscarOferta(idOferta);
-		SolicitudEmpleo solicitud = buscarSolicitud(idSolicitud);
 		
 		TipoPersona tipoSolicitado = oferta.getTipoCandidato();
-		if( (tipoSolicitado == TipoPersona.UNIVERSITARIO && solicitud.getCandidato() instanceof Universitario) ||
-			(tipoSolicitado == TipoPersona.OBRERO && solicitud.getCandidato() instanceof Obrero) ||
-			(tipoSolicitado == TipoPersona.TECNICO && solicitud.getCandidato() instanceof Tecnico)) {
-			porcentaje += 20;
+		if( (tipoSolicitado == TipoPersona.UNIVERSITARIO && solicitante instanceof Universitario) ||
+			(tipoSolicitado == TipoPersona.OBRERO && solicitante instanceof Obrero) ||
+			(tipoSolicitado == TipoPersona.TECNICO && solicitante instanceof Tecnico)) {
+			porcentaje += 25;
 		}
 		float expEsperada = oferta.getAniosExp();
-		float expSolicitante = solicitud.getExperiencia();
+		float expSolicitante = solicitante.getYearsExp();
+		
 		if(expSolicitante >= expEsperada) {
-			porcentaje += 20;
+			porcentaje += 25;
 		}
 		else {
-			porcentaje += (expSolicitante / expEsperada ) * 20;
+			porcentaje += (expSolicitante / expEsperada ) * 25;
 		}
 		
-		if(oferta.getJornada().equals(solicitud.getJornada())) {
+		if(oferta.getCiudad().equalsIgnoreCase(solicitante.getCiudad())) {
 			porcentaje+=10;
 		}
+	
 		
-		if(oferta.getPuesto() == (solicitud.getPuestoDeseado())) {
-			porcentaje+=20;
-		}
-		
-		if(!oferta.isLicencia() || oferta.isLicencia() && solicitud.isLicencia()) {
-			porcentaje += 5;
-		}
-		
-		if(solicitud.getModalidad() == oferta.getModalidad()) {
-			porcentaje += 10;
-		}
-		
-		if(solicitud.getCandidato().getCiudad().equalsIgnoreCase(oferta.getCiudad())) {
+		if((!oferta.isLicencia()) || (oferta.isLicencia() && solicitante.isLicenciaConducir())) {
 			porcentaje += 15;
 		}
-		else {
-			if(solicitud.isDispMudar()) {
-				porcentaje += 15;
-			}
+		
+		if((!oferta.isDispMudar()) || (oferta.isDispMudar() && solicitante.isDispParaMudarse()) ) {
+			porcentaje += 15;
+		}
+		if(oferta.getSexo().equals(Sexo.CUALQUIERA) || (oferta.getSexo() == solicitante.getSexo())) {
+			porcentaje += 10;
 		}
 
 		return porcentaje;
 	}
-*/
+
 	
 	public boolean validUserPassword(String IdUser, String password) {
 		boolean valid = false;
