@@ -41,8 +41,8 @@ public class TipoUser extends JDialog {
 		setTitle("Tipo de Usuario");
 		setBounds(100, 100, 671, 424);
 		setLocationRelativeTo(null);
+		Utilidades.aplicarIcono(this);
 		getContentPane().setLayout(new BorderLayout());
-		setIconImage(new ImageIcon(getClass().getResource("/img/Sample_User_Icon.png")).getImage());
 		{
 			JLayeredPane layeredPane = new JLayeredPane();
 			getContentPane().add(layeredPane, BorderLayout.CENTER);

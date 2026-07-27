@@ -63,6 +63,7 @@ public class LogIn extends JDialog {
 		contentPanel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
+		Utilidades.aplicarIcono(this);
 		{
 			JPanel panel = new JPanel();
 			panel.setBackground(new Color(255, 255, 255));
