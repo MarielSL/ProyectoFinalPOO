@@ -13,6 +13,7 @@ public class BotonRedond extends JButton {
 	private int radio;
 	private Color colorNormal;
 	private Color colorHover;
+	private boolean hoverPersonalizado = false;
 
 	public BotonRedond(String texto, int radio) {
 		super(texto);
@@ -21,7 +22,6 @@ public class BotonRedond extends JButton {
 		setFocusPainted(false);
 		setBorderPainted(false);
 		setOpaque(false);
-
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -29,7 +29,6 @@ public class BotonRedond extends JButton {
 					setBackground(colorHover);
 				}
 			}
-
 			@Override
 			public void mouseExited(MouseEvent e) {
 				if (colorNormal != null) {
@@ -42,10 +41,11 @@ public class BotonRedond extends JButton {
 	@Override
 	public void setBackground(Color bg) {
 		super.setBackground(bg);
-		// Solo actualiza colorNormal/colorHover si el cambio no vino del propio hover
 		if (colorNormal == null || !bg.equals(colorHover)) {
 			colorNormal = bg;
-			colorHover = oscurecer(bg, 0.85f);
+			if (!hoverPersonalizado) {
+				colorHover = oscurecer(bg, 0.85f);
+			}
 		}
 	}
 
@@ -75,8 +75,9 @@ public class BotonRedond extends JButton {
 		g2.dispose();
 		super.paintComponent(g);
 	}
-	
+
 	public void setColorHover(Color colorHover) {
 	    this.colorHover = colorHover;
+	    this.hoverPersonalizado = true;
 	}
 }
