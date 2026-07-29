@@ -381,6 +381,7 @@ public class RegistrarSolicitante extends JDialog {
 			}
 
 			BolsaEmpleo.getInstancia().regPersona(persona);
+			persona.setUser(user);
 
 			if (user != null) {
 				user.setCorreo(txtCorreo.getText());
@@ -389,8 +390,10 @@ public class RegistrarSolicitante extends JDialog {
 
 			JOptionPane.showMessageDialog(null, "Se ha registrado el solicitante.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
 			clear();
+			
+			HomeCandidato homeCandidato = new HomeCandidato();
+			homeCandidato.setVisible(true);
 			dispose();
-			//Aca se le agrega el setVisible del menu para los solicitantes
 
 		}
 		else {

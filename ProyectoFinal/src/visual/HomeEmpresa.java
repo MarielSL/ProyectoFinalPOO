@@ -145,9 +145,12 @@ public class HomeEmpresa extends JFrame {
 			lblMisOfertas.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					VerOfertasEmpresa verOfertas = new VerOfertasEmpresa();
-					verOfertas.setVisible(true);
-					dispose();
+					if(empresa!= null) {
+						VerOfertasEmpresa verOfertas = new VerOfertasEmpresa();
+						verOfertas.setVisible(true);
+						dispose();
+					}
+					
 				}
 			});
 			lblMisOfertas.setFont(new Font("Calibri", Font.PLAIN, 18));
@@ -164,8 +167,12 @@ public class HomeEmpresa extends JFrame {
 			lblVerPerfil.setBounds(1080, 26, anchosMenu[3], 20);
 			lblVerPerfil.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
-					VerUserEmpresa verUserEmpresa = new VerUserEmpresa();
-					verUserEmpresa.setVisible(true);
+					if(empresa != null) {
+						VerUserEmpresa verUserEmpresa = new VerUserEmpresa();
+						verUserEmpresa.setVisible(true);
+						dispose();
+					}
+					
 				}
 			});
 			panelMenu.add(lblVerPerfil);

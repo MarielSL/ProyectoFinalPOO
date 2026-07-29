@@ -106,6 +106,8 @@ public class RegEmpresa extends JDialog {
 					BolsaEmpleo.getInstancia().regUser(nuevoUsuario);
 					BolsaEmpleo.getInstancia().setLoginUser(nuevoUsuario);
 					BolsaEmpleo.getInstancia().regEmpresa(empresa);
+					empresa.setUser(nuevoUsuario);
+					
 					JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
 					clear();
 					HomeEmpresa emp = new HomeEmpresa();

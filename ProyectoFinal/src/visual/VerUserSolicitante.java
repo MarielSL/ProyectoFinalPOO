@@ -84,7 +84,12 @@ public class VerUserSolicitante extends JFrame {
 		userIcon.setIcon(new ImageIcon(VerUserSolicitante.class.getResource("/img/User Icon.png")));
 		Escalador.b(userIcon, 119, 108, 230, 230);
 		contentPane.add(userIcon);
-		colocarImagen(userIcon,"/img/User Icon.png");
+		if((BolsaEmpleo.getInstancia().getLoginUser() == null) || (BolsaEmpleo.getInstancia().getLoginUser().getFotoPerfil() == null) ) {
+			colocarImagen(userIcon,"/img/User Icon.png");
+		}
+		else {
+			colocarImagen(userIcon,BolsaEmpleo.getInstancia().getLoginUser().getFotoPerfil());
+		}
 		
 		JLabel lblNewLabel = new JLabel("Usuario");
 		lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, Escalador.t(20)));

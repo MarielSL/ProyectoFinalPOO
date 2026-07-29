@@ -93,7 +93,7 @@ public class VerUserEmpresa extends JFrame {
 		fotoPerfil.setIcon(new ImageIcon(VerUserEmpresa.class.getResource("/img/User Icon.png")));
 		Escalador.b(fotoPerfil, 119, 108, 230, 230);
 		contentPane.add(fotoPerfil);
-		if(BolsaEmpleo.getInstancia().getLoginUser() == null) {
+		if((BolsaEmpleo.getInstancia().getLoginUser() == null) || (BolsaEmpleo.getInstancia().getLoginUser().getFotoPerfil() == null) ) {
 			colocarImagen(fotoPerfil,"/img/User Icon.png");
 		}
 		else {
