@@ -1,9 +1,17 @@
 package logico;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class BolsaEmpleo {
+public class BolsaEmpleo implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Usuario> usuarios;
 	private ArrayList<Persona> personas;
 	private ArrayList<Empresa> empresas;
@@ -334,6 +342,14 @@ public class BolsaEmpleo {
 		}
 		
 		return index;
+	}
+	
+	public void guardarDatos() {
+		try( ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream("BolsaEmpleo.dat"))){
+			salida.writeObject(this);
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
