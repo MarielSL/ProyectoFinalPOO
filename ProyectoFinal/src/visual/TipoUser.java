@@ -73,8 +73,21 @@ public class TipoUser extends JDialog {
 				lblNewLabel.setBounds(153, 13, 93, 29);
 				panel_2.add(lblNewLabel);
 				
+				JLabel iconEmpresa = new JLabel("New label");
+				iconEmpresa.setIcon(new ImageIcon(TipoUser.class.getResource("/img/empresa_icon.png")));
+				iconEmpresa.setBounds(73, 153, 30, 30);
+				panel_1.add(iconEmpresa);
+				colocarImagen(iconEmpresa,"/img/empresa_icon.png");
+				
+				JLabel iconSolicitante = new JLabel("");
+				iconSolicitante.setIcon(new ImageIcon(TipoUser.class.getResource("/img/candidato_icon.png")));
+				iconSolicitante.setBounds(306, 153, 35, 35);
+				panel_1.add(iconSolicitante);
+				colocarImagen(iconSolicitante, "/img/candidato_icon.png");
+				
+				
 				BotonRedond btnEmpresa = new BotonRedond("Empresa", 25);
-				btnEmpresa.setText("Soy empresa");
+				btnEmpresa.setText("   Empresa");
 				btnEmpresa.setVerticalTextPosition(SwingConstants.TOP);       
 				btnEmpresa.setHorizontalTextPosition(SwingConstants.CENTER); 
 				btnEmpresa.setIconTextGap(6);
@@ -89,11 +102,11 @@ public class TipoUser extends JDialog {
 						
 					}
 				});
-				btnEmpresa.setBounds(60, 149, 138, 39);
+				btnEmpresa.setBounds(60, 149, 155, 39);
 				panel_1.add(btnEmpresa);
 				
 				BotonRedond btnSolicitante = new BotonRedond("Solicitante", 25);
-				btnSolicitante.setText("Soy solicitante");
+				btnSolicitante.setText("   Solicitante");
 				btnSolicitante.setVerticalTextPosition(SwingConstants.TOP);       
 				btnSolicitante.setHorizontalTextPosition(SwingConstants.CENTER); 
 				btnSolicitante.setIconTextGap(6);
@@ -108,8 +121,7 @@ public class TipoUser extends JDialog {
 				btnSolicitante.setForeground(new Color(0, 0, 51));
 				btnSolicitante.setBackground(new Color(255, 153, 0));
 				btnSolicitante.setBounds(300, 149, 148, 39);
-				panel_1.add(btnSolicitante);
-				
+				panel_1.add(btnSolicitante);	
 				
 				JLabel lblNewLabel_2 = new JLabel("New label");
 				lblNewLabel_2.setIcon(new ImageIcon(LogIn.class.getResource("/img/Fondo-General.png")));
