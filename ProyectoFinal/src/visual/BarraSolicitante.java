@@ -71,129 +71,157 @@ public class BarraSolicitante extends JDialog {
 		contentPanel.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
-		JLabel lblNewLabel_2 = new JLabel(correoUser);
-		lblNewLabel_2.setForeground(new Color(105, 105, 105));
-		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 13));
-		lblNewLabel_2.setBounds(161, 837, 194, 30);
-		panel.add(lblNewLabel_2);
-		
-		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setBounds(33, 27, 321, 95);
-		panel.add(lblNewLabel);
-		colocarImagen(lblNewLabel,"/img/HireLink_logo_full.png");
-		
-		JSeparator separator = new JSeparator();
-		separator.setForeground(new Color(255, 153, 0));
-		separator.setBounds(12, 186, 365, 37);
-		panel.add(separator);
+		BotonRedond btnPerfil = new BotonRedond(nombreUser,25);
+		btnPerfil.setBackground(new Color(255, 255, 255));
+		btnPerfil.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnPerfil.setHorizontalAlignment(SwingConstants.LEFT);
+		btnPerfil.setBounds(147, 857, 228, 80);
+		btnPerfil.setColorHover(new Color(255, 153, 0));
+		panel.add(btnPerfil);
 		
 		JLabel lblNewLabel_1 = new JLabel("Solicitante");
 		lblNewLabel_1.setForeground(new Color(255, 153, 0));
 		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 20));
-		lblNewLabel_1.setBounds(12, 157, 108, 16);
+		lblNewLabel_1.setBounds(12, 128, 108, 16);
 		panel.add(lblNewLabel_1);
 		
+		JLabel lblNewLabel_2 = new JLabel("correoelectronico@hotmail.com");
+		lblNewLabel_2.setForeground(new Color(105, 105, 105));
+		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 13));
+		lblNewLabel_2.setBounds(160, 907, 194, 30);
+		panel.add(lblNewLabel_2);
+		
+		JLabel iconoLogo = new JLabel("");
+		iconoLogo.setBounds(33, 27, 321, 95);
+		panel.add(iconoLogo);
+		colocarImagen(iconoLogo,"/img/HireLink_logo_full.png");
+		
+		JSeparator separator = new JSeparator();
+		separator.setForeground(new Color(255, 153, 0));
+		separator.setBounds(12, 147, 363, 24);
+		panel.add(separator);
+		
 		JSeparator separator_1 = new JSeparator();
-		separator_1.setBounds(12, 781, 365, 37);
+		separator_1.setBounds(12, 843, 363, 24);
 		panel.add(separator_1);
 		
-		BotonConSombra btnDashboard = new BotonConSombra("Dashboard",25);
+		JPanel panelBotones = new JPanel();
+		panelBotones.setBackground(new Color(255, 255, 255));
+		panelBotones.setBounds(22, 172, 353, 516);
+		panel.add(panelBotones);
+		panelBotones.setLayout(null);
+		
+		BotonConSombra btnDashboard = new BotonConSombra("Dashboard", 25);
 		btnDashboard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				HomeCandidato soli = new HomeCandidato();
-				soli.setVisible(true);
-				dispose();
 			}
 		});
-		btnDashboard.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnDashboard.setBackground(new Color(255, 255, 255));
 		btnDashboard.setHorizontalAlignment(SwingConstants.LEFT);
-		btnDashboard.setBounds(109, 223, 189, 49);
+		btnDashboard.setFont(new Font("Calibri", Font.PLAIN, 20));
 		btnDashboard.setColorHover(new Color(255, 153, 0));
-		panel.add(btnDashboard);
+		btnDashboard.setBounds(117, 31, 189, 49);
+		panelBotones.add(btnDashboard);
 		
-		BotonConSombra btnMisSolicitudes = new BotonConSombra("Mis Solicitudes",25);
-		btnMisSolicitudes.addActionListener(new ActionListener() {
+		
+		BotonConSombra btnSolicitudes = new BotonConSombra("Mis Solicitudes", 25);
+		btnSolicitudes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				dispose();
 				VerSolicitudesAplicadas soli = new VerSolicitudesAplicadas();
 				soli.setVisible(true);
-				dispose();
+				
 			}
 		});
-		btnMisSolicitudes.setHorizontalAlignment(SwingConstants.LEFT);
-		btnMisSolicitudes.setFont(new Font("Calibri", Font.PLAIN, 20));
-		btnMisSolicitudes.setBounds(109, 310, 189, 49);
-		btnMisSolicitudes.setColorHover(new Color(255, 153, 0));
-		panel.add(btnMisSolicitudes);
+		btnSolicitudes.setBackground(new Color(255, 255, 255));
+		btnSolicitudes.setHorizontalAlignment(SwingConstants.LEFT);
+		btnSolicitudes.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnSolicitudes.setColorHover(new Color(255, 153, 0));
+		btnSolicitudes.setBounds(117, 111, 189, 49);
+		panelBotones.add(btnSolicitudes);
 		
-		BotonConSombra btnBuscarOfertas = new BotonConSombra("Buscar Ofertas",25);
-		btnBuscarOfertas.addActionListener(new ActionListener() {
+		BotonConSombra btnOfertas = new BotonConSombra("Buscar Ofertas", 25);
+		btnOfertas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				dispose();
 				BuscarOfertas soli = new BuscarOfertas(null);
 				soli.setVisible(true);
-				dispose();
+				
 			}
 		});
-		btnBuscarOfertas.setHorizontalAlignment(SwingConstants.LEFT);
-		btnBuscarOfertas.setFont(new Font("Calibri", Font.PLAIN, 20));
-		btnBuscarOfertas.setBounds(109, 403, 189, 49);
-		btnBuscarOfertas.setColorHover(new Color(255, 153, 0));
-		panel.add(btnBuscarOfertas);
+				
+		btnOfertas.setBackground(new Color(255, 255, 255));
+		btnOfertas.setHorizontalAlignment(SwingConstants.LEFT);
+		btnOfertas.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnOfertas.setColorHover(new Color(255, 153, 0));
+		btnOfertas.setBounds(117, 191, 189, 49);
+		panelBotones.add(btnOfertas);
 		
-		BotonConSombra btnMensaje = new BotonConSombra("Mis Solicitudes",25);
-		btnMensaje.setText("Mensajes");
-		btnMensaje.setHorizontalAlignment(SwingConstants.LEFT);
-		btnMensaje.setFont(new Font("Calibri", Font.PLAIN, 20));
-		btnMensaje.setBounds(109, 496, 189, 49);
-		btnMensaje.setColorHover(new Color(255, 153, 0));
-		panel.add(btnMensaje);
+		BotonConSombra btnMensajes = new BotonConSombra("Mis Solicitudes", 25);
+		
+		btnMensajes.setBackground(new Color(255, 255, 255));
+		btnMensajes.setText("Mensajes");
+		btnMensajes.setHorizontalAlignment(SwingConstants.LEFT);
+		btnMensajes.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnMensajes.setColorHover(new Color(255, 153, 0));
+		btnMensajes.setBounds(117, 271, 189, 49);
+		panelBotones.add(btnMensajes);
 		
 		BotonConSombra btnNotificaciones = new BotonConSombra("Mis Solicitudes", 25);
+		btnNotificaciones.setBackground(new Color(255, 255, 255));
 		btnNotificaciones.setText("Notificaciones");
 		btnNotificaciones.setHorizontalAlignment(SwingConstants.LEFT);
 		btnNotificaciones.setFont(new Font("Calibri", Font.PLAIN, 20));
-		btnNotificaciones.setBounds(109, 595, 189, 49);
 		btnNotificaciones.setColorHover(new Color(255, 153, 0));
-		panel.add(btnNotificaciones);
+		btnNotificaciones.setBounds(117, 351, 189, 49);
+		panelBotones.add(btnNotificaciones);
 		
-		JLabel iconoDashboard = new JLabel("New label");
-		iconoDashboard.setBounds(67, 236, 30, 30);
+		JLabel iconoDashboard = new JLabel("");
+		iconoDashboard.setBounds(75, 48, 30, 30);
 		colocarImagen(iconoDashboard, "/img/hogar.png");
-		panel.add(iconoDashboard);
+		panelBotones.add(iconoDashboard);
 		
-		JLabel label = new JLabel("New label");
-		label.setBounds(67, 319, 30, 30);
-		colocarImagen(label, "/img/documento.png");
-		panel.add(label);
+		JLabel iconoSolicitudes = new JLabel("");
+		iconoSolicitudes.setBounds(75, 126, 30, 30);
+		colocarImagen(iconoSolicitudes, "/img/documento.png");
+		panelBotones.add(iconoSolicitudes);
 		
-		JLabel label_1 = new JLabel("New label");
-		label_1.setBounds(67, 412, 30, 30);
-		colocarImagen(label_1, "/img/correo-electronico.png");
-		panel.add(label_1);
+		JLabel iconoOfertas = new JLabel("");
+		iconoOfertas.setBounds(75, 204, 30, 30);
+		colocarImagen(iconoOfertas, "/img/correo-electronico.png");
+		panelBotones.add(iconoOfertas);
 		
-		JLabel label_2 = new JLabel("New label");
-		label_2.setBounds(67, 505, 30, 30);
-		colocarImagen(label_2, "/img/mensaje.png");
-		panel.add(label_2);
+		JLabel iconoMensajes = new JLabel("");
+		iconoMensajes.setBounds(75, 282, 30, 30);
+		colocarImagen(iconoMensajes, "/img/mensaje.png");
+		panelBotones.add(iconoMensajes);
 		
-		JLabel label_3 = new JLabel("New label");
-		label_3.setBounds(67, 604, 30, 30);
-		colocarImagen(label_3, "/img/notificacion.png");
-		panel.add(label_3);
+		JLabel iconoNotificaciones = new JLabel("");
+		iconoNotificaciones.setBounds(75, 360, 30, 30);
+		colocarImagen(iconoNotificaciones, "/img/notificacion.png");
+		panelBotones.add(iconoNotificaciones);
 		
-		BotonRedond btnNewButton = new BotonRedond(nombreUser,25);
-		btnNewButton.addActionListener(new ActionListener() {
+		BotonConSombra btnCerrarSessin = new BotonConSombra("Mis Solicitudes", 25);
+		btnCerrarSessin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				VerUserEmpresa perfil = new VerUserEmpresa();
-				perfil.setVisible(true);
 				dispose();
+				LogIn ver = new LogIn();
+				setModal(true);
+				ver.setVisible(true);
 			}
 		});
-		btnNewButton.setBackground(new Color(255, 255, 255));
-		btnNewButton.setFont(new Font("Calibri", Font.PLAIN, 20));
-		btnNewButton.setHorizontalAlignment(SwingConstants.LEFT);
-		btnNewButton.setBounds(147, 787, 228, 80);
-		btnNewButton.setColorHover(new Color(255, 153, 0));
-		panel.add(btnNewButton);
+		btnCerrarSessin.setText("Cerrar Sessi\u00F3n");
+		btnCerrarSessin.setHorizontalAlignment(SwingConstants.LEFT);
+		btnCerrarSessin.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnCerrarSessin.setColorHover(new Color(255, 153, 0));
+		btnCerrarSessin.setBackground(Color.WHITE);
+		btnCerrarSessin.setBounds(117, 431, 189, 49);
+		panelBotones.add(btnCerrarSessin);
+		
+		JLabel iconoCerrarSession = new JLabel("");
+		iconoCerrarSession.setBounds(75, 438, 30, 30);
+		colocarImagen(iconoCerrarSession, "/img/log_out.png");
+		panelBotones.add(iconoCerrarSession);
 		
 		Utilidades.aplicarIcono(this);
 	}

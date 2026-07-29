@@ -50,7 +50,7 @@ public class BarraEmpresa extends JDialog {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setTitle("Menu Empresa");
 		Utilidades.aplicarIcono(this);
-		setBounds(0, 0, 415, dim.height);
+		setBounds(0, 0, 415, dim.height-40);
 		//setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(new Color(175, 238, 238));
@@ -76,8 +76,23 @@ public class BarraEmpresa extends JDialog {
 			JLabel lblNewLabel_2 = new JLabel(correoUser);
 			lblNewLabel_2.setForeground(new Color(105, 105, 105));
 			lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 13));
-			lblNewLabel_2.setBounds(161, 837, 194, 30);
+			lblNewLabel_2.setBounds(162, 930, 194, 30);
 			panel.add(lblNewLabel_2);
+			
+			BotonRedond btnVerPerfil = new BotonRedond(nombreUser,25);
+			btnVerPerfil.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					VerUserEmpresa perfil = new VerUserEmpresa();
+					perfil.setVisible(true);
+					dispose();
+				}
+			});
+			btnVerPerfil.setBackground(new Color(255, 255, 255));
+			btnVerPerfil.setFont(new Font("Calibri", Font.PLAIN, 20));
+			btnVerPerfil.setHorizontalAlignment(SwingConstants.LEFT);
+			btnVerPerfil.setBounds(146, 880, 228, 80);
+			btnVerPerfil.setColorHover(new Color(135, 206, 250));
+			panel.add(btnVerPerfil);
 			
 			JSeparator separator = new JSeparator();
 			separator.setForeground(new Color(0, 191, 255));
@@ -85,7 +100,7 @@ public class BarraEmpresa extends JDialog {
 			panel.add(separator);
 			
 			JSeparator separator_1 = new JSeparator();
-			separator_1.setBounds(12, 708, 363, 24);
+			separator_1.setBounds(12, 843, 363, 24);
 			panel.add(separator_1);
 			
 			JLabel iconoLogo = new JLabel("");
@@ -99,103 +114,94 @@ public class BarraEmpresa extends JDialog {
 			lblEmpresa.setBounds(12, 124, 125, 16);
 			panel.add(lblEmpresa);
 			
+			JPanel panelBotones = new JPanel();
+			panelBotones.setBackground(new Color(255, 255, 255));
+			panelBotones.setBounds(22, 172, 353, 516);
+			panel.add(panelBotones);
+			panelBotones.setLayout(null);
+			
 			BotonConSombra btnDashboard = new BotonConSombra("Dashboard",25);
 			btnDashboard.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					HomeEmpresa emp = new HomeEmpresa();
-					emp.setVisible(true);
-					dispose();
-				}
-			});
-			btnDashboard.setBackground(new Color(255, 255, 255));
-			btnDashboard.setHorizontalAlignment(SwingConstants.LEFT);
-			btnDashboard.setColorHover(new Color(135,206,250));
-			btnDashboard.setFont(new Font("Calibri", Font.PLAIN, 20));
-			btnDashboard.setBounds(111, 195, 221, 45);
-			panel.add(btnDashboard);
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+				HomeCandidato soli = new HomeCandidato();
+				soli.setVisible(true);
+				
+		}
+	});
 			
-			BotonConSombra btnMisOfertas = new BotonConSombra("Dashboard", 25);
-			btnMisOfertas.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					VerOfertasEmpresa emp = new VerOfertasEmpresa();
-					emp.setVisible(true);
-					dispose();
-				}
-			});
-			btnMisOfertas.setBackground(new Color(255, 255, 255));
-			btnMisOfertas.setHorizontalAlignment(SwingConstants.LEFT);
+			btnDashboard.setHorizontalAlignment(SwingConstants.LEFT);
+			btnDashboard.setFont(new Font("Calibri", Font.PLAIN, 20));
+			btnDashboard.setColorHover(new Color(135, 206, 250));
+			btnDashboard.setBackground(Color.WHITE);
+			btnDashboard.setBounds(120, 35, 221, 45);
+			panelBotones.add(btnDashboard);
+			
+			BotonConSombra btnMisOfertas = new BotonConSombra("Mis Solicitudes", 25);
 			btnMisOfertas.setText("Mis Ofertas");
+			btnMisOfertas.setHorizontalAlignment(SwingConstants.LEFT);
 			btnMisOfertas.setFont(new Font("Calibri", Font.PLAIN, 20));
 			btnMisOfertas.setColorHover(new Color(135, 206, 250));
-			btnMisOfertas.setBounds(111, 279, 221, 45);
-			panel.add(btnMisOfertas);
+			btnMisOfertas.setBackground(Color.WHITE);
+			btnMisOfertas.setBounds(120, 128, 221, 45);
+			panelBotones.add(btnMisOfertas);
 			
-			BotonConSombra btncnsmbrSolicitudesRecibidas = new BotonConSombra("Dashboard", 25);
-			btncnsmbrSolicitudesRecibidas.setBackground(new Color(255, 255, 255));
-			btncnsmbrSolicitudesRecibidas.setHorizontalAlignment(SwingConstants.LEFT);
-			btncnsmbrSolicitudesRecibidas.setText("Solicitudes Recibidas");
-			btncnsmbrSolicitudesRecibidas.setFont(new Font("Calibri", Font.PLAIN, 20));
-			btncnsmbrSolicitudesRecibidas.setColorHover(new Color(135, 206, 250));
-			btncnsmbrSolicitudesRecibidas.setBounds(111, 363, 221, 45);
-			panel.add(btncnsmbrSolicitudesRecibidas);
-			
-			BotonConSombra btncnsmbrMensajes = new BotonConSombra("Dashboard", 25);
-			btncnsmbrMensajes.setBackground(new Color(255, 255, 255));
-			btncnsmbrMensajes.setHorizontalAlignment(SwingConstants.LEFT);
-			btncnsmbrMensajes.setText("Mensajes");
-			btncnsmbrMensajes.setFont(new Font("Calibri", Font.PLAIN, 20));
-			btncnsmbrMensajes.setColorHover(new Color(135, 206, 250));
-			btncnsmbrMensajes.setBounds(111, 442, 221, 45);
-			panel.add(btncnsmbrMensajes);
-			
-			BotonConSombra btncnsmbrNotificaciones = new BotonConSombra("Dashboard", 25);
-			btncnsmbrNotificaciones.setBackground(new Color(255, 255, 255));
-			btncnsmbrNotificaciones.setHorizontalAlignment(SwingConstants.LEFT);
-			btncnsmbrNotificaciones.setText("Notificaciones");
-			btncnsmbrNotificaciones.setFont(new Font("Calibri", Font.PLAIN, 20));
-			btncnsmbrNotificaciones.setColorHover(new Color(135, 206, 250));
-			btncnsmbrNotificaciones.setBounds(111, 526, 221, 45);
-			panel.add(btncnsmbrNotificaciones);
-			
-			JLabel iconoDashboard = new JLabel("");
-			iconoDashboard.setBounds(66, 195, 30, 30);
-			colocarImagen(iconoDashboard,"/img/hogar.png");
-			panel.add(iconoDashboard);
-			
-			JLabel label = new JLabel("");
-			label.setBounds(66, 293, 30, 30);
-			colocarImagen(label,"/img/maletin.png");
-			panel.add(label);
-			
-			JLabel label_1 = new JLabel("");
-			label_1.setBounds(66, 377, 30, 30);
-			colocarImagen(label_1,"/img/portapapeles.png");
-			panel.add(label_1);
-			
-			JLabel label_2 = new JLabel("");
-			label_2.setBounds(66, 456, 30, 30);
-			colocarImagen(label_2,"/img/mensaje.png");
-			panel.add(label_2);
-			
-			JLabel label_3 = new JLabel("");
-			label_3.setBounds(66, 540, 30, 30);
-			colocarImagen(label_3,"/img/notificacion.png");
-			panel.add(label_3);
-			
-			BotonRedond btnVerPerfil = new BotonRedond(nombreUser,25);
-			btnVerPerfil.addActionListener(new ActionListener() {
+			BotonConSombra btnSolicitudes = new BotonConSombra("Dashboard", 25);
+			btnSolicitudes.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					VerUserEmpresa perfil = new VerUserEmpresa();
-					perfil.setVisible(true);
-					dispose();
+					
 				}
 			});
-			btnVerPerfil.setBackground(new Color(255, 255, 255));
-			btnVerPerfil.setFont(new Font("Calibri", Font.PLAIN, 20));
-			btnVerPerfil.setHorizontalAlignment(SwingConstants.LEFT);
-			btnVerPerfil.setBounds(147, 787, 228, 80);
-			btnVerPerfil.setColorHover(new Color(135, 206, 250));
-			panel.add(btnVerPerfil);
+			btnSolicitudes.setText("Solicitudes Recibidas");
+			btnSolicitudes.setHorizontalAlignment(SwingConstants.LEFT);
+			btnSolicitudes.setFont(new Font("Calibri", Font.PLAIN, 20));
+			btnSolicitudes.setColorHover(new Color(135, 206, 250));
+			btnSolicitudes.setBackground(Color.WHITE);
+			btnSolicitudes.setBounds(120, 221, 221, 45);
+			panelBotones.add(btnSolicitudes);
+			
+			BotonConSombra btnMensajes = new BotonConSombra("Dashboard", 25);
+			btnMensajes.setText("Mensajes");
+			btnMensajes.setHorizontalAlignment(SwingConstants.LEFT);
+			btnMensajes.setFont(new Font("Calibri", Font.PLAIN, 20));
+			btnMensajes.setColorHover(new Color(135, 206, 250));
+			btnMensajes.setBackground(Color.WHITE);
+			btnMensajes.setBounds(120, 314, 221, 45);
+			panelBotones.add(btnMensajes);
+			
+			JLabel iconoOfertas = new JLabel("");
+			iconoOfertas.setBounds(61, 128, 30, 30);
+			colocarImagen(iconoOfertas,"/img/maletin.png");
+			panelBotones.add(iconoOfertas);
+			
+			JLabel iconoSolicitudes = new JLabel("");
+			iconoSolicitudes.setBounds(61, 221, 30, 30);
+			colocarImagen(iconoSolicitudes,"/img/portapapeles.png");
+			panelBotones.add(iconoSolicitudes);
+			
+			JLabel iconoMensajes = new JLabel("");
+			iconoMensajes.setBounds(61, 314, 30, 30);
+			colocarImagen(iconoMensajes,"/img/mensaje.png");
+			panelBotones.add(iconoMensajes);
+			
+			JLabel iconoNotificaciones = new JLabel("");
+			iconoNotificaciones.setBounds(61, 407, 30, 30);
+			colocarImagen(iconoNotificaciones,"/img/notificacion.png");
+			panelBotones.add(iconoNotificaciones);
+			
+			JLabel iconoDashboard = new JLabel("");
+			iconoDashboard.setBounds(61, 35, 30, 30);
+			colocarImagen(iconoDashboard, "/img/hogar.png");
+			panelBotones.add(iconoDashboard);
+			
+			BotonConSombra btnNotificaciones = new BotonConSombra("Dashboard", 25);
+			btnNotificaciones.setText("Notificaciones");
+			btnNotificaciones.setHorizontalAlignment(SwingConstants.LEFT);
+			btnNotificaciones.setFont(new Font("Calibri", Font.PLAIN, 20));
+			btnNotificaciones.setColorHover(new Color(135, 206, 250));
+			btnNotificaciones.setBackground(Color.WHITE);
+			btnNotificaciones.setBounds(120, 407, 221, 45);
+			panelBotones.add(btnNotificaciones);
 		}
 	}
 	private void colocarImagen(JLabel label, String ruta) {
