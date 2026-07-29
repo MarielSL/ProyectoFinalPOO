@@ -111,8 +111,8 @@ public class VerPostulante extends JFrame {
 
 		JLabel lblNewLabel = new JLabel("Ver Postulante");
 		lblNewLabel.setForeground(new Color(255, 153, 0));
-		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 40));
-		lblNewLabel.setBounds(308, 18, 271, 32);
+		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 30));
+		lblNewLabel.setBounds(350, 18, 187, 32);
 		panel.add(lblNewLabel);
 		
 		BotonRedond btnMenu = new BotonRedond("",25);
@@ -124,8 +124,8 @@ public class VerPostulante extends JFrame {
 		});
 		btnMenu.setBackground(new Color(0, 0, 51));
 		btnMenu.setColorHover(new Color(0, 51, 102));
-		btnMenu.setBounds(12, 0, 73, 65);
-		colocarIconoBoton(btnMenu,"/img/menu.png",42,35);
+		btnMenu.setBounds(10, 3, 60, 60);
+		colocarIconoBoton(btnMenu,"/img/menu-dots-vertical(White).png",25,25);
 		btnMenu.setMargin(new Insets(0, 0, 0, 0));
 		btnMenu.setBorderPainted(false);
 		btnMenu.setContentAreaFilled(false);

@@ -97,8 +97,8 @@ public class RegistrarOferta extends JDialog {
 		});
 		btnMenu.setBackground(new Color(0, 0, 51));
 		btnMenu.setColorHover(new Color(0, 51, 102));
-		btnMenu.setBounds(12, 0, 73, 65);
-		colocarIconoBoton(btnMenu,"/img/menu.png",42,35);
+		btnMenu.setBounds(17, 5, 55, 55);
+		colocarIconoBoton(btnMenu,"/img/menu-dots-vertical(White).png",25,25);
 		btnMenu.setMargin(new Insets(0, 0, 0, 0));
 		btnMenu.setBorderPainted(false);
 		btnMenu.setContentAreaFilled(false);
@@ -109,12 +109,12 @@ public class RegistrarOferta extends JDialog {
 		lblTitulo1 = new JLabel("Publica una nueva oportunidad laboral");
 		lblTitulo1.setForeground(new Color(255, 153, 0));
 		lblTitulo1.setFont(new Font("Calibri", Font.BOLD, 24));
-		lblTitulo1.setBounds(146, 17, 571, 35);
+		lblTitulo1.setBounds(146, 18, 571, 35);
 		panelTitulo.add(lblTitulo1);
 		
 		lblIcon = new JLabel("New label");
 		lblIcon.setIcon(new ImageIcon(RegistrarOferta.class.getResource("/img/briefcase.png")));
-		lblIcon.setBounds(98, 16, 36, 38);
+		lblIcon.setBounds(106, 20, 30, 30);
 		panelTitulo.add(lblIcon);
 		PanelRedond cardBlanca = new PanelRedond(20);
 		cardBlanca.setBackground(new Color(255, 255, 255));
