@@ -116,8 +116,8 @@ public class HomeCandidato extends JFrame {
 			});
 			btnMenu.setBackground(new Color(0, 0, 51));
 			btnMenu.setColorHover(new Color(0, 51, 102));
-			btnMenu.setBounds(12, 0, 73, 65);
-			colocarIconoBoton(btnMenu,"/img/menu.png",42,35);
+			btnMenu.setBounds(13, 4, 60, 60);
+			colocarIconoBoton(btnMenu,"/img/menu-dots-vertical(White).png",25,25);
 			btnMenu.setMargin(new Insets(0, 0, 0, 0));
 			btnMenu.setBorderPainted(false);
 			btnMenu.setContentAreaFilled(false);

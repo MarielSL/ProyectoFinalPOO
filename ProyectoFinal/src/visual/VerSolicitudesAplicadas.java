@@ -127,9 +127,9 @@ public class VerSolicitudesAplicadas extends JFrame {
 		panel_1.setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Mis Solicitudes");
-		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 30));
+		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 26));
 		lblNewLabel.setForeground(new Color(255, 153, 0));
-		lblNewLabel.setBounds(123, 31, 290, 35);
+		lblNewLabel.setBounds(105, 32, 290, 35);
 		panel_1.add(lblNewLabel);
 		
 		BotonRedond btnMenu = new BotonRedond("",25);
@@ -141,8 +141,8 @@ public class VerSolicitudesAplicadas extends JFrame {
 		});
 		btnMenu.setBackground(new Color(0, 0, 51));
 		btnMenu.setColorHover(new Color(0, 51, 102));
-		btnMenu.setBounds(38, 15, 73, 51);
-		colocarIconoBoton(btnMenu,"/img/menu.png",42,35);
+		btnMenu.setBounds(24, 24, 60, 50);
+		colocarIconoBoton(btnMenu,"/img/menu-dots-vertical(White).png",25,25);
 		btnMenu.setMargin(new Insets(0, 0, 0, 0));
 		btnMenu.setBorderPainted(false);
 		btnMenu.setContentAreaFilled(false);
@@ -183,12 +183,12 @@ public class VerSolicitudesAplicadas extends JFrame {
 		panel_2.setLayout(null);
 		
 		JLabel lblNewLabel_1 = new JLabel("Total Aplicadas");
-		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblNewLabel_1.setBounds(95, 25, 185, 31);
 		panel_2.add(lblNewLabel_1);
 		
 		JLabel lblCant = new JLabel("Cant");
-		lblCant.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblCant.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblCant.setBounds(95, 69, 185, 31);
 		panel_2.add(lblCant);
 		
@@ -204,12 +204,12 @@ public class VerSolicitudesAplicadas extends JFrame {
 		panelConSombra.setLayout(null);
 		
 		JLabel lblEnRevisin = new JLabel("En revisi\u00F3n");
-		lblEnRevisin.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblEnRevisin.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblEnRevisin.setBounds(91, 25, 185, 31);
 		panelConSombra.add(lblEnRevisin);
 		
 		JLabel label = new JLabel("Cant");
-		label.setFont(new Font("Calibri", Font.PLAIN, 20));
+		label.setFont(new Font("Calibri", Font.PLAIN, 18));
 		label.setBounds(91, 69, 185, 31);
 		panelConSombra.add(label);
 		
@@ -225,12 +225,12 @@ public class VerSolicitudesAplicadas extends JFrame {
 		panelConSombra_1.setLayout(null);
 		
 		JLabel lblAceptadas = new JLabel("Aceptadas");
-		lblAceptadas.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblAceptadas.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblAceptadas.setBounds(95, 25, 185, 31);
 		panelConSombra_1.add(lblAceptadas);
 		
 		JLabel label_1 = new JLabel("Cant");
-		label_1.setFont(new Font("Calibri", Font.PLAIN, 20));
+		label_1.setFont(new Font("Calibri", Font.PLAIN, 18));
 		label_1.setBounds(95, 69, 185, 31);
 		panelConSombra_1.add(label_1);
 		
