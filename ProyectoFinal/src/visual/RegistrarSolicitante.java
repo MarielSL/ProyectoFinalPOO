@@ -39,6 +39,7 @@ import javax.swing.JPasswordField;
 import java.awt.Toolkit;
 
 public class RegistrarSolicitante extends JDialog {
+	
 	private final JPanel contentPanel = new JPanel();
 	private Usuario user;
 	private CardLayout stepsLayout;
@@ -283,61 +284,81 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	private boolean validarPaso1() {
-		if (txtCedula.getText().trim().isEmpty() || txtNombre.getText().trim().isEmpty() || txtApellido.getText().trim().isEmpty() || txtTelefono.getText().trim().isEmpty() || txtCorreo.getText().trim().isEmpty() || cbxSexo.getSelectedIndex() == -1) {
+		if (!Validaciones.camposLlenos(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), txtTelefono.getText(), txtCorreo.getText()) || cbxSexo.getSelectedIndex() == -1) {
 			JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		if (!Validaciones.soloNumeros(txtCedula.getText())) {
+			JOptionPane.showMessageDialog(null, "La c\u00E9dula solo debe contener n\u00FAmeros.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		if (!Validaciones.soloLetras(txtNombre.getText())) {
+			JOptionPane.showMessageDialog(null, "El nombre solo debe contener letras.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		if (!Validaciones.soloLetras(txtApellido.getText())) {
+			JOptionPane.showMessageDialog(null, "El apellido solo debe contener letras.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		if (!Validaciones.telefonoValido(txtTelefono.getText(), 10)) {
+			JOptionPane.showMessageDialog(null, "El tel\u00E9fono debe tener 10 d\u00EDgitos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		if (!Validaciones.correoValido(txtCorreo.getText())) {
+			JOptionPane.showMessageDialog(null, "El correo no tiene un formato v\u00E1lido.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
 		return true;
 	}
 
 	private boolean validarPaso2() {
-		if (txtDireccion.getText().trim().isEmpty() || txtCiudad.getText().trim().isEmpty()) {
+		if (!Validaciones.camposLlenos(txtDireccion.getText(), txtCiudad.getText())) {
 			JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		if (!Validaciones.soloLetras(txtCiudad.getText())) {
+			JOptionPane.showMessageDialog(null, "La ciudad solo debe contener letras.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
 		return true;
 	}
 
 	private boolean validarPaso3() {
-
 		if (cbxTipo.getSelectedIndex() == -1) {
 			JOptionPane.showMessageDialog(null, "Debe seleccionar el tipo de solicitante.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
 		TipoPersona tipo = (TipoPersona) cbxTipo.getSelectedItem();
-		if (tipo == TipoPersona.UNIVERSITARIO && txtCarrera.getText().trim().isEmpty()) {
+		if (tipo == TipoPersona.UNIVERSITARIO && !Validaciones.camposLlenos(txtCarrera.getText())) {
 			JOptionPane.showMessageDialog(null, "Debe indicar la carrera.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-		if (tipo == TipoPersona.TECNICO && txtAreaTecnico.getText().trim().isEmpty()) {
+		if (tipo == TipoPersona.TECNICO && !Validaciones.camposLlenos(txtAreaTecnico.getText())) {
 			JOptionPane.showMessageDialog(null, "Debe indicar el \u00E1rea t\u00E9cnica.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-		if (tipo == TipoPersona.OBRERO && txtHabilidades.getText().trim().isEmpty()) {
+		if (tipo == TipoPersona.OBRERO && !Validaciones.camposLlenos(txtHabilidades.getText())) {
 			JOptionPane.showMessageDialog(null, "Debe indicar las habilidades.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-
 		return true;
 	}
 
-	private boolean validarPaso4 () {
-		if(txtUser.getText().trim().isEmpty() || passwordField.getPassword().length == 0) {
+	private boolean validarPaso4() {
+		if (!Validaciones.camposLlenos(txtUser.getText()) || passwordField.getPassword().length == 0) {
 			JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-
-		if(BolsaEmpleo.getInstancia().verifUsuario(txtUser.getText(), passwordField.getText())) {
+		String contrasena = new String(passwordField.getPassword());
+		if (BolsaEmpleo.getInstancia().verifUsuario(txtUser.getText(), contrasena)) {
 			JOptionPane.showConfirmDialog(null, "Usuario en uso.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-
-		Usuario newUser = new Usuario("U-"+BolsaEmpleo.generadorIdUser,txtUser.getText(),passwordField.getText(),null,null,null,null,null);
+		Usuario newUser = new Usuario("U-" + BolsaEmpleo.generadorIdUser, txtUser.getText(), contrasena, null, null, null, null, null);
 		BolsaEmpleo.getInstancia().regUser(newUser);
 		BolsaEmpleo.getInstancia().setLoginUser(newUser);
 		dispose();
 		return true;
-
 	}
 
 	private void registrarSolicitante() {
@@ -388,7 +409,7 @@ public class RegistrarSolicitante extends JDialog {
 			
 			BolsaEmpleo.getInstancia().getLoginUser().setCorreo(txtCorreo.getText());
 			BolsaEmpleo.getInstancia().getLoginUser().setUsername(txtUser.getText());
-			BolsaEmpleo.getInstancia().getLoginUser().setPassword(passwordField.getText());
+			BolsaEmpleo.getInstancia().getLoginUser().setPassword(new String(passwordField.getPassword()));
 			
 			
 			if(tipo == TipoPersona.UNIVERSITARIO) {

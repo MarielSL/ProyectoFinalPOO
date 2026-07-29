@@ -56,7 +56,10 @@ public class RegistrarOferta extends JDialog {
 	private JSpinner spnSalario;
 	private JLabel lblTitulo1;
 	private JLabel lblIcon;
-
+	
+	/**
+	 * Launch the application.
+	 */
 	public static void main(String[] args) {
 		try {
 			RegistrarOferta dialog = new RegistrarOferta(null);
@@ -67,12 +70,18 @@ public class RegistrarOferta extends JDialog {
 		}
 	}
 
+	/**
+	 * Create the dialog.
+	 */
 	public RegistrarOferta(Empresa empresa) {
+		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarOferta.class.getResource("/img/AppIconoFull.png")));
+		
 		this.empresa = empresa;
 		setTitle("Publicar Oferta");
 		setBounds(100, 100, 734, 560);
 		setLocationRelativeTo(null);
+		
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -126,9 +135,11 @@ public class RegistrarOferta extends JDialog {
 		pnlSteps.setOpaque(false);
 		pnlSteps.setBounds(20, 15, 624, 300);
 		cardBlanca.add(pnlSteps);
+		
 		pnlSteps.add(crearPaso1(), "paso1");
 		pnlSteps.add(crearPaso2(), "paso2");
 		pnlSteps.add(crearPaso3(), "paso3");
+		
 		int xDot = 312;
 		for (int i = 0; i < 3; i++) {
 			JLabel dot = new JLabel("\u25CF", JLabel.CENTER);
@@ -187,18 +198,21 @@ public class RegistrarOferta extends JDialog {
 	}
 
 	private void irSiguiente() {
+		
 		if (pasoActual == 1) {
 			if (!validarPaso1())
 				return;
 			stepsLayout.show(pnlSteps, "paso2");
 			pasoActual = 2;
 			btnAtras.setVisible(true);
+			
 		} else if (pasoActual == 2) {
 			if (!validarPaso2())
 				return;
 			stepsLayout.show(pnlSteps, "paso3");
 			pasoActual = 3;
 			btnSiguiente.setText("Publicar");
+			
 		} else {
 			if (!validarPaso3())
 				return;
@@ -209,15 +223,18 @@ public class RegistrarOferta extends JDialog {
 	}
 
 	private void irAtras() {
+		
 		if (pasoActual == 3) {
 			stepsLayout.show(pnlSteps, "paso2");
 			pasoActual = 2;
 			btnSiguiente.setText("Continuar");
+			
 		} else if (pasoActual == 2) {
 			stepsLayout.show(pnlSteps, "paso1");
 			pasoActual = 1;
 			btnAtras.setVisible(false);
 		}
+		
 		actualizarDots();
 	}
 
@@ -232,7 +249,7 @@ public class RegistrarOferta extends JDialog {
 	}
 
 	private boolean validarPaso1() {
-		if (txtPuesto.getText().trim().isEmpty() || txtDescripcion.getText().trim().isEmpty()) {
+		if (!Validaciones.camposLlenos(txtPuesto.getText(), txtDescripcion.getText())) {
 			JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
@@ -248,8 +265,12 @@ public class RegistrarOferta extends JDialog {
 	}
 
 	private boolean validarPaso3() {
-		if (cbxJornada.getSelectedIndex() == -1 || cbxModalidad.getSelectedIndex() == -1 || txtCiudad.getText().trim().isEmpty()) {
+		if (!Validaciones.camposLlenos(txtCiudad.getText()) || cbxJornada.getSelectedIndex() == -1 || cbxModalidad.getSelectedIndex() == -1) {
 			JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		if (!Validaciones.soloLetras(txtCiudad.getText())) {
+			JOptionPane.showMessageDialog(null, "La ciudad solo debe contener letras.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
 		return true;
