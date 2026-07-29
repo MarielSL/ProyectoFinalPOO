@@ -40,7 +40,7 @@ import javax.swing.JPasswordField;
 import java.awt.Toolkit;
 
 public class RegistrarSolicitante extends JDialog {
-	
+
 	private final JPanel contentPanel = new JPanel();
 	private Usuario user;
 	private CardLayout stepsLayout;
@@ -92,7 +92,7 @@ public class RegistrarSolicitante extends JDialog {
 		else {
 			setTitle("Modificar Solicitante");
 		}
-		
+
 		setBounds(100, 100, 734, 560);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -169,37 +169,40 @@ public class RegistrarSolicitante extends JDialog {
 		lblNewLabel.setBounds(0, 0, 724, 513);
 		panel.add(lblNewLabel);
 		actualizarDots();
+		if (mySolicitante != null) {
+		    cbxTipo.setEnabled(false);
+		}
 
 
 	}
 
 	private void loadSolicitante() {
-		
+
 		if(mySolicitante == null) {
 			return;
 		}
-		
+
 		txtNombre.setText(mySolicitante.getNombre());
 		txtApellido.setText(mySolicitante.getApellido());
-		
+
 		if(mySolicitante instanceof Universitario) {
 			Universitario aux = (Universitario) mySolicitante;
 			txtCarrera.setText(aux.getCarrera());
 			cbxTipo.setSelectedItem(TipoPersona.UNIVERSITARIO);
 		}
-		
+
 		if(mySolicitante instanceof Tecnico) {
 			Tecnico aux = (Tecnico) mySolicitante;
 			txtAreaTecnico.setText(aux.getTecnico());
 			cbxTipo.setSelectedItem(TipoPersona.TECNICO);
 		}
-		
+
 		if(mySolicitante instanceof Obrero) {
 			Obrero aux = (Obrero) mySolicitante;
 			txtHabilidades.setText(aux.getHabilidades());
 			cbxTipo.setSelectedItem(TipoPersona.OBRERO);
 		}
-		
+
 		txtCedula.setText(mySolicitante.getCedula());
 		txtCiudad.setText(mySolicitante.getCiudad());
 		txtCorreo.setText(mySolicitante.getUser().getCorreo());
@@ -208,23 +211,25 @@ public class RegistrarSolicitante extends JDialog {
 		txtUser.setText(mySolicitante.getUser().getUsername());
 		passwordField.setText(mySolicitante.getUser().getPassword());
 		cbxSexo.setSelectedItem(mySolicitante.getSexo());
-		spnFechaNacim.setValue(mySolicitante.getFechNacim());
+		Date fecha = Date.from(mySolicitante.getFechNacim().atStartOfDay(ZoneId.systemDefault()).toInstant());
+		spnFechaNacim.setValue(fecha);		
 		spnExp.setValue(mySolicitante.getYearsExp());
-		
+
 		if(mySolicitante.isDispParaMudarse()) {
 			chkMudarse.setSelected(true);
 		}
-		
+
 		if(mySolicitante.isLicenciaConducir()) {
 			chkLicencia.setSelected(true);
 		}
-		
+
 		if(mySolicitante.isEstadoEmpleo()) {
 			chkEmpleado.setSelected(true);
 		}
-		
+	
 	}
 
+	
 	private void irSiguiente() {
 		if (pasoActual == 1) {
 			if (!validarPaso1()) return;
@@ -361,8 +366,6 @@ public class RegistrarSolicitante extends JDialog {
 		if(mySolicitante == null) {
 			String contrasena = new String(passwordField.getPassword());
 			Usuario newUser = new Usuario("U-" + BolsaEmpleo.generadorIdUser, txtUser.getText(), contrasena, txtCorreo.getText(), null, null, TipoUser.CANDIDATO, null);
-			BolsaEmpleo.getInstancia().regUser(newUser);
-			BolsaEmpleo.getInstancia().setLoginUser(newUser);
 			this.user = newUser;
 
 			String id = "P-" + BolsaEmpleo.generadorIdPersona;
@@ -378,13 +381,16 @@ public class RegistrarSolicitante extends JDialog {
 
 			}
 
+			newUser.setPersona(persona);
+			persona.setUser(newUser);
+
 			BolsaEmpleo.getInstancia().regPersona(persona);
-			persona.setUser(user);
-			user.setPersona(persona);
+			BolsaEmpleo.getInstancia().regUser(newUser);
+			BolsaEmpleo.getInstancia().setLoginUser(newUser);
 
 			JOptionPane.showMessageDialog(null, "Se ha registrado el solicitante.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
 			clear();
-			
+
 			HomeCandidato homeCandidato = new HomeCandidato();
 			homeCandidato.setVisible(true);
 			dispose();
@@ -403,18 +409,20 @@ public class RegistrarSolicitante extends JDialog {
 			mySolicitante.setSexo((Sexo) cbxSexo.getSelectedItem());
 			mySolicitante.setTelefono(txtTelefono.getText());
 			mySolicitante.setYearsExp((int) spnExp.getValue());
+
 			
-			BolsaEmpleo.getInstancia().getLoginUser().setCorreo(txtCorreo.getText());
-			BolsaEmpleo.getInstancia().getLoginUser().setUsername(txtUser.getText());
-			BolsaEmpleo.getInstancia().getLoginUser().setPassword(new String(passwordField.getPassword()));
+			Usuario user = mySolicitante.getUser();
 			
-			
+			user.setCorreo(txtCorreo.getText());
+			user.setUsername(txtUser.getText());
+			user.setPassword(new String (passwordField.getPassword()));
+
 			if(tipo == TipoPersona.UNIVERSITARIO) {
 				Universitario uni = (Universitario) mySolicitante;
 				uni.setCarrera(txtCarrera.getText());
 				BolsaEmpleo.getInstancia().modSolicitante(uni);
 			}
-			
+
 			if(tipo == TipoPersona.TECNICO) {
 				Tecnico tecnico = (Tecnico) mySolicitante;
 				tecnico.setTecnico(txtAreaTecnico.getText());
@@ -427,11 +435,13 @@ public class RegistrarSolicitante extends JDialog {
 
 			}
 			BolsaEmpleo.getInstancia().modUsuario(BolsaEmpleo.getInstancia().getLoginUser());
+			BolsaEmpleo.getInstancia().modSolicitante(mySolicitante);
+			
 			VerUserSolicitante verUser = new VerUserSolicitante();
 			verUser.setVisible(true);
 			dispose();
 		}
-		
+
 	}
 	private void clear() {
 		txtCedula.setText("");
@@ -703,12 +713,12 @@ public class RegistrarSolicitante extends JDialog {
 		txtHabilidades.setBounds(0, 25, 500, 30);
 		cardObrero.add(txtHabilidades);
 		pnlDatosTipo.add(cardObrero, TipoPersona.OBRERO.name());
-		
+
 		JLabel lblNewLabel_2 = new JLabel("A\u00F1os de Experiencia");
 		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblNewLabel_2.setBounds(352, 2, 175, 16);
 		paso.add(lblNewLabel_2);
-		
+
 		spnExp = new JSpinner();
 		spnExp.setForeground(new Color(0, 0, 51));
 		spnExp.setBackground(SystemColor.controlHighlight);

@@ -23,6 +23,9 @@ import logico.BolsaEmpleo;
 import logico.Empresa;
 import logico.EstadoOferta;
 import logico.Oferta;
+import java.awt.CardLayout;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class VerOfertasEmpresa extends JFrame {
 
@@ -36,6 +39,8 @@ public class VerOfertasEmpresa extends JFrame {
 	private JPanel pnlVacio;
 	private JPanel pnlTabla;
 	private JLabel lblIlustracion;
+	private JTable table;
+
 
 	/**
 	 * Launch the application.
@@ -260,16 +265,14 @@ public class VerOfertasEmpresa extends JFrame {
 		panelContenedor.setBackground(Color.WHITE);
 		panelContenedor.setBounds(margen, yContenido, anchoContenido, altoContenido);
 		panel.add(panelContenedor);
-		panelContenedor.setLayout(null);
+		panelContenedor.setLayout(new CardLayout(0, 0));
 
 		pnlVacio = crearEstadoVacio();
-		pnlVacio.setBounds(0, 0, anchoContenido, altoContenido);
-		panelContenedor.add(pnlVacio);
+		panelContenedor.add(pnlVacio, "name_15485631297600");
 
 		pnlTabla = crearTabla();
-		pnlTabla.setBounds(0, 0, anchoContenido, altoContenido);
 		pnlTabla.setVisible(false);
-		panelContenedor.add(pnlTabla);
+		panelContenedor.add(pnlTabla, "name_15485659564600");
 	}
 
 	private JPanel crearEstadoVacio() {
@@ -284,16 +287,16 @@ public class VerOfertasEmpresa extends JFrame {
 
 		JLabel lblTitulo = new JLabel("Aun no has publicado ninguna oferta");
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
 		lblTitulo.setForeground(new Color(0, 0, 51));
-		lblTitulo.setBounds(0, 220, 1, 1);
+		lblTitulo.setBounds(919, 361, 1, 1);
 		panelVacio.add(lblTitulo);
 
 		JLabel lblSubtitulo = new JLabel("Cuando publiques una nueva oferta aparecera aqui para que puedas gestionarla facilmente.");
 		lblSubtitulo.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSubtitulo.setFont(new Font("Calibri", Font.PLAIN, 14));
+		lblSubtitulo.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblSubtitulo.setForeground(new Color(130, 130, 130));
-		lblSubtitulo.setBounds(0, 250, 1, 1);
+		lblSubtitulo.setBounds(919, 361, 1, 1);
 		panelVacio.add(lblSubtitulo);
 
 		panelVacio.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -312,6 +315,13 @@ public class VerOfertasEmpresa extends JFrame {
 	private JPanel crearTabla() {
 		JPanel panelTabla = new JPanel();
 		panelTabla.setOpaque(false);
+		panelTabla.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane scrollPane = new JScrollPane();
+		panelTabla.add(scrollPane, BorderLayout.EAST);
+		
+		table = new JTable();
+		panelTabla.add(table, BorderLayout.CENTER);
 		return panelTabla;
 	}
 
