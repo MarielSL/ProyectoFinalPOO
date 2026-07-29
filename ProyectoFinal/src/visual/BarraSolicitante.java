@@ -8,6 +8,9 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import logico.Usuario;
+
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import java.awt.Font;
@@ -23,6 +26,7 @@ public class BarraSolicitante extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	Dimension dim = getToolkit().getScreenSize();
+	private Usuario user;
 
 	/**
 	 * Launch the application.
@@ -51,13 +55,23 @@ public class BarraSolicitante extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		
+		String nombreUser = "Nombre";
+		if (user != null) {
+			nombreUser = user.getPersona().getNombre() + user.getPersona().getApellido();
+		}
+		
+		String correoUser = "correoelectronico@hotmail.com";
+		if (user != null) {
+			correoUser = user.getCorreo();
+		}
+		
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 255, 255));
 		panel.setForeground(new Color(255, 255, 255));
 		contentPanel.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
-		JLabel lblNewLabel_2 = new JLabel("correoelectronico@hotmail.com");
+		JLabel lblNewLabel_2 = new JLabel(correoUser);
 		lblNewLabel_2.setForeground(new Color(105, 105, 105));
 		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 13));
 		lblNewLabel_2.setBounds(161, 837, 194, 30);
@@ -166,7 +180,14 @@ public class BarraSolicitante extends JDialog {
 		colocarImagen(label_3, "/img/notificacion.png");
 		panel.add(label_3);
 		
-		BotonRedond btnNewButton = new BotonRedond("Nombre",25);
+		BotonRedond btnNewButton = new BotonRedond(nombreUser,25);
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VerUserEmpresa perfil = new VerUserEmpresa();
+				perfil.setVisible(true);
+				dispose();
+			}
+		});
 		btnNewButton.setBackground(new Color(255, 255, 255));
 		btnNewButton.setFont(new Font("Calibri", Font.PLAIN, 20));
 		btnNewButton.setHorizontalAlignment(SwingConstants.LEFT);

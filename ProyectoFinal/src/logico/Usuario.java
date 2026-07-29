@@ -1,7 +1,6 @@
 package logico;
-
 import java.io.Serializable;
-
+import java.time.LocalDate;
 public class Usuario implements Serializable {
     private static final long serialVersionUID = 1L;
 	
@@ -13,7 +12,7 @@ public class Usuario implements Serializable {
 	private Persona persona;
 	private TipoUser tipoUser;
 	private String fotoPerfil;
-
+	private LocalDate fechaRegistro;
 	
 	
 	public Usuario(String Id,String username, String password, String correo, Empresa empresa, Persona persona,
@@ -27,68 +26,44 @@ public class Usuario implements Serializable {
 		this.persona = persona;
 		this.tipoUser = tipoUser;
 		this.fotoPerfil = fotoPerfil;
+		this.fechaRegistro = LocalDate.now();
 	}
-
-
 	public String getUsername() {
 		return username;
 	}
-
-
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
-
 	public String getPassword() {
 		return password;
 	}
-
-
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-
 	public String getCorreo() {
 		return correo;
 	}
-
-
 	public void setCorreo(String correo) {
 		this.correo = correo;
 	}
-
-
 	public Empresa getEmpresa() {
 		return empresa;
 	}
-
-
 	public void setEmpresa(Empresa empresa) {
 		this.empresa = empresa;
 	}
-
-
 	public Persona getPersona() {
 		return persona;
 	}
-
-
 	public void setPersona(Persona persona) {
 		this.persona = persona;
 	}
-
-
 	public TipoUser getTipoUser() {
 		return tipoUser;
 	}
-
-
 	public void setTipoUser(TipoUser tipoUser) {
 		this.tipoUser = tipoUser;
 	}
-
 	public String getId() {
 		return Id;
 	}
@@ -96,11 +71,15 @@ public class Usuario implements Serializable {
 	public String getFotoPerfil() {
 	    return fotoPerfil;
 	}
-
 	public void setFotoPerfil(String fotoPerfil) {
 	    this.fotoPerfil = fotoPerfil;
 	}
+	public LocalDate getFechaRegistro() {
+		return fechaRegistro;
+	}
+	public void setFechaRegistro(LocalDate fechaRegistro) {
+		this.fechaRegistro = fechaRegistro;
+	}
 	
 	
-
 }

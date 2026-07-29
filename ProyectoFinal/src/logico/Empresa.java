@@ -1,8 +1,7 @@
 package logico;
-
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
-
 public class Empresa implements Serializable{
 	
 	/**
@@ -31,77 +30,59 @@ public class Empresa implements Serializable{
 		this.lasOfertas = new ArrayList<>();
 		this.user = user;
 	}
-
 	public void agregarOferta(Oferta o) {
 		lasOfertas.add(o);
 	}
-
 	public String getRnc() {
 		return rnc;
 	}
-
 	public void setRnc(String rnc) {
 		this.rnc = rnc;
 	}
-
 	public String getNombre() {
 		return nombre;
 	}
-
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-
 	public String getTelefono() {
 		return telefono;
 	}
-
 	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
-
 	public String getDireccion() {
 		return direccion;
 	}
-
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
 	}
-
 	public TipoEmpresa getTipo() {
 		return tipo;
 	}
-
 	public void setTipo(TipoEmpresa tipo) {
 		this.tipo = tipo;
 	}
-
 	public boolean isEstado() {
 		return estado;
 	}
-
 	public void setEstado(boolean estado) {
 		this.estado = estado;
 	}
-
 	public ArrayList<Oferta> getLasOfertas() {
 		return lasOfertas;
 	}
-
 	public Usuario getUser() {
 		return user;
 	}
-
 	public void setUser(Usuario user) {
 		this.user = user;
 	}
-
 	public String getId() {
 		return Id;
 	}
-
 	public void setLasOfertas(ArrayList<Oferta> lasOfertas) {
 		this.lasOfertas = lasOfertas;
 	}
-	
+
 }

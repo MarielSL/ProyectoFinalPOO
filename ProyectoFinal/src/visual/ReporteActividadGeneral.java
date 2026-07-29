@@ -1,0 +1,107 @@
+package visual;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import logico.BolsaEmpleo;
+import logico.Empresa;
+import logico.Oferta;
+import logico.Persona;
+import logico.SolicitudEmpleo;
+
+public class ReporteActividadGeneral extends JDialog {
+
+	public static void main(String[] args) {
+		try {
+			ReporteActividadGeneral dialog = new ReporteActividadGeneral();
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public ReporteActividadGeneral() {
+		setTitle("Actividad General");
+		setBounds(100, 100, 427, 280);
+		setLocationRelativeTo(null);
+		setResizable(false);
+		getContentPane().setLayout(new BorderLayout());
+
+		JPanel contentPanel = new JPanel();
+		contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+		contentPanel.setLayout(new BorderLayout(0, 10));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+
+		JLabel lblTitulo = new JLabel("Vista general de la plataforma:");
+		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitulo.setFont(new Font("Arial", Font.PLAIN, 13));
+		contentPanel.add(lblTitulo, BorderLayout.NORTH);
+
+		ArrayList<Oferta> lasOfertas = BolsaEmpleo.getInstancia().getOfertas();
+		ArrayList<Persona> lasPersonas = BolsaEmpleo.getInstancia().getPersonas();
+		ArrayList<SolicitudEmpleo> lasSolicitudes = BolsaEmpleo.getInstancia().getSolicitudes();
+		ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
+
+		int totalOfertas = lasOfertas == null ? 0 : lasOfertas.size();
+		int totalSolicitantes = lasPersonas == null ? 0 : lasPersonas.size();
+		int totalPostulaciones = lasSolicitudes == null ? 0 : lasSolicitudes.size();
+		int totalEmpresas = lasEmpresas == null ? 0 : lasEmpresas.size();
+
+		JPanel panelStats = new JPanel();
+		panelStats.setLayout(new GridLayout(2, 2, 20, 16));
+		panelStats.add(crearBloque("Ofertas", String.valueOf(totalOfertas), new Color(0, 120, 0)));
+		panelStats.add(crearBloque("Solicitantes", String.valueOf(totalSolicitantes), new Color(204, 102, 0)));
+		panelStats.add(crearBloque("Postulaciones", String.valueOf(totalPostulaciones), new Color(65, 95, 170)));
+		panelStats.add(crearBloque("Empresas", String.valueOf(totalEmpresas), new Color(198, 40, 40)));
+		contentPanel.add(panelStats, BorderLayout.CENTER);
+
+		JLabel lblCantidad = new JLabel("Basado en los datos actuales de la plataforma");
+		lblCantidad.setHorizontalAlignment(SwingConstants.CENTER);
+		lblCantidad.setFont(new Font("Arial", Font.ITALIC, 11));
+		contentPanel.add(lblCantidad, BorderLayout.SOUTH);
+
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		JButton cerrarButton = new JButton("Cerrar");
+		cerrarButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+		buttonPane.add(cerrarButton);
+	}
+
+	private JPanel crearBloque(String titulo, String valor, Color color) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout(0, 5));
+
+		JLabel lblTitulo = new JLabel(titulo);
+		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitulo.setFont(new Font("Arial", Font.PLAIN, 12));
+		panel.add(lblTitulo, BorderLayout.NORTH);
+
+		JLabel lblValor = new JLabel(valor);
+		lblValor.setHorizontalAlignment(SwingConstants.CENTER);
+		lblValor.setFont(new Font("Arial", Font.BOLD, 26));
+		lblValor.setForeground(color);
+		panel.add(lblValor, BorderLayout.CENTER);
+
+		return panel;
+	}
+}

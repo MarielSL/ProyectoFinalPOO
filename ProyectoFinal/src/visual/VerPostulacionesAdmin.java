@@ -2,12 +2,17 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
@@ -16,35 +21,33 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import logico.BolsaEmpleo;
-import logico.Empresa;
-import logico.EstadoOferta;
-import logico.Oferta;
+import logico.EstadoSolicitud;
+import logico.SolicitudEmpleo;
 
-public class VerOfertasEmpresa extends JFrame {
+public class VerPostulacionesAdmin extends JFrame {
 
 	private JPanel contentPane;
 	private Dimension dim;
-	private Empresa empresa;
 	private TextFieldRedond txtBuscar;
 	private ComboBoxRedond<String> cbxEstado;
-	private ComboBoxRedond<String> cbxTipoEmpleo;
-	private BotonRedond btnPublicarOferta;
 	private JPanel pnlVacio;
 	private JPanel pnlTabla;
 	private JLabel lblIlustracion;
+	private JTable table;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					VerOfertasEmpresa frame = new VerOfertasEmpresa();
+					VerPostulacionesAdmin frame = new VerPostulacionesAdmin();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -53,15 +56,8 @@ public class VerOfertasEmpresa extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
-	public VerOfertasEmpresa() {
-		if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
-			empresa = BolsaEmpleo.getInstancia().getLoginUser().getEmpresa();
-		}
-
-		setTitle("Mis Ofertas");
+	public VerPostulacionesAdmin() {
+		setTitle("Postulaciones");
 		Utilidades.aplicarIcono(this);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -96,7 +92,7 @@ public class VerOfertasEmpresa extends JFrame {
 	}
 
 	private void construirHeader(JPanel panel, int margen, int anchoContenido) {
-		JPanel panelHeader = new JPanel();
+		PanelConSombra panelHeader = new PanelConSombra(25);
 		panelHeader.setBackground(new Color(0, 0, 51));
 		panelHeader.setBounds(0, 0, dim.width, 70);
 		panel.add(panelHeader);
@@ -111,34 +107,22 @@ public class VerOfertasEmpresa extends JFrame {
 		btnAtras.setOpaque(false);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				HomeEmpresa home = new HomeEmpresa();
+				BarraAdmin home = new BarraAdmin();
 				home.setVisible(true);
 				dispose();
 			}
 		});
 		panelHeader.add(btnAtras);
 
-		JLabel lblTitulo = new JLabel("Mis Ofertas Publicadas");
+		JLabel lblTitulo = new JLabel("Postulaciones");
 		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
-		lblTitulo.setForeground(new Color(30, 144, 255));
+		lblTitulo.setForeground(new Color(255, 51, 51));
 		lblTitulo.setBounds(74, 22, 400, 30);
 		panelHeader.add(lblTitulo);
-
-		String nombreEmpresa = "Mi Empresa";
-		if (empresa != null) {
-			nombreEmpresa = empresa.getNombre();
-		}
-		int anchoNombre = 14 * nombreEmpresa.length() + 20;
 
 		JLabel lblChevron = new JLabel();
 		lblChevron.setBounds(dim.width - 40, 26, 18, 18);
 		panelHeader.add(lblChevron);
-
-		JLabel lblNombreEmpresa = new JLabel(nombreEmpresa);
-		lblNombreEmpresa.setFont(new Font("Calibri", Font.PLAIN, 16));
-		lblNombreEmpresa.setForeground(Color.WHITE);
-		lblNombreEmpresa.setBounds(dim.width - 66 - anchoNombre, 26, anchoNombre, 20);
-		panelHeader.add(lblNombreEmpresa);
 	}
 
 	private void construirTarjetas(JPanel panel, int margen, int anchoContenido) {
@@ -146,61 +130,49 @@ public class VerOfertasEmpresa extends JFrame {
 		int anchoCards = anchoContenido - anchoBoton - 40;
 		int anchoTarjeta = (anchoCards - 24) / 2;
 
-		PanelConSombra panelTotalOfertas = new PanelConSombra(18);
-		panelTotalOfertas.setBackground(new Color(255, 224, 178));
-		panelTotalOfertas.setBounds(margen, 110, anchoTarjeta, 90);
-		panel.add(panelTotalOfertas);
-		panelTotalOfertas.setLayout(null);
+		PanelConSombra panelTotalPostulaciones = new PanelConSombra(18);
+		panelTotalPostulaciones.setBackground(new Color(255, 224, 178));
+		panelTotalPostulaciones.setBounds(125, 110, anchoTarjeta, 90);
+		panel.add(panelTotalPostulaciones);
+		panelTotalPostulaciones.setLayout(null);
 
 		JLabel lblIconoTotal = new JLabel();
 		lblIconoTotal.setBounds(16, 16, 40, 40);
-		panelTotalOfertas.add(lblIconoTotal);
+		panelTotalPostulaciones.add(lblIconoTotal);
 
-		JLabel lblTotalOfertas = new JLabel("Total de ofertas");
-		lblTotalOfertas.setFont(new Font("Calibri", Font.PLAIN, 15));
-		lblTotalOfertas.setForeground(new Color(204, 102, 0));
-		lblTotalOfertas.setBounds(64, 12, anchoTarjeta - 84, 20);
-		panelTotalOfertas.add(lblTotalOfertas);
+		JLabel lblTotalPostulaciones = new JLabel("Total de postulaciones");
+		lblTotalPostulaciones.setFont(new Font("Calibri", Font.PLAIN, 15));
+		lblTotalPostulaciones.setForeground(new Color(204, 102, 0));
+		lblTotalPostulaciones.setBounds(64, 12, anchoTarjeta - 84, 20);
+		panelTotalPostulaciones.add(lblTotalPostulaciones);
 
-		JLabel lblTotalOfertasNum = new JLabel(String.valueOf(contarTotalOfertas()));
-		lblTotalOfertasNum.setFont(new Font("Calibri", Font.BOLD, 30));
-		lblTotalOfertasNum.setForeground(new Color(204, 102, 0));
-		lblTotalOfertasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
-		panelTotalOfertas.add(lblTotalOfertasNum);
+		JLabel lblTotalPostulacionesNum = new JLabel(String.valueOf(contarTotalPostulaciones()));
+		lblTotalPostulacionesNum.setFont(new Font("Calibri", Font.BOLD, 30));
+		lblTotalPostulacionesNum.setForeground(new Color(204, 102, 0));
+		lblTotalPostulacionesNum.setBounds(64, 34, anchoTarjeta - 84, 36);
+		panelTotalPostulaciones.add(lblTotalPostulacionesNum);
 
-		PanelConSombra panelOfertasActivas = new PanelConSombra(18);
-		panelOfertasActivas.setBackground(new Color(198, 239, 206));
-		panelOfertasActivas.setBounds(margen + anchoTarjeta + 24, 110, anchoTarjeta, 90);
-		panel.add(panelOfertasActivas);
-		panelOfertasActivas.setLayout(null);
+		PanelConSombra panelPendientes = new PanelConSombra(18);
+		panelPendientes.setBackground(new Color(198, 239, 206));
+		panelPendientes.setBounds(1008, 110, anchoTarjeta, 90);
+		panel.add(panelPendientes);
+		panelPendientes.setLayout(null);
 
-		JLabel lblIconoActivas = new JLabel();
-		lblIconoActivas.setBounds(16, 16, 40, 40);
-		panelOfertasActivas.add(lblIconoActivas);
+		JLabel lblIconoPendientes = new JLabel();
+		lblIconoPendientes.setBounds(16, 16, 40, 40);
+		panelPendientes.add(lblIconoPendientes);
 
-		JLabel lblOfertasActivas = new JLabel("Ofertas activas");
-		lblOfertasActivas.setFont(new Font("Calibri", Font.PLAIN, 15));
-		lblOfertasActivas.setForeground(new Color(46, 125, 50));
-		lblOfertasActivas.setBounds(64, 12, anchoTarjeta - 84, 20);
-		panelOfertasActivas.add(lblOfertasActivas);
+		JLabel lblPendientes = new JLabel("Pendientes de revisión");
+		lblPendientes.setFont(new Font("Calibri", Font.PLAIN, 15));
+		lblPendientes.setForeground(new Color(46, 125, 50));
+		lblPendientes.setBounds(64, 12, anchoTarjeta - 84, 20);
+		panelPendientes.add(lblPendientes);
 
-		JLabel lblOfertasActivasNum = new JLabel(String.valueOf(contarOfertasActivas()));
-		lblOfertasActivasNum.setFont(new Font("Calibri", Font.BOLD, 30));
-		lblOfertasActivasNum.setForeground(new Color(46, 125, 50));
-		lblOfertasActivasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
-		panelOfertasActivas.add(lblOfertasActivasNum);
-
-		btnPublicarOferta = new BotonRedond("Publicar nueva oferta", 18);
-		btnPublicarOferta.setFont(new Font("Calibri", Font.PLAIN, 16));
-		btnPublicarOferta.setBackground(new Color(255, 153, 0));
-		btnPublicarOferta.setForeground(Color.WHITE);
-		btnPublicarOferta.setBounds(margen + anchoContenido - anchoBoton, 128, anchoBoton, 54);
-		btnPublicarOferta.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				abrirRegistrarOferta();
-			}
-		});
-		panel.add(btnPublicarOferta);
+		JLabel lblPendientesNum = new JLabel(String.valueOf(contarPostulacionesPendientes()));
+		lblPendientesNum.setFont(new Font("Calibri", Font.BOLD, 30));
+		lblPendientesNum.setForeground(new Color(46, 125, 50));
+		lblPendientesNum.setBounds(64, 34, anchoTarjeta - 84, 36);
+		panelPendientes.add(lblPendientesNum);
 	}
 
 	private void construirBusqueda(JPanel panel, int margen, int anchoContenido) {
@@ -218,38 +190,23 @@ public class VerOfertasEmpresa extends JFrame {
 		txtBuscar.setFont(new Font("Calibri", Font.PLAIN, 16));
 		txtBuscar.setForeground(new Color(0, 0, 51));
 		txtBuscar.setBackground(new Color(245, 245, 245));
-		txtBuscar.setBounds(50, 14, anchoContenido - 480, 32);
+		txtBuscar.setBounds(50, 14, anchoContenido - 300, 32);
 		panelBusqueda.add(txtBuscar);
 
 		JLabel lblEstado = new JLabel("Estado");
 		lblEstado.setFont(new Font("Calibri", Font.PLAIN, 13));
 		lblEstado.setForeground(new Color(120, 120, 120));
-		lblEstado.setBounds(anchoContenido - 420, 4, 150, 16);
+		lblEstado.setBounds(anchoContenido - 220, 4, 190, 16);
 		panelBusqueda.add(lblEstado);
 
 		cbxEstado = new ComboBoxRedond<String>(15);
 		cbxEstado.setFont(new Font("Calibri", Font.PLAIN, 15));
 		cbxEstado.setForeground(Color.BLACK);
 		cbxEstado.setBackground(Color.WHITE);
-		cbxEstado.setModel(new DefaultComboBoxModel<String>(new String[] { "Todos", "Activas", "En pausa", "Cerradas" }));
+		cbxEstado.setModel(new DefaultComboBoxModel<String>(new String[] { "Todos", "Pendiente", "Aceptada", "Rechazada" }));
 		cbxEstado.setSelectedIndex(0);
-		cbxEstado.setBounds(anchoContenido - 420, 20, 190, 28);
+		cbxEstado.setBounds(anchoContenido - 220, 20, 190, 28);
 		panelBusqueda.add(cbxEstado);
-
-		JLabel lblTipoEmpleo = new JLabel("Tipo de empleo");
-		lblTipoEmpleo.setFont(new Font("Calibri", Font.PLAIN, 13));
-		lblTipoEmpleo.setForeground(new Color(120, 120, 120));
-		lblTipoEmpleo.setBounds(anchoContenido - 210, 4, 190, 16);
-		panelBusqueda.add(lblTipoEmpleo);
-
-		cbxTipoEmpleo = new ComboBoxRedond<String>(15);
-		cbxTipoEmpleo.setFont(new Font("Calibri", Font.PLAIN, 15));
-		cbxTipoEmpleo.setForeground(Color.BLACK);
-		cbxTipoEmpleo.setBackground(Color.WHITE);
-		cbxTipoEmpleo.setModel(new DefaultComboBoxModel<String>(new String[] { "Todos", "Tiempo completo", "Medio tiempo", "Remoto" }));
-		cbxTipoEmpleo.setSelectedIndex(0);
-		cbxTipoEmpleo.setBounds(anchoContenido - 210, 20, 190, 28);
-		panelBusqueda.add(cbxTipoEmpleo);
 	}
 
 	private void construirContenido(JPanel panel, int margen, int anchoContenido) {
@@ -266,7 +223,7 @@ public class VerOfertasEmpresa extends JFrame {
 		pnlVacio.setBounds(0, 0, anchoContenido, altoContenido);
 		panelContenedor.add(pnlVacio);
 
-		pnlTabla = crearTabla();
+		pnlTabla = crearTabla(anchoContenido, altoContenido);
 		pnlTabla.setBounds(0, 0, anchoContenido, altoContenido);
 		pnlTabla.setVisible(false);
 		panelContenedor.add(pnlTabla);
@@ -282,14 +239,14 @@ public class VerOfertasEmpresa extends JFrame {
 		lblIlustracion.setBounds(0, 40, 1, 1);
 		panelVacio.add(lblIlustracion);
 
-		JLabel lblTitulo = new JLabel("Aun no has publicado ninguna oferta");
+		JLabel lblTitulo = new JLabel("Aun no hay postulaciones registradas");
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 20));
 		lblTitulo.setForeground(new Color(0, 0, 51));
 		lblTitulo.setBounds(0, 220, 1, 1);
 		panelVacio.add(lblTitulo);
 
-		JLabel lblSubtitulo = new JLabel("Cuando publiques una nueva oferta aparecera aqui para que puedas gestionarla facilmente.");
+		JLabel lblSubtitulo = new JLabel("Cuando los candidatos postulen a ofertas apareceran aqui.");
 		lblSubtitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSubtitulo.setFont(new Font("Calibri", Font.PLAIN, 14));
 		lblSubtitulo.setForeground(new Color(130, 130, 130));
@@ -300,7 +257,7 @@ public class VerOfertasEmpresa extends JFrame {
 			public void componentResized(java.awt.event.ComponentEvent e) {
 				int ancho = panelVacio.getWidth();
 				lblIlustracion.setBounds((ancho - 220) / 2, 30, 220, 180);
-				colocarImagen(lblIlustracion, "/img/ofertasvacias.png");
+				colocarImagen(lblIlustracion, "/img/postulacionesvacias.png");
 				lblTitulo.setBounds(0, 226, ancho, 28);
 				lblSubtitulo.setBounds((ancho - 520) / 2, 258, 520, 40);
 			}
@@ -309,65 +266,75 @@ public class VerOfertasEmpresa extends JFrame {
 		return panelVacio;
 	}
 
-	private JPanel crearTabla() {
+	private JPanel crearTabla(int ancho, int alto) {
 		JPanel panelTabla = new JPanel();
 		panelTabla.setOpaque(false);
+		panelTabla.setLayout(null);
+
+		table = new JTable();
+		table.setModel(crearModeloPostulaciones());
+		table.setFont(new Font("Calibri", Font.PLAIN, 16));
+		table.setRowHeight(38);
+		table.setForeground(new Color(50, 50, 50));
+		table.setSelectionBackground(new Color(240, 240, 245));
+		table.setShowGrid(false);
+		table.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 15));
+		table.getTableHeader().setForeground(new Color(0, 0, 51));
+		table.getColumnModel().getColumn(4).setCellRenderer(new RenderEstado());
+
+		JScrollPane scrollTabla = new JScrollPane(table);
+		scrollTabla.setBorder(null);
+		scrollTabla.setBounds(24, 20, ancho - 48, alto - 40);
+		panelTabla.add(scrollTabla);
+
 		return panelTabla;
 	}
 
 	private void cargarDatos() {
-		ArrayList<Oferta> lasOfertas = new ArrayList<Oferta>();
-		if (empresa != null) {
-			lasOfertas = empresa.getLasOfertas();
-		}
+		ArrayList<SolicitudEmpleo> lasSolicitudes = BolsaEmpleo.getInstancia().getSolicitudes();
 
-		if (lasOfertas.isEmpty()) {
-			btnPublicarOferta.setText("Publicar nueva oferta");
+		if (lasSolicitudes == null || lasSolicitudes.isEmpty()) {
 			pnlVacio.setVisible(true);
 			pnlTabla.setVisible(false);
 			return;
 		}
-
-		btnPublicarOferta.setText("A\u00F1adir oferta");
 		pnlVacio.setVisible(false);
 		pnlTabla.setVisible(true);
 	}
 
-	private int contarTotalOfertas() {
-		if (empresa == null) {
+	private int contarTotalPostulaciones() {
+		ArrayList<SolicitudEmpleo> lasSolicitudes = BolsaEmpleo.getInstancia().getSolicitudes();
+		if (lasSolicitudes == null) {
 			return 0;
 		}
-		return empresa.getLasOfertas().size();
+		return lasSolicitudes.size();
 	}
 
-	private int contarOfertasActivas() {
-		if (empresa == null) {
+	private int contarPostulacionesPendientes() {
+		ArrayList<SolicitudEmpleo> lasSolicitudes = BolsaEmpleo.getInstancia().getSolicitudes();
+		if (lasSolicitudes == null) {
 			return 0;
 		}
 		int contador = 0;
-		for (Oferta oferta : empresa.getLasOfertas()) {
-			if (oferta.getEstado() == EstadoOferta.PENDIENTE) {
+		for (SolicitudEmpleo solicitud : lasSolicitudes) {
+			if (solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
 				contador++;
 			}
 		}
 		return contador;
 	}
 
-	private String formatearEstado(EstadoOferta estado) {
-		if (estado == EstadoOferta.PENDIENTE) {
-			return "Activa";
+	private String formatearEstado(EstadoSolicitud estado) {
+		if (estado == EstadoSolicitud.PENDIENTE) {
+			return "Pendiente";
 		}
-		if (estado == EstadoOferta.COMPLETADA) {
-			return "Cerrada";
+		if (estado == EstadoSolicitud.ACEPTADA) {
+			return "Aceptada";
+		}
+		if (estado == EstadoSolicitud.RECHAZADA) {
+			return "Rechazada";
 		}
 		return "N/A";
-	}
-
-	private void abrirRegistrarOferta() {
-		if (empresa != null) {
-			RegistrarOferta registrarOferta = new RegistrarOferta(empresa);
-			registrarOferta.setVisible(true);
-		}
 	}
 
 	private void colocarImagen(JLabel label, String ruta) {
@@ -395,6 +362,69 @@ public class VerOfertasEmpresa extends JFrame {
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
-	
-	
+
+	private DefaultTableModel crearModeloPostulaciones() {
+		DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Solicitante", "Oferta", "Empresa", "Fecha", "Estado" }) {
+			public boolean isCellEditable(int fila, int columna) {
+				return false;
+			}
+		};
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
+		ArrayList<SolicitudEmpleo> lasSolicitudes = BolsaEmpleo.getInstancia().getSolicitudes();
+		if (lasSolicitudes == null) {
+			return modelo;
+		}
+		for (SolicitudEmpleo solicitud : lasSolicitudes) {
+			String nombreCandidato = solicitud.getCandidato().getNombre() + " " + solicitud.getCandidato().getApellido();
+			String nombreEmpresa = solicitud.getOferta().getEmpresa().getNombre();
+			String estadoTexto = formatearEstado(solicitud.getEstado());
+			modelo.addRow(new Object[] { nombreCandidato, solicitud.getOferta().getPuesto(), nombreEmpresa, solicitud.getFechaSolicitud().format(formato), estadoTexto });
+		}
+		return modelo;
+	}
+
+	private class RenderEstado extends JLabel implements TableCellRenderer {
+
+		public RenderEstado() {
+			setOpaque(false);
+			setHorizontalAlignment(SwingConstants.CENTER);
+			setFont(new Font("Calibri", Font.BOLD, 14));
+		}
+
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+				boolean hasFocus, int row, int column) {
+			String estado = "";
+			if (value != null) {
+				estado = value.toString();
+			}
+			setText(estado);
+
+			if (estado.equals("Aceptada")) {
+				setBackground(new Color(198, 239, 206));
+				setForeground(new Color(46, 125, 50));
+			} else if (estado.equals("Rechazada")) {
+				setBackground(new Color(255, 205, 210));
+				setForeground(new Color(198, 40, 40));
+			} else {
+				setBackground(new Color(255, 224, 178));
+				setForeground(new Color(204, 102, 0));
+			}
+
+			return this;
+		}
+
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g.create();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setColor(getBackground());
+
+			int margenVertical = 6;
+			int margenHorizontal = 10;
+			g2.fillRoundRect(margenHorizontal, margenVertical,
+				getWidth() - margenHorizontal * 2, getHeight() - margenVertical * 2, 16, 16);
+			g2.dispose();
+
+			super.paintComponent(g);
+		}
+	}
 }
