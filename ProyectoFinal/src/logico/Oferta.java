@@ -1,6 +1,7 @@
 package logico;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Oferta implements Serializable{
@@ -25,10 +26,11 @@ public class Oferta implements Serializable{
 	private ArrayList<SolicitudEmpleo> solicitudes;
 	private Empresa empresa;
 	private Modalidad modalidad;
+	private LocalDate FechaPublicacion;
 	
 	public Oferta(String id, Sexo sexo, TipoPersona tipoCandidato, String puesto, int cantPuestos, boolean licencia,
 			boolean dispMudar, EstadoOferta estado, Jornada jornada, String ciudad, float salario,
-			String descripPuesto, int aniosExp, Empresa empresa, Modalidad modalidad) {
+			String descripPuesto, int aniosExp, Empresa empresa, Modalidad modalidad, LocalDate FechaPublicacion) {
 		super();
 		this.id = id;
 		this.sexo = sexo;
@@ -46,6 +48,7 @@ public class Oferta implements Serializable{
 		solicitudes = new ArrayList<>();
 		this.empresa = empresa;
 		this.modalidad = modalidad;
+		this.FechaPublicacion = FechaPublicacion;
 	}
 
 	public Sexo getSexo() {
@@ -221,6 +224,14 @@ public class Oferta implements Serializable{
 			ind ++;
 		}
 		return id;
+	}
+
+	public LocalDate getFechaPublicacion() {
+		return FechaPublicacion;
+	}
+
+	public void setFechaPublicacion(LocalDate fechaPublicacion) {
+		FechaPublicacion = fechaPublicacion;
 	}
 	
 			

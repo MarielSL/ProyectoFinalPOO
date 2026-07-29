@@ -9,6 +9,7 @@ import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 
 import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
@@ -284,7 +285,7 @@ public class RegistrarOferta extends JDialog {
 		Modalidad modalidad = (Modalidad) cbxModalidad.getSelectedItem();
 		int aniosExp = (Integer) spnAniosExp.getValue();
 		float salario = ((Number) spnSalario.getValue()).floatValue();
-		Oferta oferta = new Oferta(id, sexo, tipoCandidato, txtPuesto.getText(), (Integer) spnCantPuestos.getValue(), chkLicencia.isSelected(), chkMudarse.isSelected(), EstadoOferta.PENDIENTE, jornada, txtCiudad.getText(), salario, txtDescripcion.getText(), aniosExp, empresa, modalidad);
+		Oferta oferta = new Oferta(id, sexo, tipoCandidato, txtPuesto.getText(), (Integer) spnCantPuestos.getValue(), chkLicencia.isSelected(), chkMudarse.isSelected(), EstadoOferta.PENDIENTE, jornada, txtCiudad.getText(), salario, txtDescripcion.getText(), aniosExp, empresa, modalidad, LocalDate.now());
 		BolsaEmpleo.getInstancia().refOferta(oferta);
 		if(empresa != null) {
 			empresa.agregarOferta(oferta);
