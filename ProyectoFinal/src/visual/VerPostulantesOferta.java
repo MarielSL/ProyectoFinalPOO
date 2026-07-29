@@ -69,8 +69,8 @@ public class VerPostulantesOferta extends JDialog {
 	private JTable table;
 	private static DefaultTableModel model;
 	private static Object[] row;
-	private ArrayList<Persona> postulantesMostrados = null;
-	private ArrayList<Persona> top = null;
+	private ArrayList<Persona> postulantesMostrados = new ArrayList<>();
+	private ArrayList<Persona> top =  new ArrayList<>();
 	private JButton btnVerAplicantes;
 	private BotonRedond btnVerPerfilTop3;
 	
@@ -528,6 +528,13 @@ public class VerPostulantesOferta extends JDialog {
 			table.setForeground(new Color(0, 0, 51));
 			
 			BotonRedond btnVerAplicantes = new BotonRedond("Ver Todos los Aplicantes",30);
+			btnVerAplicantes.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					VerTodosPostulantesOferta todos = new VerTodosPostulantesOferta(oferta);
+					todos.setVisible(true);
+					dispose();
+				}
+			});
 			btnVerAplicantes.setFont(new Font("Calibri", Font.BOLD, 20));
 			btnVerAplicantes.setBounds(1482, 716, 272, 42);
 			panel.add(btnVerAplicantes);
