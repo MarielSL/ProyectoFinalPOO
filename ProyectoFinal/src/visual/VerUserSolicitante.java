@@ -24,6 +24,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import javax.swing.UIManager;
 
 public class VerUserSolicitante extends JFrame {
 
@@ -74,27 +75,10 @@ public class VerUserSolicitante extends JFrame {
 		setSize(dim.width, dim.height -55);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
+		contentPane.setBackground(new Color(255, 255, 255));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
-		BotonRedond btnMenu = new BotonRedond("",25);
-		btnMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				BarraSolicitante menu = new BarraSolicitante();
-				menu.setVisible(true);
-			}
-		});
-		btnMenu.setBackground(new Color(0, 0, 51));
-		btnMenu.setColorHover(new Color(0, 51, 102));
-		btnMenu.setBounds(12, 0, 73, 65);
-		colocarIconoBoton(btnMenu,"/img/menu.png",42,35);
-		btnMenu.setMargin(new Insets(0, 0, 0, 0));
-		btnMenu.setBorderPainted(false);
-		btnMenu.setContentAreaFilled(false);
-		btnMenu.setFocusPainted(false);
-		btnMenu.setOpaque(false);
-		contentPane.add(btnMenu);
 		
 		userIcon = new JLabel("New label");
 		userIcon.setIcon(new ImageIcon(VerUserSolicitante.class.getResource("/img/User Icon.png")));
@@ -279,6 +263,24 @@ public class VerUserSolicitante extends JFrame {
 		txtTipo.setFocusable(false);
 		contentPane.add(txtTipo);
 		txtTipo.setColumns(10);
+		
+		BotonRedond btnMenu = new BotonRedond("",30);
+		btnMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BarraEmpresa menu = new BarraEmpresa();
+				menu.setVisible(true);
+			}
+		});
+		btnMenu.setBackground(new Color(255, 255, 255));
+		btnMenu.setBounds(0, 0, 60, 60);
+		colocarIconoBoton(btnMenu, "/img/menu-dots-vertical (Blue).png", 25, 25);
+		btnMenu.setMargin(new Insets(0, 0, 0, 0));
+		btnMenu.setBorderPainted(false);
+		btnMenu.setContentAreaFilled(false);
+		btnMenu.setFocusPainted(false);
+		btnMenu.setOpaque(false);
+		contentPane.add(btnMenu);
+		
 		if(BolsaEmpleo.getInstancia().getLoginUser() == null ) {
 			colocarImagen(lblFondo,"/img/Fondo-Ver Usuario.png");
 		}
@@ -341,8 +343,8 @@ public class VerUserSolicitante extends JFrame {
 	}
 	
 	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
-	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-	    boton.setIcon(new ImageIcon(imagenEscalada));
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }

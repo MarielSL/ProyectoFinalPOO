@@ -73,7 +73,7 @@ public class LogIn extends JDialog {
 				panel.setLayout(null);
 				
 				PanelRedond panel_1 = new PanelRedond(30);
-				panel_1.setBounds(198, 50, 299, 395);
+				panel_1.setBounds(199, 38, 299, 395);
 				panel_1.setBackground(new Color(255, 255, 255));
 				panel.add(panel_1);
 				panel_1.setLayout(null);
@@ -126,7 +126,7 @@ public class LogIn extends JDialog {
 				btnLogin.setForeground(new Color(0, 0, 51));
 				btnLogin.setBackground(new Color(255, 153, 51));
 				btnLogin.setFont(new Font("Calibri", Font.PLAIN, 16));
-				btnLogin.setBounds(22, 289, 97, 55);
+				btnLogin.setBounds(25, 289, 97, 43);
 				panel_1.add(btnLogin);
 				
 				BotonConSombra btnRegistrarse = new BotonConSombra("Registrarse",25);
@@ -141,11 +141,11 @@ public class LogIn extends JDialog {
 				btnRegistrarse.setForeground(new Color(0, 0, 51));
 				btnRegistrarse.setBackground(new Color(255, 153, 51));
 				btnRegistrarse.setFont(new Font("Calibri", Font.PLAIN, 16));
-				btnRegistrarse.setBounds(156, 289, 117, 55);
+				btnRegistrarse.setBounds(156, 289, 117, 43);
 				panel_1.add(btnRegistrarse);
 				
 				JLabel lblNewLabel_3 = new JLabel("Logo");
-				lblNewLabel_3.setBounds(57, 28, 197, 55);
+				lblNewLabel_3.setBounds(28, 28, 242, 72);
 				colocarImagen(lblNewLabel_3, "/img/HireLink_logo_full.png");
 				panel_1.add(lblNewLabel_3);
 				

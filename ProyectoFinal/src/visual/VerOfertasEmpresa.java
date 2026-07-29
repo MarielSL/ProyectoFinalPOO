@@ -40,6 +40,7 @@ import java.awt.Window.Type;
 import javax.swing.JSplitPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import javax.swing.ScrollPaneConstants;
 
 public class VerOfertasEmpresa extends JFrame {
 
@@ -132,7 +133,8 @@ public class VerOfertasEmpresa extends JFrame {
 		panel_1.add(lblNewLabel);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(56, 373, 1778, 606);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setBounds(56, 373, 1778, 582);
 		panel.add(scrollPane);
 		
 		table = new JTable();

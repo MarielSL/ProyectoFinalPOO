@@ -56,13 +56,13 @@ public class TipoUser extends JDialog {
 				
 				PanelRedond panel_1 = new PanelRedond(30);
 				panel_1.setBackground(new Color(255, 255, 255));
-				panel_1.setBounds(70, 54, 508, 239);
+				panel_1.setBounds(72, 69, 508, 239);
 				panel.add(panel_1);
 				panel_1.setLayout(null);
 				
 				PanelRedond panel_2 = new PanelRedond(30);
 				panel_2.setBackground(new Color(0, 0, 51));
-				panel_2.setBounds(74, 30, 388, 49);
+				panel_2.setBounds(60, 30, 388, 49);
 				panel_1.add(panel_2);
 				panel_2.setLayout(null);
 				
@@ -89,7 +89,7 @@ public class TipoUser extends JDialog {
 						
 					}
 				});
-				btnEmpresa.setBounds(116, 136, 138, 71);
+				btnEmpresa.setBounds(60, 135, 138, 71);
 				panel_1.add(btnEmpresa);
 				
 				BotonRedond btnSolicitante = new BotonRedond("Solicitante", 25);
@@ -107,7 +107,7 @@ public class TipoUser extends JDialog {
 				btnSolicitante.setFont(new Font("Calibri", Font.PLAIN, 18));
 				btnSolicitante.setForeground(new Color(0, 0, 51));
 				btnSolicitante.setBackground(new Color(255, 153, 0));
-				btnSolicitante.setBounds(308, 135, 138, 71);
+				btnSolicitante.setBounds(310, 135, 138, 71);
 				panel_1.add(btnSolicitante);
 				
 				

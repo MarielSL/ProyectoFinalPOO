@@ -167,8 +167,42 @@ public class Oferta {
 		this.modalidad = modalidad;
 	}
 	
-	
-	
+	public ArrayList<Persona> topSolicitantes() {
+		ArrayList<Persona> top = new ArrayList<>();
+		int cantidadTop;
+
+		if (solicitudes.size() < 3) {
+			cantidadTop = solicitudes.size();
+		} 
+		else {
+			cantidadTop = 3;
+		}
+
+		for (int ind = 0; ind < cantidadTop; ind++) { 
+			Persona mejor = buscarNextTop(top);
+			if (mejor != null) {
+				top.add(mejor);
+			}
+		}
+		return top;
+	}
+
+	private Persona buscarNextTop(ArrayList<Persona> elegidos) {
+		Persona aux = null;
+		float mayotPorcen = -1;
+
+		for (SolicitudEmpleo solicitud : solicitudes) {
+
+			if (!(elegidos.contains(solicitud.getCandidato()))) {
+				if (solicitud.getPorcentajeCoincidencia() > mayotPorcen) {
+					aux = solicitud.getCandidato();
+					mayotPorcen = solicitud.getPorcentajeCoincidencia();
+				}
+			}
+		}
+		return aux;
+	}
+			
 	
 
 }
