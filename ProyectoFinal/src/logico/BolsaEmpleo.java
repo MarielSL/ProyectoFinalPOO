@@ -17,6 +17,7 @@ public class BolsaEmpleo implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
 	private ArrayList<Usuario> usuarios;
 	private ArrayList<Persona> personas;
 	private ArrayList<Empresa> empresas;
