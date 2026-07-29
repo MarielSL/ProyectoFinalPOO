@@ -289,7 +289,7 @@ public class VerOfertasEmpresa extends JFrame {
 		lblTitulo.setBounds(0, 220, 1, 1);
 		panelVacio.add(lblTitulo);
 
-		JLabel lblSubtitulo = new JLabel("Cuando publiques una nueva oferta, aparecera aqui para que puedas gestionarla facilmente.");
+		JLabel lblSubtitulo = new JLabel("Cuando publiques una nueva oferta aparecera aqui para que puedas gestionarla facilmente.");
 		lblSubtitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSubtitulo.setFont(new Font("Calibri", Font.PLAIN, 14));
 		lblSubtitulo.setForeground(new Color(130, 130, 130));
