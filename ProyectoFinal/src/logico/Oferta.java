@@ -202,6 +202,22 @@ public class Oferta {
 		}
 		return aux;
 	}
+	
+	public String idSolicitud(Persona solicitante) {
+		boolean encontrado = false;
+		String id=null;
+		int ind = 0;
+		
+		while(!encontrado && ind <solicitudes.size()) {
+			if(solicitudes.get(ind).getCandidato().getId().equals(solicitante.getId())) {
+				id = solicitudes.get(ind).getId();
+				encontrado = true;
+			}
+			ind ++;
+		}
+		return id;
+	}
+	
 			
 	
 

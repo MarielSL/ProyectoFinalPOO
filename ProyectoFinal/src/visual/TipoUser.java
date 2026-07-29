@@ -74,7 +74,7 @@ public class TipoUser extends JDialog {
 				panel_2.add(lblNewLabel);
 				
 				BotonRedond btnEmpresa = new BotonRedond("Empresa", 25);
-				colocarIconoBoton(btnEmpresa, "/img/icono_empresa.png", 25, 25);
+				btnEmpresa.setText("Soy empresa");
 				btnEmpresa.setVerticalTextPosition(SwingConstants.TOP);       
 				btnEmpresa.setHorizontalTextPosition(SwingConstants.CENTER); 
 				btnEmpresa.setIconTextGap(6);
@@ -89,11 +89,11 @@ public class TipoUser extends JDialog {
 						
 					}
 				});
-				btnEmpresa.setBounds(60, 135, 138, 71);
+				btnEmpresa.setBounds(60, 149, 138, 39);
 				panel_1.add(btnEmpresa);
 				
 				BotonRedond btnSolicitante = new BotonRedond("Solicitante", 25);
-				colocarIconoBoton(btnSolicitante, "/img/icono_solicitante.png", 25, 25);
+				btnSolicitante.setText("Soy solicitante");
 				btnSolicitante.setVerticalTextPosition(SwingConstants.TOP);       
 				btnSolicitante.setHorizontalTextPosition(SwingConstants.CENTER); 
 				btnSolicitante.setIconTextGap(6);
@@ -107,7 +107,7 @@ public class TipoUser extends JDialog {
 				btnSolicitante.setFont(new Font("Calibri", Font.PLAIN, 18));
 				btnSolicitante.setForeground(new Color(0, 0, 51));
 				btnSolicitante.setBackground(new Color(255, 153, 0));
-				btnSolicitante.setBounds(310, 135, 138, 71);
+				btnSolicitante.setBounds(300, 149, 148, 39);
 				panel_1.add(btnSolicitante);
 				
 				

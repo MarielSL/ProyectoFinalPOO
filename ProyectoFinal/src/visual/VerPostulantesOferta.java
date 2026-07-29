@@ -34,6 +34,10 @@ import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class VerPostulantesOferta extends JDialog {
 
@@ -65,6 +69,11 @@ public class VerPostulantesOferta extends JDialog {
 	private JTable table;
 	private static DefaultTableModel model;
 	private static Object[] row;
+	private ArrayList<Persona> postulantesMostrados = new ArrayList<>();
+	private ArrayList<Persona> top =  new ArrayList<>();
+	private JButton btnVerAplicantes;
+	private BotonRedond btnVerPerfilTop3;
+	
 
 	/**
 	 * Launch the application.
@@ -83,6 +92,11 @@ public class VerPostulantesOferta extends JDialog {
 	 * Create the dialog.
 	 */
 	public VerPostulantesOferta(Oferta oferta) {
+		setResizable(false);
+		if(oferta!= null) {
+			top = oferta.topSolicitantes();
+		}
+		
 		setTitle("Postulantes de la Oferta");
 		Utilidades.aplicarIcono(this);
 		setBounds(100, 100, 450, 300);
@@ -267,11 +281,27 @@ public class VerPostulantesOferta extends JDialog {
 			lblTopTwoCoincidencia.setBounds(129, 245, 93, 30);
 			panel_Top2.add(lblTopTwoCoincidencia);
 			
-			btnTopTwoVerPerfil = new BotonRedond("Ver Perfil",30);
+			BotonRedond btnTopTwoVerPerfil = new BotonRedond("Ver Perfil",30);
+			btnTopTwoVerPerfil.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(oferta !=null) {
+						String IdSolicitud = oferta.idSolicitud(top.get(1));
+						SolicitudEmpleo solicitud = top.get(1).buscarSolicitud(IdSolicitud);
+						VerPostulante verPostulante = new VerPostulante(top.get(1),oferta,solicitud);
+						verPostulante.setVisible(true);
+					}
+					else {
+						VerPostulante verPostulante = new VerPostulante(null,null,null);
+						verPostulante.setVisible(true);
+					}
+					
+				}
+			});
 			btnTopTwoVerPerfil.setBackground(Color.decode("#e3ebfe"));
 			btnTopTwoVerPerfil.setForeground(new Color(51, 102, 204));
 			btnTopTwoVerPerfil.setFont(new Font("Calibri", Font.PLAIN, 20));
 			btnTopTwoVerPerfil.setBounds(99, 290, 152, 35);
+			btnTopTwoVerPerfil.setColorHover(Color.decode("#d9e4ff"));
 			panel_Top2.add(btnTopTwoVerPerfil);
 			
 			PanelRedond panel_Top3 = new PanelRedond(30);
@@ -323,12 +353,27 @@ public class VerPostulantesOferta extends JDialog {
 			label_6.setBounds(129, 243, 93, 30);
 			panel_Top3.add(label_6);
 			
-			BotonRedond botonRedond = new BotonRedond("Ver Perfil", 30);
-			botonRedond.setForeground(Color.decode("#ff5757"));
-			botonRedond.setFont(new Font("Calibri", Font.PLAIN, 20));
-			botonRedond.setBackground(Color.decode("#fde7e7"));
-			botonRedond.setBounds(99, 288, 152, 35);
-			panel_Top3.add(botonRedond);
+			BotonRedond btnVerPerfilTop3 = new BotonRedond("Ver Perfil", 30);
+			btnVerPerfilTop3.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(oferta !=null) {
+						String IdSolicitud = oferta.idSolicitud(top.get(2));
+						SolicitudEmpleo solicitud = top.get(2).buscarSolicitud(IdSolicitud);
+						VerPostulante verPostulante = new VerPostulante(top.get(2),oferta,solicitud);
+						verPostulante.setVisible(true);
+					}
+					else {
+						VerPostulante verPostulante = new VerPostulante(null,null,null);
+						verPostulante.setVisible(true);
+					}
+				}
+			});
+			btnVerPerfilTop3.setForeground(Color.decode("#ff5757"));
+			btnVerPerfilTop3.setFont(new Font("Calibri", Font.PLAIN, 20));
+			btnVerPerfilTop3.setBackground(Color.decode("#fde7e7"));
+			btnVerPerfilTop3.setColorHover(Color.decode("#fbdada"));
+			btnVerPerfilTop3.setBounds(99, 288, 152, 35);
+			panel_Top3.add(btnVerPerfilTop3);
 			
 			TextFieldRedond txtTop3 = new TextFieldRedond(120);
 			txtTop3.setHorizontalAlignment(SwingConstants.CENTER);
@@ -402,10 +447,25 @@ public class VerPostulantesOferta extends JDialog {
 			lblTopOneCoinci.setBounds(153, 288, 93, 32);
 			panel_Top1.add(lblTopOneCoinci);
 			
-			btnTopOneVerPerfil = new BotonRedond("Ver Perfil", 30);
+			BotonRedond btnTopOneVerPerfil = new BotonRedond("Ver Perfil", 30);
+			btnTopOneVerPerfil.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(oferta !=null) {
+						String IdSolicitud = oferta.idSolicitud(top.get(0));
+						SolicitudEmpleo solicitud = top.get(0).buscarSolicitud(IdSolicitud);
+						VerPostulante verPostulante = new VerPostulante(top.get(0),oferta,solicitud);
+						verPostulante.setVisible(true);
+					}
+					else {
+						VerPostulante verPostulante = new VerPostulante(null,null,null);
+						verPostulante.setVisible(true);
+					}
+				}
+			});
 			btnTopOneVerPerfil.setForeground(Color.decode("#fe9703"));
 			btnTopOneVerPerfil.setFont(new Font("Calibri", Font.PLAIN, 23));
 			btnTopOneVerPerfil.setBackground(Color.decode("#ffecd0"));
+			btnTopOneVerPerfil.setColorHover(Color.decode("#fee4c0"));
 			btnTopOneVerPerfil.setBounds(113, 336, 172, 38);
 			panel_Top1.add(btnTopOneVerPerfil);
 			
@@ -437,15 +497,50 @@ public class VerPostulantesOferta extends JDialog {
 			JScrollPane scrollPane = new JScrollPane();
 			scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			panel_Tabla.add(scrollPane, BorderLayout.CENTER);
-			String[] headers = {"Nombre", "Cat. Laboral","Coincidencia", "Estado", "Perfil"};
+			String[] headers = {"Nombre", "Cat. Laboral","Coincidencia", "Estado"};
 			model = new DefaultTableModel();
 			model.setColumnIdentifiers(headers);
 			table = new JTable();
+			table.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					loadRestoPostulantes(oferta);
+					int index = table.getSelectedRow();
+					if(index>=0) {
+						if(oferta == null) {
+							VerPostulante verPostulante = new VerPostulante(null,null,null);
+							setVisible(true);
+						}
+						else {
+							String IdSolicitud = oferta.idSolicitud(postulantesMostrados.get(index));
+							SolicitudEmpleo solicitud = postulantesMostrados.get(index).buscarSolicitud(IdSolicitud);
+							VerPostulante verPostulante = new VerPostulante(postulantesMostrados.get(index),oferta,solicitud);
+							setVisible(true);
+						}
+					}
+					
+				}
+			});
 			table.setModel(model);
 			table.setFont(new Font("Calibri", Font.PLAIN, 16));
 			scrollPane.setViewportView(table);
 			table.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 18));
 			table.setForeground(new Color(0, 0, 51));
+			
+			BotonRedond btnVerAplicantes = new BotonRedond("Ver Todos los Aplicantes",30);
+			btnVerAplicantes.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					VerTodosPostulantesOferta todos = new VerTodosPostulantesOferta(oferta);
+					todos.setVisible(true);
+					dispose();
+				}
+			});
+			btnVerAplicantes.setFont(new Font("Calibri", Font.BOLD, 20));
+			btnVerAplicantes.setBounds(1482, 716, 272, 42);
+			panel.add(btnVerAplicantes);
+			btnVerAplicantes.setBackground(Color.decode("#ffecd0"));
+			btnVerAplicantes.setForeground(Color.decode("#fe9703"));
+			btnVerAplicantes.setColorHover(Color.decode("#fee4c0"));
 			table.getTableHeader().setForeground(new Color(0, 0, 51));
 		}
 		{
@@ -456,7 +551,6 @@ public class VerPostulantesOferta extends JDialog {
 			panel.setLayout(null);
 		}
 		if(oferta!=null) {
-			ArrayList<Persona> top = oferta.topSolicitantes();
 			int cantSolicitantes = oferta.getSolicitudes().size();
 			
 			lblEmpresa.setText(oferta.getEmpresa().getNombre());
@@ -578,6 +672,7 @@ public class VerPostulantesOferta extends JDialog {
 		ArrayList<Persona> top = oferta.topSolicitantes();
 		for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
 			if((solicitud.getCandidato() != top.get(0)) && (solicitud.getCandidato() != top.get(1)) && (solicitud.getCandidato() != top.get(2)) ) {
+				postulantesMostrados.add(solicitud.getCandidato());
 				row[0] = solicitud.getCandidato().getNombre() + " " + solicitud.getCandidato().getApellido();
 				if(solicitud.getCandidato() instanceof Universitario) {
 					if(solicitud.getCandidato().getSexo() == Sexo.FEMENINO) {
