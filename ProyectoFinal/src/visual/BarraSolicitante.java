@@ -41,6 +41,7 @@ public class BarraSolicitante extends JDialog {
 	 * Create the dialog.
 	 */
 	public BarraSolicitante() {
+		setResizable(false);
 		setModal(true);
 		setTitle("Menu Solicitante");
 		setBounds(0, 0, 415, dim.height);
