@@ -31,6 +31,7 @@ import logico.Persona;
 import logico.Sexo;
 import logico.Tecnico;
 import logico.TipoPersona;
+import logico.TipoUser;
 import logico.Universitario;
 import logico.Usuario;
 import javax.swing.JRadioButton;
@@ -84,7 +85,7 @@ public class RegistrarSolicitante extends JDialog {
 
 	public RegistrarSolicitante(Persona persona) {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarSolicitante.class.getResource("/img/AppIconoFull.png")));
-		persona = mySolicitante;
+		this.mySolicitante = persona;
 		if(mySolicitante == null) {
 			setTitle("Registrar Solicitante");
 		}
@@ -158,12 +159,6 @@ public class RegistrarSolicitante extends JDialog {
 		btnSiguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				irSiguiente();
-				if(pasoActual == 4) {
-					HomeCandidato home = new HomeCandidato();
-					home.setVisible(true);
-					dispose();
-					
-				}
 			}
 		});
 		panel.add(btnSiguiente);
@@ -246,11 +241,10 @@ public class RegistrarSolicitante extends JDialog {
 			if (!validarPaso3()) return;
 			stepsLayout.show(pnlSteps, "paso4");
 			pasoActual = 4;
-		} else if (pasoActual == 4) {
-			if(!validarPaso4()) return;
 			btnSiguiente.setText("Finalizar");
 
-		} else {
+		} else if (pasoActual == 4) {
+			if (!validarPaso4()) return;
 			registrarSolicitante();
 			return;
 		}
@@ -349,15 +343,13 @@ public class RegistrarSolicitante extends JDialog {
 			JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-		String contrasena = new String(passwordField.getPassword());
-		if (BolsaEmpleo.getInstancia().verifUsuario(txtUser.getText(), contrasena)) {
-			JOptionPane.showConfirmDialog(null, "Usuario en uso.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-			return false;
+		if (mySolicitante == null) {
+			String contrasena = new String(passwordField.getPassword());
+			if (BolsaEmpleo.getInstancia().verifUsuario(txtUser.getText(), contrasena)) {
+				JOptionPane.showMessageDialog(null, "Usuario en uso.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+				return false;
+			}
 		}
-		Usuario newUser = new Usuario("U-" + BolsaEmpleo.generadorIdUser, txtUser.getText(), contrasena, null, null, null, null, null);
-		BolsaEmpleo.getInstancia().regUser(newUser);
-		BolsaEmpleo.getInstancia().setLoginUser(newUser);
-		dispose();
 		return true;
 	}
 
@@ -367,6 +359,12 @@ public class RegistrarSolicitante extends JDialog {
 		TipoPersona tipo = (TipoPersona) cbxTipo.getSelectedItem();
 
 		if(mySolicitante == null) {
+			String contrasena = new String(passwordField.getPassword());
+			Usuario newUser = new Usuario("U-" + BolsaEmpleo.generadorIdUser, txtUser.getText(), contrasena, txtCorreo.getText(), null, null, TipoUser.CANDIDATO, null);
+			BolsaEmpleo.getInstancia().regUser(newUser);
+			BolsaEmpleo.getInstancia().setLoginUser(newUser);
+			this.user = newUser;
+
 			String id = "P-" + BolsaEmpleo.generadorIdPersona;
 			Persona persona;
 			if (tipo == TipoPersona.UNIVERSITARIO) {
@@ -382,11 +380,7 @@ public class RegistrarSolicitante extends JDialog {
 
 			BolsaEmpleo.getInstancia().regPersona(persona);
 			persona.setUser(user);
-
-			if (user != null) {
-				user.setCorreo(txtCorreo.getText());
-				user.setPersona(persona);
-			}
+			user.setPersona(persona);
 
 			JOptionPane.showMessageDialog(null, "Se ha registrado el solicitante.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
 			clear();
