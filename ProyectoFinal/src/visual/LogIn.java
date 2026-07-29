@@ -110,16 +110,24 @@ public class LogIn extends JDialog {
 							JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 							return;
 						}
-						if(!(BolsaEmpleo.getInstancia().confirmLogin(txtUser.getText(), passwordField.getText()))) {
-							JOptionPane.showMessageDialog(null,"El usuario no existe, debe de crear una cuenta." , "Advertencia", JOptionPane.WARNING_MESSAGE);
+						
+						boolean logIn = BolsaEmpleo.getInstancia().confirmLogin(txtUser.getText(), passwordField.getText());
+						
+						if(!(logIn)) {
+							JOptionPane.showMessageDialog(null,"Usuario o contraseña incorrectos" , "Advertencia", JOptionPane.WARNING_MESSAGE);
 							return;
 						}
 					
-						if(!(BolsaEmpleo.getInstancia().validUserPassword(txtUser.getText(),passwordField.getText()))) {
-							JOptionPane.showMessageDialog(null,"Contraseña Incorrecta." , "Advertencia", JOptionPane.WARNING_MESSAGE);
-							return;
+						if(BolsaEmpleo.getInstancia().getLoginUser().getEmpresa() != null) {
+							HomeEmpresa homeEmpresa = new HomeEmpresa();
+							homeEmpresa.setVisible(true);
+							dispose();
 						}
-						dispose();
+						if(BolsaEmpleo.getInstancia().getLoginUser().getPersona() != null) {
+							HomeCandidato homeCandidato = new HomeCandidato();
+							homeCandidato.setVisible(true);
+							dispose();
+						}
 					
 					}
 				});

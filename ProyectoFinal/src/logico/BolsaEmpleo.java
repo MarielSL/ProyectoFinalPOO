@@ -1,10 +1,15 @@
 package logico;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import javax.imageio.stream.FileImageInputStream;
 
 public class BolsaEmpleo implements Serializable {
 
@@ -35,7 +40,7 @@ public class BolsaEmpleo implements Serializable {
 	}
 	public static BolsaEmpleo getInstancia() {
 		if(bolsaEmpleo == null) {
-			bolsaEmpleo = new BolsaEmpleo();
+			bolsaEmpleo = cargarDatos();
 		}
 		return bolsaEmpleo;
 	}
@@ -76,24 +81,29 @@ public class BolsaEmpleo implements Serializable {
 	public void setLoginUser(Usuario loginUser) {
 		this.loginUser = loginUser;
 	}
+	
 	public void regUser(Usuario user) {
 		usuarios.add(user);
 		generadorIdUser++;
+		guardarDatos();
 	}
 	
 	public void regPersona(Persona persona) {
 		personas.add(persona);
 		generadorIdPersona++;
+		guardarDatos();
 	}
 	
 	public void regEmpresa(Empresa empresa) {
 		empresas.add(empresa);
 		generadorIdEmpresa++;
+		guardarDatos();
 	}
 	
 	public void refOferta (Oferta oferta) {
 		ofertas.add(oferta);
 		generadorIdOferta++;
+		guardarDatos();
 	}
 	
 	public void regSolicitud(String idOferta, SolicitudEmpleo solicitud) {
@@ -102,6 +112,7 @@ public class BolsaEmpleo implements Serializable {
 		solicitudes.add(solicitud);
 		loginUser.getPersona().getSolicitudes().add(solicitud);
 		generadorIdSolicitud++;
+		guardarDatos();
 	}
 	
 	private Usuario buscarUser(String Id) {
@@ -237,18 +248,25 @@ public class BolsaEmpleo implements Serializable {
 	}
 
 	
-	public boolean validUserPassword(String IdUser, String password) {
+	public boolean validUserPassword(String username, String password) {
 		boolean valid = false;
-		Usuario aux = buscarUser(IdUser);
+		Usuario aux = buscarUser(username);
+		
+		if(aux == null) {
+			return valid;
+		}
+		
 		if(aux.getPassword().equals(password)) {
 			valid = true;
 		}
+		
 		return valid;
 	}
 	
 	public boolean confirmLogin(String text, String text2) {
 		boolean login = false;
 		for (Usuario usuario : usuarios) {
+			
 			if(usuario.getUsername().equals(text) && usuario.getPassword().equals(text2)){
 				loginUser = usuario;
 				login = true;
@@ -266,6 +284,7 @@ public class BolsaEmpleo implements Serializable {
 		}
 		return login;
 	}
+	
 	public boolean isEmpressRep(String rnc) {
 		boolean rep = false;
 		int ind = 0;
@@ -278,10 +297,11 @@ public class BolsaEmpleo implements Serializable {
 		
 		return rep;
 	}
+	
 	public void modEmpresa(Empresa myEmpresa) {
 		int indexEmpresa = buscarEmpresaIndex(myEmpresa.getId());
 		empresas.set(indexEmpresa, myEmpresa);
-		
+		guardarDatos();
 	}
 	
 	private int buscarEmpresaIndex(String idEmpresa) {
@@ -303,7 +323,7 @@ public class BolsaEmpleo implements Serializable {
 	public void modUsuario(Usuario user) {
 		int indexUser = buscarUsuarioindex(user.getId());
 		usuarios.set(indexUser, user);
-		
+		guardarDatos();
 	}
 	
 	private int buscarUsuarioindex(String idUsuario) {
@@ -325,6 +345,7 @@ public class BolsaEmpleo implements Serializable {
 	public void modSolicitante(Persona solicitante) {
 		int indexSolicitante = buscarSolicitanteIndex(solicitante.getId());
 		personas.set(indexSolicitante, solicitante);
+		guardarDatos();
 		
 	}
 	
@@ -347,9 +368,27 @@ public class BolsaEmpleo implements Serializable {
 	public void guardarDatos() {
 		try( ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream("BolsaEmpleo.dat"))){
 			salida.writeObject(this);
+		
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
+	private static BolsaEmpleo cargarDatos() {
+		try(ObjectInputStream entrada = new ObjectInputStream (new FileInputStream("BolsaEmpleo.dat"))){
+			return (BolsaEmpleo) entrada.readObject();
+		
+		}catch(FileNotFoundException e) {
+			return new BolsaEmpleo();
+		
+		}catch(IOException e) {
+			e.printStackTrace();
+			return new BolsaEmpleo();
+		
+		}catch(ClassNotFoundException e) {
+			e.printStackTrace();
+			return new BolsaEmpleo();
+		}
+	}
+	    
 }

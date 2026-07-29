@@ -142,6 +142,14 @@ public class HomeEmpresa extends JFrame {
 			xMenu += anchosMenu[1] + espacioEntreItems;
 
 			JLabel lblMisOfertas = new JLabel(textosMenu[2]);
+			lblMisOfertas.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					VerOfertasEmpresa verOfertas = new VerOfertasEmpresa();
+					verOfertas.setVisible(true);
+					dispose();
+				}
+			});
 			lblMisOfertas.setFont(new Font("Calibri", Font.PLAIN, 18));
 			lblMisOfertas.setForeground(Color.WHITE);
 			lblMisOfertas.setCursor(new Cursor(Cursor.HAND_CURSOR));
