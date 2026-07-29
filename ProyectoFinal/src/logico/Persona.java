@@ -157,6 +157,20 @@ public abstract class Persona {
 		this.yearsExp = yearsExp;
 	}
 	
+	public SolicitudEmpleo buscarSolicitud(String id) {
+		int ind = 0;
+		boolean encontrado = false;
+		SolicitudEmpleo aux = null;
+		
+		while(!encontrado && ind < solicitudes.size()) {
+			if(solicitudes.get(ind).getId().equals(id)) {
+				aux = solicitudes.get(ind);
+				encontrado = true;
+			}
+			ind++;
+		}
+		return aux;
+	}
 	
 	
 }
