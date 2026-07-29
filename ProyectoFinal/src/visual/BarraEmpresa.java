@@ -13,6 +13,8 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -20,6 +22,7 @@ import java.awt.event.ActionEvent;
 public class BarraEmpresa extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
+	private Dimension dim = getToolkit().getScreenSize();
 
 	/**
 	 * Launch the application.
@@ -38,9 +41,12 @@ public class BarraEmpresa extends JDialog {
 	 * Create the dialog.
 	 */
 	public BarraEmpresa() {
+		setModal(true);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setTitle("Menu Empresa");
 		Utilidades.aplicarIcono(this);
-		setBounds(100, 100, 415, 937);
+		setBounds(0, 0, 415, dim.height);
+		//setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(new Color(175, 238, 238));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

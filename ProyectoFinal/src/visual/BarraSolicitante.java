@@ -13,6 +13,8 @@ import javax.swing.JSeparator;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -20,6 +22,7 @@ import java.awt.event.ActionEvent;
 public class BarraSolicitante extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
+	Dimension dim = getToolkit().getScreenSize();
 
 	/**
 	 * Launch the application.
@@ -38,8 +41,9 @@ public class BarraSolicitante extends JDialog {
 	 * Create the dialog.
 	 */
 	public BarraSolicitante() {
+		setModal(true);
 		setTitle("Menu Solicitante");
-		setBounds(100, 100, 415, 935);
+		setBounds(0, 0, 415, dim.height);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(new Color(255, 204, 153));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

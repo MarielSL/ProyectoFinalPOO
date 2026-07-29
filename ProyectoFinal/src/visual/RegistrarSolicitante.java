@@ -102,7 +102,7 @@ public class RegistrarSolicitante extends JDialog {
 		panel.setBounds(0, 0, 724, 550);
 		contentPanel.add(panel);
 		panel.setLayout(null);
-		JPanel panelTitulo = new JPanel();
+		PanelConSombra panelTitulo = new PanelConSombra(25);
 		panelTitulo.setBackground(new Color(0, 0, 51));
 		panelTitulo.setBounds(0, 0, 717, 65);
 		panel.add(panelTitulo);
@@ -113,7 +113,7 @@ public class RegistrarSolicitante extends JDialog {
 		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
 		lblTitulo.setBounds(20, 16, 650, 35);
 		panelTitulo.add(lblTitulo);
-		PanelRedond cardBlanca = new PanelRedond(20);
+		PanelConSombra cardBlanca = new PanelConSombra(25);
 		cardBlanca.setBackground(new Color(255, 255, 255));
 		cardBlanca.setBounds(27, 75, 664, 330);
 		panel.add(cardBlanca);
