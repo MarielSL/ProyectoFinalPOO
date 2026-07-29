@@ -1,10 +1,15 @@
 package logico;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class Oferta {
+public class Oferta implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String id;
 	private Sexo sexo;
 	private TipoPersona tipoCandidato;

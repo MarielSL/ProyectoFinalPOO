@@ -1,9 +1,14 @@
 package logico;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class SolicitudEmpleo {
+public class SolicitudEmpleo implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String id;
 	private EstadoSolicitud estado;
 	private Persona candidato;
