@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.SystemColor;
@@ -15,6 +16,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
+
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
@@ -45,6 +48,7 @@ import java.awt.Toolkit;
 public class RegistrarSolicitante extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
+	private Dimension dim = getToolkit().getScreenSize();
 	private Usuario user;
 	private CardLayout stepsLayout;
 	private JPanel pnlSteps;
@@ -65,11 +69,6 @@ public class RegistrarSolicitante extends JDialog {
 	private JCheckBox chkLicencia;
 	private JCheckBox chkEmpleado;
 	private ComboBoxRedond<TipoPersona> cbxTipo;
-	private CardLayout tipoLayout;
-	private JPanel pnlDatosTipo;
-	private TextFieldRedond txtCarrera;
-	private TextFieldRedond txtAreaTecnico;
-	private TextFieldRedond txtHabilidades;
 	private JTextField txtUser;
 	private JPasswordField passwordField;
 	private JLabel lblVerPassword;
@@ -78,6 +77,9 @@ public class RegistrarSolicitante extends JDialog {
 	private FotoPerfilRedond fotoPerfil;
 	private Persona mySolicitante = null;
 	private JSpinner spnExp;
+	private TextFieldRedond txtCarrera;
+	private TextFieldRedond txtAreaTecnico;
+	private TextFieldRedond txtHabilidades;
 
 	public static void main(String[] args) {
 		try {
@@ -99,7 +101,7 @@ public class RegistrarSolicitante extends JDialog {
 			setTitle("Modificar Solicitante");
 		}
 
-		setBounds(100, 100, 734, 560);
+		setBounds(0, 0, dim.width, dim.height-40);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -107,29 +109,18 @@ public class RegistrarSolicitante extends JDialog {
 		contentPanel.setLayout(null);
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 255, 255));
-		panel.setBounds(0, 0, 724, 550);
+		panel.setBounds(0, 0, 1902, 993);
 		contentPanel.add(panel);
 		panel.setLayout(null);
-		PanelConSombra panelTitulo = new PanelConSombra(25);
-		panelTitulo.setBackground(new Color(0, 0, 51));
-		panelTitulo.setBounds(0, 0, 717, 65);
-		panel.add(panelTitulo);
-		panelTitulo.setLayout(null);
-
-		JLabel lblTitulo = new JLabel("Reg\u00EDstrate para acceder a las ofertas");
-		lblTitulo.setForeground(new Color(255, 153, 0));
-		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
-		lblTitulo.setBounds(20, 16, 650, 35);
-		panelTitulo.add(lblTitulo);
-		PanelConSombra cardBlanca = new PanelConSombra(25);
+		JPanel cardBlanca = new JPanel();
 		cardBlanca.setBackground(new Color(255, 255, 255));
-		cardBlanca.setBounds(27, 75, 664, 330);
+		cardBlanca.setBounds(1118, 183, 744, 491);
 		panel.add(cardBlanca);
 		cardBlanca.setLayout(null);
 		stepsLayout = new CardLayout();
 		pnlSteps = new JPanel(stepsLayout);
 		pnlSteps.setOpaque(false);
-		pnlSteps.setBounds(20, 15, 624, 300);
+		pnlSteps.setBounds(20, 15, 693, 412);
 		cardBlanca.add(pnlSteps);
 		pnlSteps.add(crearPaso1(), "paso1");
 		pnlSteps.add(crearPaso2(), "paso2");
@@ -145,35 +136,66 @@ public class RegistrarSolicitante extends JDialog {
 			panel.add(dot);
 			xDot += 30;
 		}
+		loadSolicitante();
+		
+		
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBackground(Color.WHITE);
+		panel_1.setBounds(1031, 0, 871, 993);
+		panel.add(panel_1);
+		panel_1.setLayout(null);
+		btnSiguiente = new BotonRedond("Continuar", 25);
+		btnSiguiente.setColorHover(new Color(210, 105, 30));
+		btnSiguiente.setText("Continuar  \u2192");
+		btnSiguiente.setBounds(647, 805, 212, 57);
+		panel_1.add(btnSiguiente);
+		btnSiguiente.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnSiguiente.setBackground(new Color(255, 153, 0));
+		btnSiguiente.setForeground(new Color(255, 255, 255));
 		btnAtras = new BotonRedond("Atr\u00E1s", 25);
-		btnAtras.setFont(new Font("Calibri", Font.PLAIN, 18));
-		btnAtras.setBackground(new Color(220, 220, 220));
+		btnAtras.setColorHover(new Color(30, 144, 255));
+		btnAtras.setText(" \u2190  Atr\u00E1s");
+		BorderFactory.createLineBorder(new Color(255, 153, 0));
+		btnAtras.setBounds(109, 805, 212, 57);
+		panel_1.add(btnAtras);
+		btnAtras.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnAtras.setBackground(new Color(255, 255, 255));
 		btnAtras.setForeground(new Color(0, 0, 51));
-		btnAtras.setBounds(27, 460, 110, 34);
+		
+		JLabel lblNewLabel_3 = new JLabel("Logo");
+		lblNewLabel_3.setBounds(109, 38, 277, 84);
+		colocarImagen(lblNewLabel_3,"/img/HireLink_logo_full.png");
+		panel_1.add(lblNewLabel_3);
+		
+		JLabel lblNewLabel_4 = new JLabel("Crea tu cuenta");
+		lblNewLabel_4.setFont(new Font("Calibri", Font.BOLD, 28));
+		lblNewLabel_4.setForeground(new Color(0, 0, 51));
+		lblNewLabel_4.setBounds(109, 123, 212, 49);
+		panel_1.add(lblNewLabel_4);
+		
+		JLabel lblRegistrareParaAcceder = new JLabel("Registrare para acceder a las ofertas laborales");
+		lblRegistrareParaAcceder.setForeground(SystemColor.controlDkShadow);
+		lblRegistrareParaAcceder.setFont(new Font("Calibri", Font.PLAIN, 17));
+		lblRegistrareParaAcceder.setBounds(109, 166, 387, 16);
+		panel_1.add(lblRegistrareParaAcceder);
+		
+				JLabel lblNewLabel = new JLabel("New label");
+				//lblNewLabel.setIcon(new ImageIcon(RegistrarSolicitante.class.getResource("/img/Fondo-General.png")));
+				lblNewLabel.setBounds(0, 0, 1902, 993);
+				colocarImagen(lblNewLabel,"/img/Fondo_Registrar.png");
+				panel.add(lblNewLabel);
 		btnAtras.setVisible(false);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				irAtras();
 			}
 		});
-		panel.add(btnAtras);
-		btnSiguiente = new BotonRedond("Continuar", 25);
-		btnSiguiente.setFont(new Font("Calibri", Font.PLAIN, 18));
-		btnSiguiente.setBackground(new Color(255, 153, 0));
-		btnSiguiente.setForeground(new Color(0, 0, 51));
-		btnSiguiente.setBounds(577, 460, 114, 34);
 		btnSiguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				irSiguiente();
 			}
 		});
-		panel.add(btnSiguiente);
-		loadSolicitante();
-
-		JLabel lblNewLabel = new JLabel("New label");
-		lblNewLabel.setIcon(new ImageIcon(RegistrarSolicitante.class.getResource("/img/Fondo-General.png")));
-		lblNewLabel.setBounds(0, 0, 724, 513);
-		panel.add(lblNewLabel);
 		actualizarDots();
 		if (mySolicitante != null) {
 		    cbxTipo.setEnabled(false);
@@ -188,8 +210,8 @@ public class RegistrarSolicitante extends JDialog {
 			return;
 		}
 
-		txtNombre.setText(mySolicitante.getNombre());
-		txtApellido.setText(mySolicitante.getApellido());
+		txtNombre.setText("Ingresa tu nombre");
+		txtApellido.setText("Ingresa tu apellido");
 
 		if(mySolicitante instanceof Universitario) {
 			Universitario aux = (Universitario) mySolicitante;
@@ -209,11 +231,11 @@ public class RegistrarSolicitante extends JDialog {
 			cbxTipo.setSelectedItem(TipoPersona.OBRERO);
 		}
 
-		txtCedula.setText(mySolicitante.getCedula());
+		txtCedula.setText("Ingresa tu c\u00E9dula");
 		txtCiudad.setText(mySolicitante.getCiudad());
-		txtCorreo.setText(mySolicitante.getUser().getCorreo());
+		txtCorreo.setText("ejemplo@correo.com");
 		txtDireccion.setText(mySolicitante.getDireccion());
-		txtTelefono.setText(mySolicitante.getTelefono());
+		txtTelefono.setText("Ingresa tu tel\u00E9fono");
 		txtUser.setText(mySolicitante.getUser().getUsername());
 		passwordField.setText(mySolicitante.getUser().getPassword());
 		cbxSexo.setSelectedItem(mySolicitante.getSexo());
@@ -509,74 +531,75 @@ public class RegistrarSolicitante extends JDialog {
 
 	private JPanel crearPaso1() {
 		JPanel paso = new JPanel();
+		paso.setBounds(10, 0, 672, 401);
 		paso.setOpaque(false);
 		paso.setLayout(null);
 		JLabel lblCedula = new JLabel("C\u00E9dula");
 		lblCedula.setForeground(new Color(0, 0, 51));
-		lblCedula.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblCedula.setBounds(0, 0, 200, 20);
+		lblCedula.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblCedula.setBounds(0, 43, 200, 20);
 		paso.add(lblCedula);
 		txtCedula = new TextFieldRedond(25);
 		txtCedula.setForeground(new Color(0, 0, 51));
 		txtCedula.setBackground(SystemColor.controlHighlight);
 		txtCedula.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtCedula.setBounds(0, 25, 294, 30);
+		txtCedula.setBounds(0, 68, 294, 30);
 		paso.add(txtCedula);
 		JLabel lblTelefono = new JLabel("Tel\u00E9fono");
 		lblTelefono.setForeground(new Color(0, 0, 51));
-		lblTelefono.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblTelefono.setBounds(330, 0, 200, 20);
+		lblTelefono.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblTelefono.setBounds(330, 43, 200, 20);
 		paso.add(lblTelefono);
 		txtTelefono = new TextFieldRedond(25);
 		((javax.swing.text.AbstractDocument) txtTelefono.getDocument()).setDocumentFilter(new FiltroTelefono());
 		txtTelefono.setForeground(new Color(0, 0, 51));
 		txtTelefono.setBackground(SystemColor.controlHighlight);
 		txtTelefono.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtTelefono.setBounds(330, 25, 294, 30);
+		txtTelefono.setBounds(330, 68, 294, 30);
 		paso.add(txtTelefono);
 		JLabel lblNombre = new JLabel("Nombre");
 		lblNombre.setForeground(new Color(0, 0, 51));
-		lblNombre.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNombre.setBounds(0, 75, 200, 20);
+		lblNombre.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblNombre.setBounds(0, 133, 200, 20);
 		paso.add(lblNombre);
 		txtNombre = new TextFieldRedond(25);
 		txtNombre.setForeground(new Color(0, 0, 51));
 		txtNombre.setBackground(SystemColor.controlHighlight);
 		txtNombre.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtNombre.setBounds(0, 100, 294, 30);
+		txtNombre.setBounds(0, 158, 294, 30);
 		paso.add(txtNombre);
 		JLabel lblApellido = new JLabel("Apellido");
 		lblApellido.setForeground(new Color(0, 0, 51));
-		lblApellido.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblApellido.setBounds(330, 75, 200, 20);
+		lblApellido.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblApellido.setBounds(330, 133, 200, 20);
 		paso.add(lblApellido);
 		txtApellido = new TextFieldRedond(25);
 		txtApellido.setForeground(new Color(0, 0, 51));
 		txtApellido.setBackground(SystemColor.controlHighlight);
 		txtApellido.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtApellido.setBounds(330, 100, 294, 30);
+		txtApellido.setBounds(330, 158, 294, 30);
 		paso.add(txtApellido);
 		JLabel lblCorreo = new JLabel("Correo");
 		lblCorreo.setForeground(new Color(0, 0, 51));
-		lblCorreo.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblCorreo.setBounds(0, 150, 200, 20);
+		lblCorreo.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblCorreo.setBounds(0, 221, 200, 20);
 		paso.add(lblCorreo);
 		txtCorreo = new TextFieldRedond(25);
 		txtCorreo.setForeground(new Color(0, 0, 51));
 		txtCorreo.setBackground(SystemColor.controlHighlight);
 		txtCorreo.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtCorreo.setBounds(0, 175, 624, 30);
+		txtCorreo.setBounds(0, 246, 624, 30);
 		paso.add(txtCorreo);
 		JLabel lblSexo = new JLabel("Sexo");
 		lblSexo.setForeground(new Color(0, 0, 51));
-		lblSexo.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblSexo.setBounds(0, 225, 200, 20);
+		lblSexo.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblSexo.setBounds(0, 307, 200, 20);
 		paso.add(lblSexo);
 		cbxSexo = new ComboBoxRedond<Sexo>(25);
 		cbxSexo.setForeground(new Color(0, 0, 51));
 		cbxSexo.setFont(new Font("Calibri", Font.PLAIN, 18));
 		cbxSexo.setBackground(SystemColor.controlHighlight);
-		cbxSexo.setBounds(0, 250, 180, 30);
+		cbxSexo.setBounds(0, 332, 180, 30);
 		cbxSexo.setModel(new DefaultComboBoxModel<Sexo>(Sexo.values()));
 		cbxSexo.setSelectedIndex(-1);
 		cbxSexo.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
@@ -595,8 +618,8 @@ public class RegistrarSolicitante extends JDialog {
 		paso.add(cbxSexo);
 		JLabel lblFecha = new JLabel("Fecha de nacimiento");
 		lblFecha.setForeground(new Color(0, 0, 51));
-		lblFecha.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblFecha.setBounds(210, 225, 220, 20);
+		lblFecha.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblFecha.setBounds(210, 307, 220, 20);
 		paso.add(lblFecha);
 		Calendar cal = Calendar.getInstance();
 		Date hoy = cal.getTime();
@@ -606,8 +629,20 @@ public class RegistrarSolicitante extends JDialog {
 		spnFechaNacim = new JSpinner(dateModel);
 		spnFechaNacim.setEditor(new JSpinner.DateEditor(spnFechaNacim, "dd/MM/yyyy"));
 		spnFechaNacim.setFont(new Font("Calibri", Font.PLAIN, 18));
-		spnFechaNacim.setBounds(210, 250, 150, 30);
+		spnFechaNacim.setBounds(210, 332, 150, 30);
 		paso.add(spnFechaNacim);
+		
+		JLabel lblNewLabel_5 = new JLabel("Paso 1 de 4");
+		lblNewLabel_5.setBounds(0, 0, 105, 16);
+		paso.add(lblNewLabel_5);
+		lblNewLabel_5.setForeground(new Color(1, 88, 248));
+		lblNewLabel_5.setFont(new Font("Calibri", Font.PLAIN, 18));
+		
+		JLabel lblNewLabel_6 = new JLabel("Datos personales");
+		lblNewLabel_6.setBounds(109, 1, 130, 16);
+		paso.add(lblNewLabel_6);
+		lblNewLabel_6.setFont(new Font("Calibri", Font.PLAIN, 17));
+		lblNewLabel_6.setForeground(new Color(105, 105, 105));
 		return paso;
 	}
 
@@ -617,52 +652,64 @@ public class RegistrarSolicitante extends JDialog {
 		paso.setLayout(null);
 		JLabel lblDireccion = new JLabel("Direcci\u00F3n");
 		lblDireccion.setForeground(new Color(0, 0, 51));
-		lblDireccion.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblDireccion.setBounds(0, 0, 200, 20);
+		lblDireccion.setFont(new Font("Calibri", Font.BOLD, 18));
+		lblDireccion.setBounds(0, 51, 200, 20);
 		paso.add(lblDireccion);
 		txtDireccion = new TextFieldRedond(25);
 		txtDireccion.setForeground(new Color(0, 0, 51));
 		txtDireccion.setBackground(SystemColor.controlHighlight);
 		txtDireccion.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtDireccion.setBounds(0, 25, 294, 30);
+		txtDireccion.setBounds(0, 76, 294, 30);
 		paso.add(txtDireccion);
 		JLabel lblCiudad = new JLabel("Ciudad");
 		lblCiudad.setForeground(new Color(0, 0, 51));
-		lblCiudad.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblCiudad.setBounds(330, 0, 200, 20);
+		lblCiudad.setFont(new Font("Calibri", Font.BOLD, 18));
+		lblCiudad.setBounds(330, 51, 200, 20);
 		paso.add(lblCiudad);
 
 		txtCiudad = new TextFieldRedond(25);
 		txtCiudad.setForeground(new Color(0, 0, 51));
 		txtCiudad.setBackground(SystemColor.controlHighlight);
 		txtCiudad.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtCiudad.setBounds(330, 25, 294, 30);
+		txtCiudad.setBounds(330, 76, 294, 30);
 		paso.add(txtCiudad);
 
 		JLabel lblDisp = new JLabel("Disponibilidad");
 		lblDisp.setForeground(new Color(0, 0, 51));
-		lblDisp.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblDisp.setBounds(0, 85, 200, 20);
+		lblDisp.setFont(new Font("Calibri", Font.BOLD, 18));
+		lblDisp.setBounds(0, 173, 200, 20);
 		paso.add(lblDisp);
 
 		chkMudarse = new JCheckBox("Disponible para mudarse");
 		chkMudarse.setForeground(new Color(0, 0, 51));
 		chkMudarse.setFont(new Font("Calibri", Font.PLAIN, 18));
 		chkMudarse.setOpaque(false);
-		chkMudarse.setBounds(0, 115, 250, 25);
+		chkMudarse.setBounds(0, 203, 250, 25);
 		paso.add(chkMudarse);
 		chkLicencia = new JCheckBox("Licencia de conducir");
 		chkLicencia.setForeground(new Color(0, 0, 51));
 		chkLicencia.setFont(new Font("Calibri", Font.PLAIN, 18));
 		chkLicencia.setOpaque(false);
-		chkLicencia.setBounds(0, 150, 250, 25);
+		chkLicencia.setBounds(0, 238, 250, 25);
 		paso.add(chkLicencia);
 		chkEmpleado = new JCheckBox("Actualmente empleado");
 		chkEmpleado.setForeground(new Color(0, 0, 51));
 		chkEmpleado.setFont(new Font("Calibri", Font.PLAIN, 18));
 		chkEmpleado.setOpaque(false);
-		chkEmpleado.setBounds(0, 185, 250, 25);
+		chkEmpleado.setBounds(0, 273, 250, 25);
 		paso.add(chkEmpleado);
+		
+		JLabel lblPasoDe = new JLabel("Paso 2 de 4");
+		lblPasoDe.setForeground(new Color(1, 88, 248));
+		lblPasoDe.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblPasoDe.setBounds(0, 0, 105, 16);
+		paso.add(lblPasoDe);
+		
+		JLabel lblLocalizacin = new JLabel("Localizaci\u00F3n");
+		lblLocalizacin.setForeground(SystemColor.controlDkShadow);
+		lblLocalizacin.setFont(new Font("Calibri", Font.PLAIN, 17));
+		lblLocalizacin.setBounds(109, 1, 130, 16);
+		paso.add(lblLocalizacin);
 		return paso;
 	}
 
@@ -671,15 +718,15 @@ public class RegistrarSolicitante extends JDialog {
 		paso.setOpaque(false);
 		paso.setLayout(null);
 		JLabel lblTipo = new JLabel("Tipo de solicitante");
+		lblTipo.setBounds(0, 45, 200, 20);
 		lblTipo.setForeground(new Color(0, 0, 51));
-		lblTipo.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblTipo.setBounds(0, 0, 200, 20);
+		lblTipo.setFont(new Font("Calibri", Font.BOLD, 18));
 		paso.add(lblTipo);
 		cbxTipo = new ComboBoxRedond<TipoPersona>(25);
+		cbxTipo.setBounds(0, 70, 225, 30);
 		cbxTipo.setForeground(new Color(0, 0, 51));
 		cbxTipo.setFont(new Font("Calibri", Font.PLAIN, 18));
 		cbxTipo.setBackground(SystemColor.controlHighlight);
-		cbxTipo.setBounds(0, 25, 225, 30);
 		cbxTipo.setModel(new DefaultComboBoxModel<TipoPersona>(new TipoPersona[] { TipoPersona.UNIVERSITARIO, TipoPersona.TECNICO, TipoPersona.OBRERO }));
 		cbxTipo.setSelectedIndex(-1);
 		cbxTipo.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
@@ -695,77 +742,71 @@ public class RegistrarSolicitante extends JDialog {
 				return popup;
 			}
 		});
-		cbxTipo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				TipoPersona seleccionado = (TipoPersona) cbxTipo.getSelectedItem();
-				if (seleccionado != null) {
-					tipoLayout.show(pnlDatosTipo, seleccionado.name());
-				}
-			}
-		});
 		paso.add(cbxTipo);
-		tipoLayout = new CardLayout();
-		pnlDatosTipo = new JPanel(tipoLayout);
-		pnlDatosTipo.setOpaque(false);
-		pnlDatosTipo.setBounds(0, 75, 624, 160);
-		paso.add(pnlDatosTipo);
-		JPanel cardUniversitario = new JPanel();
-		cardUniversitario.setOpaque(false);
-		cardUniversitario.setLayout(null);
-		JLabel lblCarrera = new JLabel("Carrera");
-		lblCarrera.setForeground(new Color(0, 0, 51));
-		lblCarrera.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblCarrera.setBounds(0, 0, 200, 20);
-		cardUniversitario.add(lblCarrera);
-		txtCarrera = new TextFieldRedond(25);
-		txtCarrera.setForeground(new Color(0, 0, 51));
-		txtCarrera.setBackground(SystemColor.controlHighlight);
-		txtCarrera.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtCarrera.setBounds(0, 25, 294, 30);
-		cardUniversitario.add(txtCarrera);
-		pnlDatosTipo.add(cardUniversitario, TipoPersona.UNIVERSITARIO.name());
-		JPanel cardTecnico = new JPanel();
-		cardTecnico.setOpaque(false);
-		cardTecnico.setLayout(null);
-		JLabel lblArea = new JLabel("\u00C1rea t\u00E9cnica");
-		lblArea.setForeground(new Color(0, 0, 51));
-		lblArea.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblArea.setBounds(0, 0, 200, 20);
-		cardTecnico.add(lblArea);
-		txtAreaTecnico = new TextFieldRedond(25);
-		txtAreaTecnico.setForeground(new Color(0, 0, 51));
-		txtAreaTecnico.setBackground(SystemColor.controlHighlight);
-		txtAreaTecnico.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtAreaTecnico.setBounds(0, 25, 294, 30);
-		cardTecnico.add(txtAreaTecnico);
-		pnlDatosTipo.add(cardTecnico, TipoPersona.TECNICO.name());
-		JPanel cardObrero = new JPanel();
-		cardObrero.setOpaque(false);
-		cardObrero.setLayout(null);
-		JLabel lblHabilidades = new JLabel("Habilidades");
-		lblHabilidades.setForeground(new Color(0, 0, 51));
-		lblHabilidades.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblHabilidades.setBounds(0, 0, 200, 20);
-		cardObrero.add(lblHabilidades);
-		txtHabilidades = new TextFieldRedond(25);
-		txtHabilidades.setForeground(new Color(0, 0, 51));
-		txtHabilidades.setBackground(SystemColor.controlHighlight);
-		txtHabilidades.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtHabilidades.setBounds(0, 25, 500, 30);
-		cardObrero.add(txtHabilidades);
-		pnlDatosTipo.add(cardObrero, TipoPersona.OBRERO.name());
 
 		JLabel lblNewLabel_2 = new JLabel("A\u00F1os de Experiencia");
-		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_2.setBounds(352, 2, 175, 16);
+		lblNewLabel_2.setForeground(new Color(0, 0, 51));
+		lblNewLabel_2.setBounds(352, 47, 175, 16);
+		lblNewLabel_2.setFont(new Font("Calibri", Font.BOLD, 18));
 		paso.add(lblNewLabel_2);
 
 		spnExp = new JSpinner();
+		spnExp.setBounds(352, 70, 85, 30);
 		spnExp.setForeground(new Color(0, 0, 51));
 		spnExp.setBackground(SystemColor.controlHighlight);
 		spnExp.setFont(new Font("Calibri", Font.PLAIN, 18));
-		spnExp.setBounds(352, 25, 85, 30);
 		paso.add(spnExp);
+		
+		JLabel lblPasode = new JLabel("Paso 3 de 4");
+		lblPasode.setForeground(new Color(1, 88, 248));
+		lblPasode.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblPasode.setBounds(0, 0, 105, 16);
+		paso.add(lblPasode);
+		
+		JLabel lblInformacin = new JLabel("Informaci\u00F3n");
+		lblInformacin.setForeground(SystemColor.controlDkShadow);
+		lblInformacin.setFont(new Font("Calibri", Font.PLAIN, 17));
+		lblInformacin.setBounds(109, 1, 130, 16);
+		paso.add(lblInformacin);
+		
+		txtCarrera = new TextFieldRedond(25);
+		txtCarrera.setForeground(new Color(0, 0, 51));
+		txtCarrera.setFont(new Font("Calibri", Font.PLAIN, 18));
+		txtCarrera.setBackground(SystemColor.controlHighlight);
+		txtCarrera.setBounds(0, 159, 294, 30);
+		paso.add(txtCarrera);
+		
+		JLabel label = new JLabel("Carrera");
+		label.setForeground(new Color(0, 0, 51));
+		label.setFont(new Font("Calibri", Font.BOLD, 18));
+		label.setBounds(0, 136, 200, 20);
+		paso.add(label);
+		
+		txtHabilidades = new TextFieldRedond(25);
+		txtHabilidades.setForeground(new Color(0, 0, 51));
+		txtHabilidades.setFont(new Font("Calibri", Font.PLAIN, 18));
+		txtHabilidades.setBackground(SystemColor.controlHighlight);
+		txtHabilidades.setBounds(0, 333, 500, 50);
+		paso.add(txtHabilidades);
+		
+		JLabel label_3 = new JLabel("Habilidades");
+		label_3.setForeground(new Color(0, 0, 51));
+		label_3.setFont(new Font("Calibri", Font.BOLD, 18));
+		label_3.setBounds(0, 308, 200, 20);
+		paso.add(label_3);
+		
+		JLabel label_4 = new JLabel("\u00C1rea t\u00E9cnica");
+		label_4.setForeground(new Color(0, 0, 51));
+		label_4.setFont(new Font("Calibri", Font.BOLD, 18));
+		label_4.setBounds(0, 218, 200, 20);
+		paso.add(label_4);
+		
+		txtAreaTecnico = new TextFieldRedond(25);
+		txtAreaTecnico.setForeground(new Color(0, 0, 51));
+		txtAreaTecnico.setFont(new Font("Calibri", Font.PLAIN, 18));
+		txtAreaTecnico.setBackground(SystemColor.controlHighlight);
+		txtAreaTecnico.setBounds(0, 243, 294, 30);
+		paso.add(txtAreaTecnico);
 
 		return paso;
 	}
@@ -777,37 +818,37 @@ public class RegistrarSolicitante extends JDialog {
 
 		JLabel lblNewLabel = new JLabel("Usuario");
 		lblNewLabel.setForeground(new Color(0, 0, 51));
-		lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel.setBounds(0, 40, 200, 20);
+		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 18));
+		lblNewLabel.setBounds(0, 53, 200, 20);
 		paso.add(lblNewLabel);
 
 		txtUser = new TextFieldRedond(25);
 		txtUser.setForeground(new Color(0, 0, 51));
 		txtUser.setBackground(SystemColor.controlHighlight);
 		txtUser.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtUser.setBounds(0, 73, 294, 30);
+		txtUser.setBounds(0, 86, 294, 30);
 		paso.add(txtUser);
 
 		JLabel lblNewLabel_1 = new JLabel("Contrase\u00F1a");
 		lblNewLabel_1.setForeground(new Color(0, 0, 51));
-		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblNewLabel_1.setBounds(0, 128, 200, 20);
+		lblNewLabel_1.setFont(new Font("Calibri", Font.BOLD, 18));
+		lblNewLabel_1.setBounds(0, 141, 200, 20);
 		paso.add(lblNewLabel_1);
 
 		passwordField = new PasswordFieldRedond(25);
 		passwordField.setForeground(new Color(0, 0, 51));
 		passwordField.setBackground(SystemColor.controlHighlight);
 		passwordField.setFont(new Font("Calibri", Font.PLAIN, 18));
-		passwordField.setBounds(0, 161, 294, 30);
+		passwordField.setBounds(0, 174, 294, 30);
 
 		((AbstractDocument) passwordField.getDocument()).setDocumentFilter(new FiltroLongitudMaxima(14));
 
 		caracterOculto = passwordField.getEchoChar();
 
-		lblVerPassword = new JLabel("");
+		lblVerPassword = new JLabel("aaa");
 		lblVerPassword.setOpaque(false);
 		lblVerPassword.setHorizontalAlignment(JLabel.CENTER);
-		lblVerPassword.setBounds(268, 167, 18, 18);
+		lblVerPassword.setBounds(262, 179, 18, 18);
 		lblVerPassword.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				alternarVisibilidadPassword();
@@ -819,8 +860,20 @@ public class RegistrarSolicitante extends JDialog {
 		paso.add(passwordField);
 
 		fotoPerfil = new FotoPerfilRedond(114);
-		fotoPerfil.setBounds(353, 40, 200, 206);
+		fotoPerfil.setBounds(449, 38, 200, 206);
 		paso.add(fotoPerfil);
+		
+		JLabel lblUsuario = new JLabel("Usuario");
+		lblUsuario.setForeground(SystemColor.controlDkShadow);
+		lblUsuario.setFont(new Font("Calibri", Font.PLAIN, 17));
+		lblUsuario.setBounds(109, 1, 130, 16);
+		paso.add(lblUsuario);
+		
+		JLabel label_1 = new JLabel("Paso 3 de 4");
+		label_1.setForeground(new Color(1, 88, 248));
+		label_1.setFont(new Font("Calibri", Font.PLAIN, 18));
+		label_1.setBounds(0, 0, 105, 16);
+		paso.add(label_1);
 
 		return paso;
 	}
