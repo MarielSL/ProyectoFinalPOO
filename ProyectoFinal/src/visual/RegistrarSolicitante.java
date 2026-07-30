@@ -92,6 +92,7 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	public RegistrarSolicitante(Persona persona) {
+		setResizable(false);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarSolicitante.class.getResource("/img/AppIconoFull.png")));
 		this.mySolicitante = persona;
 		if(mySolicitante == null) {
@@ -181,9 +182,8 @@ public class RegistrarSolicitante extends JDialog {
 		panel_1.add(lblRegistrareParaAcceder);
 		
 				JLabel lblNewLabel = new JLabel("New label");
-				//lblNewLabel.setIcon(new ImageIcon(RegistrarSolicitante.class.getResource("/img/Fondo-General.png")));
 				lblNewLabel.setBounds(0, 0, 1902, 993);
-				colocarImagen(lblNewLabel,"/img/Fondo_Registrar.png");
+				colocarImagen(lblNewLabel,"/img/Registrar_Solicitante_Fondo.png");
 				panel.add(lblNewLabel);
 		btnAtras.setVisible(false);
 		btnAtras.addActionListener(new ActionListener() {

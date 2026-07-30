@@ -26,10 +26,10 @@ public class FotoPerfilRedond extends JPanel {
         }
 
         btnCambiar = new BotonRedond("Añadir Foto", 15);
-        btnCambiar.setFont(new Font("Calibri", Font.PLAIN, 12));
+        btnCambiar.setFont(new Font("Calibri", Font.PLAIN, 18));
         btnCambiar.setBackground(new Color(255, 153, 0));
         
-        btnCambiar.setForeground(new Color(0, 0, 51));
+        btnCambiar.setForeground(new Color(255, 255, 255));
         btnCambiar.addActionListener(e -> seleccionarFoto());
         add(btnCambiar);
     }
@@ -106,7 +106,7 @@ public class FotoPerfilRedond extends JPanel {
         
 
         int anchoBoton = getWidth() ;
-        int altoBoton = 40;
+        int altoBoton = 50;
         int x = (getWidth() - anchoBoton) / 2;
         int y = getHeight() - altoBoton;
 
