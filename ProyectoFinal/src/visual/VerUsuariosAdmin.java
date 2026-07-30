@@ -42,7 +42,6 @@ public class VerUsuariosAdmin extends JFrame {
 
 	private JPanel contentPane;
 	private Dimension dim;
-	private TextFieldRedond txtBuscar;
 	private ComboBoxRedond<String> cbxRol;
 	private JPanel pnlVacio;
 	private JPanel pnlTabla;
@@ -187,17 +186,6 @@ public class VerUsuariosAdmin extends JFrame {
 		panelBusqueda.setBounds(margen, 220, anchoContenido, 60);
 		panel.add(panelBusqueda);
 		panelBusqueda.setLayout(null);
-
-		JLabel lblIconoBuscar = new JLabel();
-		lblIconoBuscar.setBounds(20, 18, 22, 22);
-		panelBusqueda.add(lblIconoBuscar);
-
-		txtBuscar = new TextFieldRedond(18);
-		txtBuscar.setFont(new Font("Calibri", Font.PLAIN, 16));
-		txtBuscar.setForeground(new Color(0, 0, 51));
-		txtBuscar.setBackground(new Color(245, 245, 245));
-		txtBuscar.setBounds(50, 14, anchoContenido - 300, 32);
-		panelBusqueda.add(txtBuscar);
 
 		JLabel lblRol = new JLabel("Rol");
 		lblRol.setFont(new Font("Calibri", Font.PLAIN, 13));

@@ -193,17 +193,6 @@ public class VerOfertasAdmin extends JFrame {
 		panel.add(panelBusqueda);
 		panelBusqueda.setLayout(null);
 
-		JLabel lblIconoBuscar = new JLabel();
-		lblIconoBuscar.setBounds(20, 18, 22, 22);
-		panelBusqueda.add(lblIconoBuscar);
-
-		txtBuscar = new TextFieldRedond(18);
-		txtBuscar.setFont(new Font("Calibri", Font.PLAIN, 16));
-		txtBuscar.setForeground(new Color(0, 0, 51));
-		txtBuscar.setBackground(new Color(245, 245, 245));
-		txtBuscar.setBounds(50, 14, anchoContenido - 480, 32);
-		panelBusqueda.add(txtBuscar);
-
 		JLabel lblEstado = new JLabel("Estado");
 		lblEstado.setFont(new Font("Calibri", Font.PLAIN, 13));
 		lblEstado.setForeground(new Color(120, 120, 120));

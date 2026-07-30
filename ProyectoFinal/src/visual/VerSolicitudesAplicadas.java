@@ -99,15 +99,6 @@ public class VerSolicitudesAplicadas extends JFrame {
 		panel.add(panel_3);
 		panel_3.setLayout(null);
 		
-		txtBuscar = new TextFieldConSombra(20);
-		txtBuscar.setFont(new Font("Calibri", Font.PLAIN, 22));
-		txtBuscar.setBackground(new Color(255, 255, 255));
-		txtBuscar.setForeground(new Color(204, 204, 204));
-		txtBuscar.setText("Buscar");
-		txtBuscar.setBounds(1119, 13, 214, 40);
-		panel_3.add(txtBuscar);
-		txtBuscar.setColumns(10);
-		
 		cbxEstado = new ComboBoxRedond(25);
 		cbxEstado.setFont(new Font("Calibri", Font.PLAIN, 18));
 		cbxEstado.setForeground(new Color(0, 0, 51));

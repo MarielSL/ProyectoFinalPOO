@@ -38,7 +38,6 @@ public class VerSolicitantesAdmin extends JFrame {
 
 	private JPanel contentPane;
 	private Dimension dim;
-	private TextFieldRedond txtBuscar;
 	private ComboBoxRedond<String> cbxEstado;
 	private ComboBoxRedond<String> cbxTipo;
 	private JPanel pnlVacio;
@@ -190,17 +189,6 @@ public class VerSolicitantesAdmin extends JFrame {
 		panelBusqueda.setBounds(margen, 220, anchoContenido, 60);
 		panel.add(panelBusqueda);
 		panelBusqueda.setLayout(null);
-
-		JLabel lblIconoBuscar = new JLabel();
-		lblIconoBuscar.setBounds(20, 18, 22, 22);
-		panelBusqueda.add(lblIconoBuscar);
-
-		txtBuscar = new TextFieldRedond(18);
-		txtBuscar.setFont(new Font("Calibri", Font.PLAIN, 16));
-		txtBuscar.setForeground(new Color(0, 0, 51));
-		txtBuscar.setBackground(new Color(245, 245, 245));
-		txtBuscar.setBounds(50, 14, anchoContenido - 480, 32);
-		panelBusqueda.add(txtBuscar);
 
 		JLabel lblEstado = new JLabel("Estado");
 		lblEstado.setFont(new Font("Calibri", Font.PLAIN, 13));
