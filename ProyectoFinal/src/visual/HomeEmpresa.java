@@ -310,9 +310,15 @@ public class HomeEmpresa extends JFrame {
 			return 0;
 		}
 		int contador = 0;
-		for (Oferta oferta : empresa.getLasOfertas()) {
-			for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
-				if (solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
+		for (SolicitudEmpleo solicitud : BolsaEmpleo.getInstancia().getSolicitudes()) {
+			if (solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
+				boolean compatible = false;
+				for (Oferta oferta : empresa.getLasOfertas()) {
+					if (oferta.getEstado() == EstadoOferta.PENDIENTE && BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud) >= 60) {
+						compatible = true;
+					}
+				}
+				if (compatible) {
 					contador++;
 				}
 			}
@@ -326,9 +332,15 @@ public class HomeEmpresa extends JFrame {
 		}
 		int contador = 0;
 		LocalDate hoy = LocalDate.now();
-		for (Oferta oferta : empresa.getLasOfertas()) {
-			for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
-				if (solicitud.getEstado() == EstadoSolicitud.ACEPTADA && solicitud.getFechaSolicitud().getMonthValue() == hoy.getMonthValue() && solicitud.getFechaSolicitud().getYear() == hoy.getYear()) {
+		for (SolicitudEmpleo solicitud : BolsaEmpleo.getInstancia().getSolicitudes()) {
+			if (solicitud.getEstado() == EstadoSolicitud.ACEPTADA && solicitud.getFechaSolicitud().getMonthValue() == hoy.getMonthValue() && solicitud.getFechaSolicitud().getYear() == hoy.getYear()) {
+				boolean compatible = false;
+				for (Oferta oferta : empresa.getLasOfertas()) {
+					if (BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud) >= 60) {
+						compatible = true;
+					}
+				}
+				if (compatible) {
 					contador++;
 				}
 			}
@@ -341,8 +353,14 @@ public class HomeEmpresa extends JFrame {
 		if (empresa == null) {
 			return todas;
 		}
-		for (Oferta oferta : empresa.getLasOfertas()) {
-			for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
+		for (SolicitudEmpleo solicitud : BolsaEmpleo.getInstancia().getSolicitudes()) {
+			boolean compatible = false;
+			for (Oferta oferta : empresa.getLasOfertas()) {
+				if (oferta.getEstado() == EstadoOferta.PENDIENTE && BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud) >= 60) {
+					compatible = true;
+				}
+			}
+			if (compatible) {
 				todas.add(solicitud);
 			}
 		}
@@ -373,7 +391,7 @@ public class HomeEmpresa extends JFrame {
 		for (SolicitudEmpleo solicitud : obtenerSolicitudesRecientes()) {
 			String nombreCandidato = solicitud.getCandidato().getNombre() + " " + solicitud.getCandidato().getApellido();
 			String estadoTexto = formatearEstado(solicitud.getEstado());
-			modelo.addRow(new Object[] { nombreCandidato, solicitud.getOferta().getPuesto(), solicitud.getFechaSolicitud().format(formato), estadoTexto });
+			modelo.addRow(new Object[] { nombreCandidato, solicitud.getPuesto(), solicitud.getFechaSolicitud().format(formato), estadoTexto });
 		}
 		return modelo;
 	}

@@ -33,7 +33,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import logico.BolsaEmpleo;
-import logico.Empresa;
 import logico.EstadoOferta;
 import logico.EstadoSolicitud;
 import logico.Oferta;
@@ -44,7 +43,6 @@ public class HomeAdministrador extends JFrame {
 
 	private JPanel contentPane;
 	private Dimension dim;
-	private Empresa empresa;
 	private JTable table;
 	private JTable table_1;
 
@@ -68,9 +66,6 @@ public class HomeAdministrador extends JFrame {
 	 * Create the frame.
 	 */
 	public HomeAdministrador() {
-		if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
-			empresa = BolsaEmpleo.getInstancia().getLoginUser().getEmpresa();
-		}
 		setTitle("Inicio");
 		Utilidades.aplicarIcono(this);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -301,7 +296,7 @@ public class HomeAdministrador extends JFrame {
 		lblSolicitantesRegistrados.setBounds(20, 14, 188, 20);
 		panelSolicitantesRegistrados.add(lblSolicitantesRegistrados);
 		
-		JLabel label_1 = new JLabel("0");
+		JLabel label_1 = new JLabel(String.valueOf(BolsaEmpleo.getInstancia().getPersonas().size()));
 		label_1.setForeground(new Color(0, 0, 51));
 		label_1.setFont(new Font("Calibri", Font.BOLD, 30));
 		label_1.setBounds(20, 38, 188, 36);
@@ -319,7 +314,7 @@ public class HomeAdministrador extends JFrame {
 		lblPostulacionesRealizadas.setBounds(20, 14, 202, 20);
 		panelPostulacionesRealizadas.add(lblPostulacionesRealizadas);
 		
-		JLabel label_2 = new JLabel("0");
+		JLabel label_2 = new JLabel(String.valueOf(contarSolicitudes()));
 		label_2.setForeground(new Color(0, 0, 51));
 		label_2.setFont(new Font("Calibri", Font.BOLD, 30));
 		label_2.setBounds(20, 38, 202, 36);
@@ -333,11 +328,8 @@ public class HomeAdministrador extends JFrame {
 	}
 
 	private int contarOfertasActivas() {
-		if (empresa == null) {
-			return 0;
-		}
 		int contador = 0;
-		for (Oferta oferta : empresa.getLasOfertas()) {
+		for (Oferta oferta : BolsaEmpleo.getInstancia().getOfertas()) {
 			if (oferta.getEstado() == EstadoOferta.PENDIENTE) {
 				contador++;
 			}
@@ -346,57 +338,35 @@ public class HomeAdministrador extends JFrame {
 	}
 
 	private int contarSolicitudes() {
-		if (empresa == null) {
-			return 0;
-		}
+		return BolsaEmpleo.getInstancia().getSolicitudes().size();
+	}
+	
+	private int contarEmpresas() {
+		return BolsaEmpleo.getInstancia().getEmpresas().size();
+	}
+
+	private int contarContratados() {
 		int contador = 0;
-		for (Oferta oferta : empresa.getLasOfertas()) {
-			for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
+		for (SolicitudEmpleo solicitud : BolsaEmpleo.getInstancia().getSolicitudes()) {
+			if (solicitud.getEstado() == EstadoSolicitud.ACEPTADA) {
 				contador++;
 			}
 		}
 		return contador;
 	}
-	
-	private int contarEmpresas() {
-		if (empresa == null) {
-			return 0;
-		}
-		int contador = 0;
-		ArrayList<Oferta> lasOfertas = empresa.getLasOfertas();
-		for (int i = 0; i < lasOfertas.size(); i++) {
-			Oferta oferta = lasOfertas.get(i);
-			contador++;
-		}
-		return contador;
-	}
 
-	private int contarContratados() {
-		if (empresa == null) {
-			return 0;
-		}
+	private int contarCandidatosCompatibles(Oferta oferta) {
 		int contador = 0;
-		LocalDate hoy = LocalDate.now();
-		for (Oferta oferta : empresa.getLasOfertas()) {
-			for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
-				if (solicitud.getEstado() == EstadoSolicitud.ACEPTADA) {
-					contador++;
-				}
+		for (SolicitudEmpleo solicitud : BolsaEmpleo.getInstancia().getSolicitudes()) {
+			if (BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud) >= 60) {
+				contador++;
 			}
 		}
 		return contador;
 	}
 
 	private ArrayList<SolicitudEmpleo> obtenerSolicitantesRecientes() {
-		ArrayList<SolicitudEmpleo> todas = new ArrayList<SolicitudEmpleo>();
-		if (empresa == null) {
-			return todas;
-		}
-		for (Oferta oferta : empresa.getLasOfertas()) {
-			for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
-				todas.add(solicitud);
-			}
-		}
+		ArrayList<SolicitudEmpleo> todas = new ArrayList<SolicitudEmpleo>(BolsaEmpleo.getInstancia().getSolicitudes());
 		for (int i = 0; i < todas.size() - 1; i++) {
 			for (int j = 0; j < todas.size() - 1 - i; j++) {
 				if (todas.get(j).getFechaSolicitud().isBefore(todas.get(j + 1).getFechaSolicitud())) {
@@ -416,13 +386,7 @@ public class HomeAdministrador extends JFrame {
 	}
 	
 	private ArrayList<Oferta> obtenerOfertasRecientes() {
-	    ArrayList<Oferta> todas = new ArrayList<Oferta>();
-	    if (empresa == null) {
-	        return todas;
-	    }
-	    for (Oferta oferta : empresa.getLasOfertas()) {
-	        todas.add(oferta);
-	    }
+	    ArrayList<Oferta> todas = new ArrayList<Oferta>(BolsaEmpleo.getInstancia().getOfertas());
 
 	    for (int i = 0; i < todas.size() - 1; i++) {
 	        for (int j = 0; j < todas.size() - 1 - i; j++) {
@@ -443,7 +407,7 @@ public class HomeAdministrador extends JFrame {
 	}
 
 	private DefaultTableModel crearModeloSolicitudesRecientes() {
-		DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Solicitante", "Profesión", "Fecha", "Perfil", "Estado" }) {
+		DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Solicitante", "Profesi\u00F3n", "Fecha", "Perfil", "Estado" }) {
 			public boolean isCellEditable(int fila, int columna) {
 				return false;
 			}
@@ -452,13 +416,13 @@ public class HomeAdministrador extends JFrame {
 		for (SolicitudEmpleo solicitud : obtenerSolicitantesRecientes()) {
 			String nombreCandidato = solicitud.getCandidato().getNombre() + " " + solicitud.getCandidato().getApellido();
 			String estadoTexto = formatearEstado(solicitud.getEstado());
-			modelo.addRow(new Object[] { nombreCandidato, solicitud.getOferta().getPuesto(), solicitud.getFechaSolicitud().format(formato), estadoTexto });
+			modelo.addRow(new Object[] { nombreCandidato, solicitud.getPuesto(), solicitud.getFechaSolicitud().format(formato), estadoTexto });
 		}
 		return modelo;
 	}
 	
 	private DefaultTableModel crearModeloOfertasRecientes() {
-	    DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Puesto", "Empresa", "Fecha Publicación", "Solicitudes", "Estado" }) {
+	    DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Puesto", "Empresa", "Fecha Publicaci\u00F3n", "Solicitudes", "Estado" }) {
 	        public boolean isCellEditable(int fila, int columna) {
 	            return false;
 	        }
@@ -466,7 +430,7 @@ public class HomeAdministrador extends JFrame {
 	    DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
 	    for (Oferta oferta : obtenerOfertasRecientes()) {
 	        String estadoTexto = formatearEstadoOferta(oferta.getEstado());
-	        modelo.addRow(new Object[] { oferta.getPuesto(), oferta.getEmpresa(), oferta.getFechaPublicacion().format(formato), oferta.getSolicitudes().size(), estadoTexto });
+	        modelo.addRow(new Object[] { oferta.getPuesto(), oferta.getEmpresa().getNombre(), oferta.getFechaPublicacion().format(formato), contarCandidatosCompatibles(oferta), estadoTexto });
 	    }
 	    return modelo;
 	}

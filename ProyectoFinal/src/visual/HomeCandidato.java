@@ -249,7 +249,7 @@ public class HomeCandidato extends JFrame {
 
 			modeloRecientes = new DefaultTableModel(
 				new Object[][] {},
-				new String[] { "Oferta", "Empresa", "Fecha", "Estado" }
+				new String[] { "Oferta", "Fecha", "Estado" }
 			) {
 				public boolean isCellEditable(int fila, int columna) {
 					return false;
@@ -264,7 +264,7 @@ public class HomeCandidato extends JFrame {
 			tablaRecientes.setShowGrid(false);
 			tablaRecientes.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 15));
 			tablaRecientes.getTableHeader().setForeground(new Color(0, 0, 51));
-			tablaRecientes.getColumnModel().getColumn(3).setCellRenderer(new RenderEstado());
+			tablaRecientes.getColumnModel().getColumn(2).setCellRenderer(new RenderEstado());
 
 			JScrollPane scrollTabla = new JScrollPane(tablaRecientes);
 			scrollTabla.setBorder(null);
@@ -313,8 +313,7 @@ public class HomeCandidato extends JFrame {
 		for (int i = 0; i < cantidad; i++) {
 			SolicitudEmpleo solicitud = solicitudesOrdenadas.get(i);
 			modeloRecientes.addRow(new Object[] {
-				solicitud.getOferta().getPuesto(),
-				solicitud.getOferta().getEmpresa().getNombre(),
+				solicitud.getPuesto(),
 				solicitud.getFechaSolicitud().format(formato),
 				formatearEstado(solicitud.getEstado())
 			});
