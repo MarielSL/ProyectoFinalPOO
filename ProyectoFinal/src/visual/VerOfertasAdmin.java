@@ -394,7 +394,7 @@ public class VerOfertasAdmin extends JFrame {
 	    DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
 	    for (Oferta oferta : obtenerOfertasRecientes()) {
 	        String estadoTexto = formatearEstadoOferta(oferta.getEstado());
-	        modelo.addRow(new Object[] { oferta.getPuesto(), oferta.getEmpresa(), oferta.getFechaPublicacion().format(formato), oferta.getSolicitudes().size(), estadoTexto });
+	        modelo.addRow(new Object[] { oferta.getPuesto(), oferta.getEmpresa(), oferta.getFechaPublicacion().format(formato), 0, estadoTexto });
 	    }
 	    return modelo;
 	}

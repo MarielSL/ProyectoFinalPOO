@@ -32,7 +32,7 @@ import logico.BolsaEmpleo;
 import logico.EstadoSolicitud;
 import logico.SolicitudEmpleo;
 
-public class VerPostulacionesAdmin extends JFrame {
+/*public class VerPostulacionesAdmin extends JFrame {
 
 	private JPanel contentPane;
 	private Dimension dim;
@@ -421,3 +421,4 @@ public class VerPostulacionesAdmin extends JFrame {
 		}
 	}
 }
+*/

@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import javax.imageio.stream.FileImageInputStream;
 
@@ -438,5 +439,41 @@ public class BolsaEmpleo implements Serializable {
 			return new BolsaEmpleo();
 		}
 	}
+
+	public ArrayList<ResultMatch> calcularMatch(Oferta oferta) {
+
+		ArrayList<ResultMatch> resultados =
+				new ArrayList<ResultMatch>();
+
+		for (SolicitudEmpleo solicitud : solicitudes) {
+			float porcentaje = calcCoincidencia(oferta, solicitud);
+			if((solicitud.getEstado() == EstadoSolicitud.PENDIENTE) && porcentaje >= 60){
+				resultados.add(new ResultMatch(solicitud,porcentaje));
+			}
+		}
+
+		resultados.sort(new Comparator<ResultMatch>() {
+			public int compare(ResultMatch r1,ResultMatch r2) {
+				return Float.compare(r2.getPorcentaje(), r1.getPorcentaje());
+			}
+		});
+
+		return resultados;
+	}
+	public String idSolicitud(Persona candidato) {
+		boolean encontrado = false;
+		String id=null;
+		int ind = 0;
+		
+		while(!encontrado && ind <solicitudes.size()) {
+			if(solicitudes.get(ind).getCandidato().getId().equals(candidato.getId())) {
+				id = solicitudes.get(ind).getId();
+				encontrado = true;
+			}
+			ind ++;
+		}
+		return id;
+	}
+	
 
 }

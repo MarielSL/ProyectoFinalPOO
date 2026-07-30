@@ -10,9 +10,11 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import logico.BolsaEmpleo;
 import logico.Obrero;
 import logico.Oferta;
 import logico.Persona;
+import logico.ResultMatch;
 import logico.SolicitudEmpleo;
 import logico.Tecnico;
 import logico.Universitario;
@@ -196,7 +198,7 @@ public class VerTodosPostulantesOferta extends JFrame {
 						setVisible(true);
 					}
 					else {
-						String IdSolicitud = oferta.idSolicitud(postulantesMostrados.get(index));
+						String IdSolicitud = BolsaEmpleo.getInstancia().idSolicitud(postulantesMostrados.get(index));
 						SolicitudEmpleo solicitud = postulantesMostrados.get(index).buscarSolicitud(IdSolicitud);
 						VerPostulante verPostulante = new VerPostulante(postulantesMostrados.get(index),oferta,solicitud);
 						setVisible(true);
@@ -248,64 +250,61 @@ public class VerTodosPostulantesOferta extends JFrame {
 	}
 	private void loadPostulantes(String estado,String perfil,String fecha,String ordenCoincidencia) {
 		model.setRowCount(0);
-
-		if (oferta == null || oferta.getSolicitudes() == null) {
+		if (oferta == null) {
 			return;
 		}
 
-		ArrayList<SolicitudEmpleo> solicitudesFiltradas = new ArrayList<SolicitudEmpleo>();
-
+		ArrayList<ResultMatch> matcheo = BolsaEmpleo.getInstancia().calcularMatch(oferta);
+		ArrayList<ResultMatch> solicitudesFiltradas = new ArrayList<ResultMatch>();
+		ArrayList<Persona> mostrados =  new ArrayList<>();
 		LocalDate hoy = LocalDate.now();
 
-		for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
+		for (ResultMatch resultado : matcheo) {
 
-			if (solicitud == null || solicitud.getCandidato() == null) {
-				continue;
-			}
+			Persona candidato = resultado.getSolicitud().getCandidato();
 
-			Persona candidato = solicitud.getCandidato();
-
-			boolean cumpleEstado = estado.equalsIgnoreCase("Todos")|| coincideEstado(solicitud,estado );
-			boolean cumplePerfil = perfil.equalsIgnoreCase("Todos")|| obtenerPerfilLaboral(candidato).equalsIgnoreCase(perfil);
-			boolean cumpleFecha = cumpleFiltroFecha(solicitud.getFechaSolicitud(),fecha,hoy);
+			boolean cumpleEstado = estado.equalsIgnoreCase("Todos") || coincideEstado(resultado.getSolicitud(),estado );
+			boolean cumplePerfil = perfil.equalsIgnoreCase("Todos") || obtenerPerfilLaboral(candidato).equalsIgnoreCase(perfil);
+			boolean cumpleFecha = cumpleFiltroFecha(resultado.getSolicitud().getFechaSolicitud(),fecha,hoy);
 
 			if (cumpleEstado && cumplePerfil && cumpleFecha) {
-				solicitudesFiltradas.add(solicitud);
+				solicitudesFiltradas.add(resultado);
 			}
 		}
 
-		Collections.sort(
-				solicitudesFiltradas,
-				new Comparator<SolicitudEmpleo>() {
+		Collections.sort(solicitudesFiltradas,new Comparator<ResultMatch>() {
 
-					public int compare(SolicitudEmpleo s1,SolicitudEmpleo s2) {
-						if (ordenCoincidencia.equalsIgnoreCase("Menor Coincidencia")) {
-							return Float.compare(s1.getPorcentajeCoincidencia(),s2.getPorcentajeCoincidencia());
-						}
-						return Float.compare(s2.getPorcentajeCoincidencia(),s1.getPorcentajeCoincidencia());
-					}
+			public int compare(ResultMatch soli1,ResultMatch soli2) {
+				if (ordenCoincidencia.equalsIgnoreCase("Menor Coincidencia")) {
+					return Float.compare(soli1.getPorcentaje(),soli2.getPorcentaje());
 				}
+				return Float.compare(soli2.getPorcentaje(),soli1.getPorcentaje());
+			}
+		}
 				);
 
 		int numero = 1;
 
-		for (SolicitudEmpleo solicitud : solicitudesFiltradas) {
+		for (ResultMatch match : solicitudesFiltradas) {
 
-			Persona candidato = solicitud.getCandidato();
+			Persona candidato = match.getSolicitud().getCandidato();
 
 			Object[] fila =new Object[model.getColumnCount()];
 
-			fila[0]= numero;
+			fila[0] = numero;
 			fila[1] = candidato.getNombre();
 			fila[2] = obtenerPerfilLaboral(candidato);
-			fila[3] =solicitud.getPorcentajeCoincidencia() +"%";
-			fila[4] =solicitud.getFechaSolicitud();
-			fila[5] = solicitud.getEstado();
-
+			fila[3] = match.getPorcentaje() +"%";
+			fila[4] = match.getSolicitud().getFechaSolicitud();
+			
 			model.addRow(fila);
-			postulantesMostrados.add(solicitud.getCandidato());
+			mostrados.add(match.getSolicitud().getCandidato());
 			numero++;
 		}
+		
+		postulantesMostrados.clear();
+		postulantesMostrados.addAll(mostrados);
+		
 	}
 
 	private String obtenerPerfilLaboral(Persona candidato) {

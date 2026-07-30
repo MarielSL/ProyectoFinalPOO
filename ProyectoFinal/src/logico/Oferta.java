@@ -184,66 +184,6 @@ public class Oferta implements Serializable{
 		this.areaLaboral = areaLaboral;
 	}
 	
-	/*
-	public ArrayList<Persona> topSolicitantes() {
-		ArrayList<Persona> top = new ArrayList<>();
-		int cantidadTop;
-
-		if (solicitudes.size() < 3) {
-			cantidadTop = solicitudes.size();
-		} 
-		else {
-			cantidadTop = 3;
-		}
-
-		for (int ind = 0; ind < cantidadTop; ind++) { 
-			Persona mejor = buscarNextTop(top);
-			if (mejor != null) {
-				top.add(mejor);
-			}
-		}
-		return top;
-	}
-
-	private Persona buscarNextTop(ArrayList<Persona> elegidos) {
-		Persona aux = null;
-		float mayotPorcen = -1;
-
-		for (SolicitudEmpleo solicitud : solicitudes) {
-
-			if (!(elegidos.contains(solicitud.getCandidato()))) {
-				if (solicitud.getPorcentajeCoincidencia() > mayotPorcen) {
-					aux = solicitud.getCandidato();
-					mayotPorcen = solicitud.getPorcentajeCoincidencia();
-				}
-			}
-		}
-		return aux;
-	}
-	
-	public String idSolicitud(Persona solicitante) {
-		boolean encontrado = false;
-		String id=null;
-		int ind = 0;
-		
-		while(!encontrado && ind <solicitudes.size()) {
-			if(solicitudes.get(ind).getCandidato().getId().equals(solicitante.getId())) {
-				id = solicitudes.get(ind).getId();
-				encontrado = true;
-			}
-			ind ++;
-		}
-		return id;
-	}
-
-	public LocalDate getFechaPublicacion() {
-		return FechaPublicacion;
-	}
-
-	public void setFechaPublicacion(LocalDate fechaPublicacion) {
-		FechaPublicacion = fechaPublicacion;
-	}
-	*/
 			
 	
 

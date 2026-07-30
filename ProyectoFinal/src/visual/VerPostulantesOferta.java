@@ -10,10 +10,12 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import logico.BolsaEmpleo;
 import logico.EstadoSolicitud;
 import logico.Obrero;
 import logico.Oferta;
 import logico.Persona;
+import logico.ResultMatch;
 import logico.Sexo;
 import logico.SolicitudEmpleo;
 import logico.Tecnico;
@@ -69,8 +71,8 @@ public class VerPostulantesOferta extends JDialog {
 	private JTable table;
 	private static DefaultTableModel model;
 	private static Object[] row;
-	private ArrayList<Persona> postulantesMostrados = new ArrayList<>();
-	private ArrayList<Persona> top =  new ArrayList<>();
+	private ArrayList<ResultMatch> candidatosMostrados = new ArrayList<>();
+	private ArrayList<ResultMatch> resultSolicitantes =  new ArrayList<>();
 	private JButton btnVerAplicantes;
 	private BotonRedond btnVerPerfilTop3;
 	
@@ -94,7 +96,11 @@ public class VerPostulantesOferta extends JDialog {
 	public VerPostulantesOferta(Oferta oferta) {
 		setResizable(false);
 		if(oferta!= null) {
-			top = oferta.topSolicitantes();
+			resultSolicitantes = BolsaEmpleo.getInstancia().calcularMatch(oferta);
+			
+			Persona topUno = resultSolicitantes.get(0).getSolicitud().getCandidato();
+			Persona topDos = resultSolicitantes.get(1).getSolicitud().getCandidato();
+			Persona topTres = resultSolicitantes.get(2).getSolicitud().getCandidato();
 		}
 		
 		setTitle("Postulantes de la Oferta");
@@ -285,9 +291,9 @@ public class VerPostulantesOferta extends JDialog {
 			btnTopTwoVerPerfil.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if(oferta !=null) {
-						String IdSolicitud = oferta.idSolicitud(top.get(1));
-						SolicitudEmpleo solicitud = top.get(1).buscarSolicitud(IdSolicitud);
-						VerPostulante verPostulante = new VerPostulante(top.get(1),oferta,solicitud);
+						String IdSolicitud = BolsaEmpleo.getInstancia().idSolicitud(resultSolicitantes.get(1).getSolicitud().getCandidato());
+						SolicitudEmpleo solicitud = resultSolicitantes.get(1).getSolicitud().getCandidato().buscarSolicitud(IdSolicitud);
+						VerPostulante verPostulante = new VerPostulante(resultSolicitantes.get(1).getSolicitud().getCandidato(),oferta,solicitud);
 						verPostulante.setVisible(true);
 					}
 					else {
@@ -357,9 +363,9 @@ public class VerPostulantesOferta extends JDialog {
 			btnVerPerfilTop3.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if(oferta !=null) {
-						String IdSolicitud = oferta.idSolicitud(top.get(2));
-						SolicitudEmpleo solicitud = top.get(2).buscarSolicitud(IdSolicitud);
-						VerPostulante verPostulante = new VerPostulante(top.get(2),oferta,solicitud);
+						String IdSolicitud = BolsaEmpleo.getInstancia().idSolicitud(resultSolicitantes.get(2).getSolicitud().getCandidato());
+						SolicitudEmpleo solicitud = resultSolicitantes.get(2).getSolicitud().getCandidato().buscarSolicitud(IdSolicitud);
+						VerPostulante verPostulante = new VerPostulante(resultSolicitantes.get(2).getSolicitud().getCandidato(),oferta,solicitud);
 						verPostulante.setVisible(true);
 					}
 					else {
@@ -451,9 +457,9 @@ public class VerPostulantesOferta extends JDialog {
 			btnTopOneVerPerfil.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if(oferta !=null) {
-						String IdSolicitud = oferta.idSolicitud(top.get(0));
-						SolicitudEmpleo solicitud = top.get(0).buscarSolicitud(IdSolicitud);
-						VerPostulante verPostulante = new VerPostulante(top.get(0),oferta,solicitud);
+						String IdSolicitud = BolsaEmpleo.getInstancia().idSolicitud(resultSolicitantes.get(0).getSolicitud().getCandidato());
+						SolicitudEmpleo solicitud = resultSolicitantes.get(0).getSolicitud().getCandidato().buscarSolicitud(IdSolicitud);
+						VerPostulante verPostulante = new VerPostulante(resultSolicitantes.get(0).getSolicitud().getCandidato(),oferta,solicitud);
 						verPostulante.setVisible(true);
 					}
 					else {
@@ -512,9 +518,9 @@ public class VerPostulantesOferta extends JDialog {
 							setVisible(true);
 						}
 						else {
-							String IdSolicitud = oferta.idSolicitud(postulantesMostrados.get(index));
-							SolicitudEmpleo solicitud = postulantesMostrados.get(index).buscarSolicitud(IdSolicitud);
-							VerPostulante verPostulante = new VerPostulante(postulantesMostrados.get(index),oferta,solicitud);
+							String IdSolicitud = BolsaEmpleo.getInstancia().idSolicitud(candidatosMostrados.get(index).getSolicitud().getCandidato());
+							SolicitudEmpleo solicitud = candidatosMostrados.get(index).getSolicitud().getCandidato().buscarSolicitud(IdSolicitud);
+							VerPostulante verPostulante = new VerPostulante(candidatosMostrados.get(index).getSolicitud().getCandidato(),oferta,solicitud);
 							setVisible(true);
 						}
 					}
@@ -551,92 +557,99 @@ public class VerPostulantesOferta extends JDialog {
 			panel.setLayout(null);
 		}
 		if(oferta!=null) {
-			int cantSolicitantes = oferta.getSolicitudes().size();
+			int cantSolicitantes = BolsaEmpleo.getInstancia().getSolicitudes().size();
 			
 			lblEmpresa.setText(oferta.getEmpresa().getNombre());
 			lblOferta.setText(oferta.getPuesto());
-			lblPostulantes.setText(oferta.getSolicitudes().size()+"");
+			lblPostulantes.setText(resultSolicitantes.size()+"");
 			
-			lblTopOneName.setText(top.get(0).getNombre() + " " + top.get(0).getApellido());
-			if(top.get(0) instanceof Universitario) {
-				if(top.get(0).getSexo() == Sexo.FEMENINO) {
+			Persona topUno = resultSolicitantes.get(0).getSolicitud().getCandidato();
+			Persona topDos = resultSolicitantes.get(1).getSolicitud().getCandidato();
+			Persona topTres = resultSolicitantes.get(2).getSolicitud().getCandidato();
+			
+			lblTopOneName.setText(topUno.getNombre() + " " + topUno.getApellido());
+			if(topUno instanceof Universitario) {
+				if(topUno.getSexo() == Sexo.FEMENINO) {
 					txtTopOneTipo.setText("Universitaria");
 				}
 				else {
 					txtTopOneTipo.setText("Universitario");
 				}
 			}
-			if(top.get(0) instanceof Tecnico) {
-				if(top.get(0).getSexo() == Sexo.FEMENINO) {
+			if(topUno instanceof Tecnico) {
+				if(topUno.getSexo() == Sexo.FEMENINO) {
 					txtTopOneTipo.setText("Técnica");
 				}
 				else {
 					txtTopOneTipo.setText("Técnico");
 				}
 			}
-			if(top.get(0) instanceof Obrero) {
-				if(top.get(0).getSexo() == Sexo.FEMENINO) {
+			if(topUno instanceof Obrero) {
+				if(topUno.getSexo() == Sexo.FEMENINO) {
 					txtTopOneTipo.setText("Obrera");
 				}
 				else {
 					txtTopOneTipo.setText("Obrero");
 				}
 			}
-			colocarImagen(lblFotoTopOne,top.get(0).getUser().getFotoPerfil());
+			//colocarImagen(lblFotoTopOne,topUno.getUser().getFotoPerfil());
+			colocarImagen(lblFotoTopOne,"/img/User Icon.png");
 			
-			lblTopTwoName.setText(top.get(1).getNombre() + " " + top.get(1).getApellido());
-			if(top.get(1) instanceof Universitario) {
-				if(top.get(1).getSexo() == Sexo.FEMENINO) {
+			lblTopTwoName.setText(topDos.getNombre() + " " + topDos.getApellido());
+			if(topDos instanceof Universitario) {
+				if(topDos.getSexo() == Sexo.FEMENINO) {
 					txtTopOneTipo.setText("Universitaria");
 				}
 				else {
 					txtTopOneTipo.setText("Universitario");
 				}
 			}
-			if(top.get(1) instanceof Tecnico) {
-				if(top.get(1).getSexo() == Sexo.FEMENINO) {
+			if(topDos instanceof Tecnico) {
+				if(topDos.getSexo() == Sexo.FEMENINO) {
 					txtTopOneTipo.setText("Técnica");
 				}
 				else {
 					txtTopOneTipo.setText("Técnico");
 				}
 			}
-			if(top.get(1) instanceof Obrero) {
-				if(top.get(1).getSexo() == Sexo.FEMENINO) {
+			if(topDos instanceof Obrero) {
+				if(topDos.getSexo() == Sexo.FEMENINO) {
 					txtTopOneTipo.setText("Obrera");
 				}
 				else {
 					txtTopOneTipo.setText("Obrero");
 				}
 			}
-			colocarImagen(lblTop2Foto,top.get(1).getUser().getFotoPerfil());
+			//colocarImagen(lblTop2Foto,topDos.getUser().getFotoPerfil());
+			colocarImagen(lblTop2Foto,"/img/User Icon.png");
 			
-			lblTop3Name.setText(top.get(2).getNombre() + " " + top.get(2).getApellido());
-			if(top.get(2) instanceof Universitario) {
-				if(top.get(2).getSexo() == Sexo.FEMENINO) {
+			lblTop3Name.setText(topTres.getNombre() + " " + topTres.getApellido());
+			if(topTres instanceof Universitario) {
+				if(topTres.getSexo() == Sexo.FEMENINO) {
 					txtTopOneTipo.setText("Universitaria");
 				}
 				else {
 					txtTopOneTipo.setText("Universitario");
 				}
 			}
-			if(top.get(2) instanceof Tecnico) {
-				if(top.get(2).getSexo() == Sexo.FEMENINO) {
+			if(topTres instanceof Tecnico) {
+				if(topTres.getSexo() == Sexo.FEMENINO) {
 					txtTopOneTipo.setText("Técnica");
 				}
 				else {
 					txtTopOneTipo.setText("Técnico");
 				}
 			}
-			if(top.get(2) instanceof Obrero) {
-				if(top.get(2).getSexo() == Sexo.FEMENINO) {
+			if(topTres instanceof Obrero) {
+				if(topTres.getSexo() == Sexo.FEMENINO) {
 					txtTopOneTipo.setText("Obrera");
 				}
 				else {
 					txtTopOneTipo.setText("Obrero");
 				}
 			}
-			colocarImagen(lblTop3Foto,top.get(2).getUser().getFotoPerfil());
+			//colocarImagen(lblTop3Foto,topTres.getUser().getFotoPerfil());
+			colocarImagen(lblTop3Foto,"/img/User Icon.png");
 
 			
 		}
@@ -669,13 +682,14 @@ public class VerPostulantesOferta extends JDialog {
 		}
 		model.setRowCount(0);
 		row = new Object[model.getColumnCount()];
-		ArrayList<Persona> top = oferta.topSolicitantes();
-		for (SolicitudEmpleo solicitud : oferta.getSolicitudes()) {
-			if((solicitud.getCandidato() != top.get(0)) && (solicitud.getCandidato() != top.get(1)) && (solicitud.getCandidato() != top.get(2)) ) {
-				postulantesMostrados.add(solicitud.getCandidato());
-				row[0] = solicitud.getCandidato().getNombre() + " " + solicitud.getCandidato().getApellido();
-				if(solicitud.getCandidato() instanceof Universitario) {
-					if(solicitud.getCandidato().getSexo() == Sexo.FEMENINO) {
+		
+		for (ResultMatch match : resultSolicitantes) {
+			if((match.getSolicitud().getCandidato() != resultSolicitantes.get(0).getSolicitud().getCandidato()) && (match.getSolicitud().getCandidato() != resultSolicitantes.get(1).getSolicitud().getCandidato()) && (match.getSolicitud().getCandidato() != resultSolicitantes.get(2).getSolicitud().getCandidato()) ) {
+				Persona aux = match.getSolicitud().getCandidato();
+				candidatosMostrados.add(match);
+				row[0] = aux.getNombre() + " " + aux.getApellido();
+				if(aux instanceof Universitario) {
+					if(aux.getSexo() == Sexo.FEMENINO) {
 						row[1] = "Universitaria";
 
 					}
@@ -683,8 +697,8 @@ public class VerPostulantesOferta extends JDialog {
 						row[1] = "Universitario";
 					}
 				}
-				if(solicitud.getCandidato() instanceof Tecnico) {
-					if(solicitud.getCandidato().getSexo() == Sexo.FEMENINO) {
+				if(aux instanceof Tecnico) {
+					if(aux.getSexo() == Sexo.FEMENINO) {
 						row[1] = "Técnica";
 
 					}
@@ -692,8 +706,8 @@ public class VerPostulantesOferta extends JDialog {
 						row[1] = "Técnico";
 					}
 				}
-				if(solicitud.getCandidato() instanceof Obrero) {
-					if(solicitud.getCandidato().getSexo() == Sexo.FEMENINO) {
+				if(aux instanceof Obrero) {
+					if(aux.getSexo() == Sexo.FEMENINO) {
 						row[1] = "Obrera";
 
 					}
@@ -701,13 +715,13 @@ public class VerPostulantesOferta extends JDialog {
 						row[1] = "Obrero";
 					}
 				}
-				if(solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
+				if(match.getSolicitud().getEstado() == EstadoSolicitud.PENDIENTE) {
 					row[2] = "Pendiente";
 				}
-				if(solicitud.getEstado() == EstadoSolicitud.RECHAZADA) {
+				if(match.getSolicitud().getEstado() == EstadoSolicitud.RECHAZADA) {
 					row[2] = "Rechazada";
 				}
-				if(solicitud.getEstado() == EstadoSolicitud.ACEPTADA) {
+				if(match.getSolicitud().getEstado() == EstadoSolicitud.ACEPTADA) {
 					row[2] = "Aceptada";
 				}
 				

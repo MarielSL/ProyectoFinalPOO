@@ -550,9 +550,9 @@ public class VerPostulante extends JFrame {
 				lblHabilid.setText(aux.getHabilidades());
 				cardLayout.show(panel_TiposSolicitantes, "Tecnico");
 			}
-			float Porcentaje = BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitante);
+			float Porcentaje = BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud);
 			lblPorcent.setText(Porcentaje + "%");
-			if(Porcentaje >=75) {
+			if(Porcentaje >= 75) {
 				lblTectCoincidencia.setForeground(new Color(0, 102, 0));
 				lblPorcent.setForeground(new Color(0, 102, 0));
 				panelCoincidencia.setBackground(new Color(153, 204, 153));

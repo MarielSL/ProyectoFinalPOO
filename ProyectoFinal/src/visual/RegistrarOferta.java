@@ -24,6 +24,8 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
+
+import logico.AreaLaboral;
 import logico.BolsaEmpleo;
 import logico.Empresa;
 import logico.EstadoOferta;
@@ -285,7 +287,7 @@ public class RegistrarOferta extends JDialog {
 		Modalidad modalidad = (Modalidad) cbxModalidad.getSelectedItem();
 		int aniosExp = (Integer) spnAniosExp.getValue();
 		float salario = ((Number) spnSalario.getValue()).floatValue();
-		Oferta oferta = new Oferta(id, sexo, tipoCandidato, txtPuesto.getText(), (Integer) spnCantPuestos.getValue(), chkLicencia.isSelected(), chkMudarse.isSelected(), EstadoOferta.PENDIENTE, jornada, txtCiudad.getText(), salario, txtDescripcion.getText(), aniosExp, empresa, modalidad, LocalDate.now());
+		Oferta oferta = new Oferta(id, sexo, tipoCandidato, txtPuesto.getText(), (Integer) spnCantPuestos.getValue(), chkLicencia.isSelected(), chkMudarse.isSelected(), EstadoOferta.PENDIENTE, jornada, txtCiudad.getText(), salario, txtDescripcion.getText(), aniosExp, empresa, modalidad, LocalDate.now(),AreaLaboral.INGENIERIA);
 		BolsaEmpleo.getInstancia().refOferta(oferta);
 		if(empresa != null) {
 			empresa.agregarOferta(oferta);
