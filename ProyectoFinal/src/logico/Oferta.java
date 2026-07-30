@@ -10,6 +10,7 @@ public class Oferta implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
 	private String id;
 	private Sexo sexo;
 	private TipoPersona tipoCandidato;
@@ -23,14 +24,14 @@ public class Oferta implements Serializable{
 	private float salario;
 	private String descripPuesto;
 	private int aniosExp;
-	private ArrayList<SolicitudEmpleo> solicitudes;
 	private Empresa empresa;
 	private Modalidad modalidad;
 	private LocalDate FechaPublicacion;
+	private AreaLaboral areaLaboral;
 	
 	public Oferta(String id, Sexo sexo, TipoPersona tipoCandidato, String puesto, int cantPuestos, boolean licencia,
 			boolean dispMudar, EstadoOferta estado, Jornada jornada, String ciudad, float salario,
-			String descripPuesto, int aniosExp, Empresa empresa, Modalidad modalidad, LocalDate FechaPublicacion) {
+			String descripPuesto, int aniosExp, Empresa empresa, Modalidad modalidad, LocalDate FechaPublicacion, AreaLaboral areaLaboral) {
 		super();
 		this.id = id;
 		this.sexo = sexo;
@@ -45,10 +46,10 @@ public class Oferta implements Serializable{
 		this.salario = salario;
 		this.descripPuesto = descripPuesto;
 		this.aniosExp = aniosExp;
-		solicitudes = new ArrayList<>();
 		this.empresa = empresa;
 		this.modalidad = modalidad;
 		this.FechaPublicacion = FechaPublicacion;
+		this.areaLaboral = areaLaboral;
 	}
 
 	public Sexo getSexo() {
@@ -131,14 +132,6 @@ public class Oferta implements Serializable{
 		this.descripPuesto = descripPuesto;
 	}
 
-	public ArrayList<SolicitudEmpleo> getSolicitudes() {
-		return solicitudes;
-	}
-
-	public void setSolicitudes(ArrayList<SolicitudEmpleo> solicitudes) {
-		this.solicitudes = solicitudes;
-	}
-
 	public Empresa getEmpresa() {
 		return empresa;
 	}
@@ -174,7 +167,24 @@ public class Oferta implements Serializable{
 	public void setModalidad(Modalidad modalidad) {
 		this.modalidad = modalidad;
 	}
+
+	public LocalDate getFechaPublicacion() {
+		return FechaPublicacion;
+	}
+
+	public void setFechaPublicacion(LocalDate fechaPublicacion) {
+		FechaPublicacion = fechaPublicacion;
+	}
+
+	public AreaLaboral getAreaLaboral() {
+		return areaLaboral;
+	}
+
+	public void setAreaLaboral(AreaLaboral areaLaboral) {
+		this.areaLaboral = areaLaboral;
+	}
 	
+	/*
 	public ArrayList<Persona> topSolicitantes() {
 		ArrayList<Persona> top = new ArrayList<>();
 		int cantidadTop;
@@ -233,7 +243,7 @@ public class Oferta implements Serializable{
 	public void setFechaPublicacion(LocalDate fechaPublicacion) {
 		FechaPublicacion = fechaPublicacion;
 	}
-	
+	*/
 			
 	
 
