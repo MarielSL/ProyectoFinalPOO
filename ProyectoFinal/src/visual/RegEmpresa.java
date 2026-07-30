@@ -92,9 +92,7 @@ public class RegEmpresa extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 		contentPanel.setOpaque(false);
-		if (myEmpresa != null) {
-			btnGuardar.setText("Modificar");
-		}
+		
 
 		lblVerPassword = new JLabel("");
 		lblVerPassword.setOpaque(false);
@@ -247,6 +245,9 @@ public class RegEmpresa extends JDialog {
 																																						btnGuardar.setColorHover(new Color(210, 105, 30));
 																																						btnGuardar.setForeground(new Color(255, 255, 255));
 																																						btnGuardar.setText("Registrar  \u2192");
+																																						if (myEmpresa != null) {
+																																							btnGuardar.setText("Modificar");
+																																						}
 																																						btnGuardar.setBounds(775, 883, 194, 57);
 																																						panel.add(btnGuardar);
 																																						btnGuardar.setFont(new Font("Calibri", Font.PLAIN, 18));
@@ -377,16 +378,17 @@ public class RegEmpresa extends JDialog {
 	}
 
 	private void loadEmpresa() {
-		if (myEmpresa != null) {
-			txtRnc.setText(myEmpresa.getRnc());
-			txtCorreo.setText(myEmpresa.getUser().getCorreo());
-			txtNombEmpresa.setText(myEmpresa.getNombre());
-			txtTelefono.setText(myEmpresa.getTelefono());
-			txtDireccion.setText(myEmpresa.getDireccion());
-			cbxTipo.setSelectedItem(myEmpresa.getTipo());
-			txtUser.setText(myEmpresa.getUser().getUsername());
-			passwordField.setText(myEmpresa.getUser().getPassword());
-		}
+	    if (myEmpresa != null) {
+	        txtRnc.setText(myEmpresa.getRnc());
+	        txtCorreo.setText(myEmpresa.getUser().getCorreo());
+	        txtNombEmpresa.setText(myEmpresa.getNombre());
+	        txtTelefono.setText(myEmpresa.getTelefono());
+	        txtDireccion.setText(myEmpresa.getDireccion());
+	        cbxTipo.setSelectedItem(myEmpresa.getTipo());
+	        txtUser.setText(myEmpresa.getUser().getUsername());
+	        passwordField.setText(myEmpresa.getUser().getPassword());
+	        fotoPerfil.cargarImagen(myEmpresa.getUser().getFotoPerfil()); 
+	    }
 	}
 
 	private void clear() {
@@ -443,5 +445,7 @@ public class RegEmpresa extends JDialog {
 		    label.setHorizontalAlignment(JLabel.CENTER);
 		    label.setVerticalAlignment(JLabel.CENTER);
 	}
+	
+	
 
 }

@@ -70,7 +70,7 @@ public class HomeEmpresa extends JFrame {
 		if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
 			empresa = BolsaEmpleo.getInstancia().getLoginUser().getEmpresa();
 		}
-		setTitle("Inicio");
+		setTitle("Home Empresa");
 		Utilidades.aplicarIcono(this);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);

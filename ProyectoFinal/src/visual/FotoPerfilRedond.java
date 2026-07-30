@@ -14,6 +14,7 @@ public class FotoPerfilRedond extends JPanel {
     private Image imagen;
     private String rutaFotoPerfil;
     private BotonRedond btnCambiar;
+    private static final String CARPETA_FOTOS = "fotosPerfil";
 
     public FotoPerfilRedond(int diametro) {
         setLayout(null);
@@ -49,34 +50,28 @@ public class FotoPerfilRedond extends JPanel {
         }
     }
 
+    
+
     private void seleccionarFoto() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Selecciona tu foto de perfil");
         fileChooser.setFileFilter(new FileNameExtensionFilter(
                 "Imágenes (jpg, jpeg, png)", "jpg", "jpeg", "png"));
-
         int resultado = fileChooser.showOpenDialog(this);
         if (resultado != JFileChooser.APPROVE_OPTION) return;
-
         File archivoSeleccionado = fileChooser.getSelectedFile();
-
         try {
-            File carpetaDestino = new File(
-                    System.getProperty("user.home") + File.separator + "BolsaEmpleoFotos");
+            File carpetaDestino = new File(CARPETA_FOTOS);
             if (!carpetaDestino.exists()) carpetaDestino.mkdirs();
-
             String nombreOriginal = archivoSeleccionado.getName();
             String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.') + 1);
             String nombreArchivo = "perfil_" + System.currentTimeMillis() + "." + extension;
             File archivoDestino = new File(carpetaDestino, nombreArchivo);
-
             Files.copy(archivoSeleccionado.toPath(), archivoDestino.toPath(),
                     StandardCopyOption.REPLACE_EXISTING);
-
-            rutaFotoPerfil = archivoDestino.getAbsolutePath();
+            rutaFotoPerfil = CARPETA_FOTOS + File.separator + nombreArchivo;
             imagen = new ImageIcon(rutaFotoPerfil).getImage();
             repaint();
-
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this,
                     "No se pudo cargar la imagen: " + ex.getMessage(),

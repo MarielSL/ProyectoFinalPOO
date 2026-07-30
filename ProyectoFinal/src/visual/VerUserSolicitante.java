@@ -84,7 +84,12 @@ public class VerUserSolicitante extends JFrame {
 		userIcon.setIcon(new ImageIcon(VerUserSolicitante.class.getResource("/img/User Icon.png")));
 		Escalador.b(userIcon, 119, 108, 230, 230);
 		contentPane.add(userIcon);
-		colocarImagen(userIcon,"/img/User Icon.png");
+
+		if ((BolsaEmpleo.getInstancia().getLoginUser() == null) || (BolsaEmpleo.getInstancia().getLoginUser().getFotoPerfil() == null)) {
+		    colocarImagen(userIcon, "/img/User Icon.png");
+		} else {
+		    colocarImagenDesdeArchivo(userIcon, BolsaEmpleo.getInstancia().getLoginUser().getFotoPerfil());
+		}
 
 		JLabel lblNewLabel = new JLabel("Usuario");
 		lblNewLabel.setFont(new Font("Calibri", Font.PLAIN, Escalador.t(20)));
@@ -267,7 +272,7 @@ public class VerUserSolicitante extends JFrame {
 		BotonRedond btnMenu = new BotonRedond("",30);
 		btnMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BarraEmpresa menu = new BarraEmpresa();
+				BarraSolicitante menu = new BarraSolicitante();
 				menu.setVisible(true);
 			}
 		});
@@ -343,4 +348,28 @@ public class VerUserSolicitante extends JFrame {
 		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
 		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
+	
+	private void colocarImagenDesdeArchivo(JLabel label, String rutaAbsoluta) {
+	    ImageIcon icono = new ImageIcon(rutaAbsoluta);
+
+	    int anchoLabel = label.getWidth();
+	    int altoLabel = label.getHeight();
+	    int anchoImagen = icono.getIconWidth();
+	    int altoImagen = icono.getIconHeight();
+
+	    double escalaAncho = (double) anchoLabel / anchoImagen;
+	    double escalaAlto = (double) altoLabel / altoImagen;
+	    double escala = Math.max(escalaAncho, escalaAlto);
+
+	    int nuevoAncho = (int) (anchoImagen * escala);
+	    int nuevoAlto = (int) (altoImagen * escala);
+
+	    Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+	    label.setIcon(new ImageIcon(imagenEscalada));
+	    label.setText("");
+	    label.setHorizontalAlignment(JLabel.CENTER);
+	    label.setVerticalAlignment(JLabel.CENTER);
+	}
+	
+	
 }

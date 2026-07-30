@@ -65,4 +65,15 @@ public class Validaciones {
 		String soloDigitos = texto.replaceAll("[^0-9]", "");
 		return soloDigitos.length() == cantidadDigitos;
 	}
+	
+	public static boolean cedulaValida(String cedula) {
+
+	    if (cedula == null) {
+	        return false;
+	    }
+
+	    String soloNumeros = cedula.replaceAll("[^0-9]", "");
+
+	    return soloNumeros.length() == 11;
+	}
 }

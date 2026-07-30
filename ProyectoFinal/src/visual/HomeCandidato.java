@@ -74,7 +74,7 @@ public class HomeCandidato extends JFrame {
 			candidato = BolsaEmpleo.getInstancia().getLoginUser().getPersona();
 		}
 
-		setTitle("Inicio");
+		setTitle("Home Candidato");
 		Utilidades.aplicarIcono(this);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);

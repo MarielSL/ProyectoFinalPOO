@@ -69,6 +69,8 @@ public class RegistrarSolicitante extends JDialog {
 	private JCheckBox chkLicencia;
 	private JCheckBox chkEmpleado;
 	private ComboBoxRedond<TipoPersona> cbxTipo;
+	private CardLayout tipoLayout;
+	private JPanel pnlDatosTipo;
 	private JTextField txtUser;
 	private JPasswordField passwordField;
 	private JLabel lblVerPassword;
@@ -92,7 +94,6 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	public RegistrarSolicitante(Persona persona) {
-		setResizable(false);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarSolicitante.class.getResource("/img/AppIconoFull.png")));
 		this.mySolicitante = persona;
 		if(mySolicitante == null) {
@@ -182,8 +183,9 @@ public class RegistrarSolicitante extends JDialog {
 		panel_1.add(lblRegistrareParaAcceder);
 		
 				JLabel lblNewLabel = new JLabel("New label");
+				//lblNewLabel.setIcon(new ImageIcon(RegistrarSolicitante.class.getResource("/img/Fondo-General.png")));
 				lblNewLabel.setBounds(0, 0, 1902, 993);
-				colocarImagen(lblNewLabel,"/img/Registrar_Solicitante_Fondo.png");
+				colocarImagen(lblNewLabel,"/img/Fondo_Registrar.png");
 				panel.add(lblNewLabel);
 		btnAtras.setVisible(false);
 		btnAtras.addActionListener(new ActionListener() {
@@ -311,22 +313,12 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	private boolean validarPaso1() {
-		if (!Validaciones.camposLlenos(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), txtTelefono.getText(), txtCorreo.getText()) || cbxSexo.getSelectedIndex() == -1) {
-			JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
-		if (!Validaciones.soloNumeros(txtCedula.getText())) {
-			JOptionPane.showMessageDialog(null, "La c\u00E9dula solo debe contener n\u00FAmeros.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
-		if (!Validaciones.soloLetras(txtNombre.getText())) {
-			JOptionPane.showMessageDialog(null, "El nombre solo debe contener letras.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
-		if (!Validaciones.soloLetras(txtApellido.getText())) {
-			JOptionPane.showMessageDialog(null, "El apellido solo debe contener letras.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
+	    String soloDigitos = txtCedula.getText().replaceAll("[^0-9]", "");
+	    if (soloDigitos.length() < 11) {
+	        JOptionPane.showMessageDialog(null,"La cédula debe contener 11 dígitos. Actualmente tiene " + soloDigitos.length() + ".","Advertencia", JOptionPane.WARNING_MESSAGE);
+	        txtCedula.requestFocus();
+	        return false;
+	    }
 		if (!Validaciones.telefonoValido(txtTelefono.getText(), 10)) {
 			JOptionPane.showMessageDialog(null, "El tel\u00E9fono debe tener 10 d\u00EDgitos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
@@ -394,6 +386,7 @@ public class RegistrarSolicitante extends JDialog {
 		if(mySolicitante == null) {
 			String contrasena = new String(passwordField.getPassword());
 			Usuario newUser = new Usuario("U-" + BolsaEmpleo.generadorIdUser, txtUser.getText(), contrasena, txtCorreo.getText(), null, null, TipoUser.CANDIDATO, null);
+			newUser.setFotoPerfil(fotoPerfil.getRutaFotoPerfil());
 			this.user = newUser;
 
 			String id = "P-" + BolsaEmpleo.generadorIdPersona;
@@ -444,6 +437,9 @@ public class RegistrarSolicitante extends JDialog {
 			user.setCorreo(txtCorreo.getText());
 			user.setUsername(txtUser.getText());
 			user.setPassword(new String (passwordField.getPassword()));
+			 if (fotoPerfil.getRutaFotoPerfil() != null) {          
+		            user.setFotoPerfil(fotoPerfil.getRutaFotoPerfil());
+		        }
 
 			if(tipo == TipoPersona.UNIVERSITARIO) {
 				Universitario uni = (Universitario) mySolicitante;
@@ -536,15 +532,19 @@ public class RegistrarSolicitante extends JDialog {
 		paso.setLayout(null);
 		JLabel lblCedula = new JLabel("C\u00E9dula");
 		lblCedula.setForeground(new Color(0, 0, 51));
-		lblCedula.setFont(new Font("Calibri", Font.BOLD, 20));
-		lblCedula.setBounds(0, 43, 200, 20);
-		paso.add(lblCedula);
 		txtCedula = new TextFieldRedond(25);
+
+		((AbstractDocument) txtCedula.getDocument())
+		        .setDocumentFilter(new FiltroCedula());
+
 		txtCedula.setForeground(new Color(0, 0, 51));
 		txtCedula.setBackground(SystemColor.controlHighlight);
 		txtCedula.setFont(new Font("Calibri", Font.PLAIN, 18));
 		txtCedula.setBounds(0, 68, 294, 30);
 		paso.add(txtCedula);
+		lblCedula.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblCedula.setBounds(0, 43, 200, 20);
+		paso.add(lblCedula);
 		JLabel lblTelefono = new JLabel("Tel\u00E9fono");
 		lblTelefono.setForeground(new Color(0, 0, 51));
 		lblTelefono.setFont(new Font("Calibri", Font.BOLD, 20));
@@ -563,6 +563,8 @@ public class RegistrarSolicitante extends JDialog {
 		lblNombre.setBounds(0, 133, 200, 20);
 		paso.add(lblNombre);
 		txtNombre = new TextFieldRedond(25);
+		txtNombre = new TextFieldRedond(25);
+		((AbstractDocument) txtNombre.getDocument()).setDocumentFilter(new FiltroSoloLetras());
 		txtNombre.setForeground(new Color(0, 0, 51));
 		txtNombre.setBackground(SystemColor.controlHighlight);
 		txtNombre.setFont(new Font("Calibri", Font.PLAIN, 18));
@@ -574,6 +576,8 @@ public class RegistrarSolicitante extends JDialog {
 		lblApellido.setBounds(330, 133, 200, 20);
 		paso.add(lblApellido);
 		txtApellido = new TextFieldRedond(25);
+		txtApellido = new TextFieldRedond(25);
+		((AbstractDocument) txtApellido.getDocument()).setDocumentFilter(new FiltroSoloLetras());
 		txtApellido.setForeground(new Color(0, 0, 51));
 		txtApellido.setBackground(SystemColor.controlHighlight);
 		txtApellido.setFont(new Font("Calibri", Font.PLAIN, 18));
@@ -742,7 +746,65 @@ public class RegistrarSolicitante extends JDialog {
 				return popup;
 			}
 		});
+		cbxTipo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TipoPersona seleccionado = (TipoPersona) cbxTipo.getSelectedItem();
+				if (seleccionado != null) {
+					tipoLayout.show(pnlDatosTipo, seleccionado.name());
+				}
+			}
+		});
 		paso.add(cbxTipo);
+		tipoLayout = new CardLayout();
+		pnlDatosTipo = new JPanel(tipoLayout);
+		pnlDatosTipo.setOpaque(false);
+		pnlDatosTipo.setBounds(0, 113, 624, 160);
+		paso.add(pnlDatosTipo);
+		JPanel cardUniversitario = new JPanel();
+		cardUniversitario.setOpaque(false);
+		cardUniversitario.setLayout(null);
+		JLabel lblCarrera = new JLabel("Carrera");
+		lblCarrera.setForeground(new Color(0, 0, 51));
+		lblCarrera.setFont(new Font("Calibri", Font.BOLD, 18));
+		lblCarrera.setBounds(0, 0, 200, 20);
+		cardUniversitario.add(lblCarrera);
+		txtCarrera = new TextFieldRedond(25);
+		txtCarrera.setForeground(new Color(0, 0, 51));
+		txtCarrera.setBackground(SystemColor.controlHighlight);
+		txtCarrera.setFont(new Font("Calibri", Font.PLAIN, 18));
+		txtCarrera.setBounds(0, 25, 294, 30);
+		cardUniversitario.add(txtCarrera);
+		pnlDatosTipo.add(cardUniversitario, TipoPersona.UNIVERSITARIO.name());
+		JPanel cardTecnico = new JPanel();
+		cardTecnico.setOpaque(false);
+		cardTecnico.setLayout(null);
+		JLabel lblArea = new JLabel("\u00C1rea t\u00E9cnica");
+		lblArea.setForeground(new Color(0, 0, 51));
+		lblArea.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblArea.setBounds(0, 0, 200, 20);
+		cardTecnico.add(lblArea);
+		txtAreaTecnico = new TextFieldRedond(25);
+		txtAreaTecnico.setForeground(new Color(0, 0, 51));
+		txtAreaTecnico.setBackground(SystemColor.controlHighlight);
+		txtAreaTecnico.setFont(new Font("Calibri", Font.PLAIN, 18));
+		txtAreaTecnico.setBounds(0, 25, 294, 30);
+		cardTecnico.add(txtAreaTecnico);
+		pnlDatosTipo.add(cardTecnico, TipoPersona.TECNICO.name());
+		JPanel cardObrero = new JPanel();
+		cardObrero.setOpaque(false);
+		cardObrero.setLayout(null);
+		JLabel lblHabilidades = new JLabel("Habilidades");
+		lblHabilidades.setForeground(new Color(0, 0, 51));
+		lblHabilidades.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblHabilidades.setBounds(0, 0, 200, 20);
+		cardObrero.add(lblHabilidades);
+		txtHabilidades = new TextFieldRedond(25);
+		txtHabilidades.setForeground(new Color(0, 0, 51));
+		txtHabilidades.setBackground(SystemColor.controlHighlight);
+		txtHabilidades.setFont(new Font("Calibri", Font.PLAIN, 18));
+		txtHabilidades.setBounds(0, 25, 500, 30);
+		cardObrero.add(txtHabilidades);
+		pnlDatosTipo.add(cardObrero, TipoPersona.OBRERO.name());
 
 		JLabel lblNewLabel_2 = new JLabel("A\u00F1os de Experiencia");
 		lblNewLabel_2.setForeground(new Color(0, 0, 51));
@@ -768,45 +830,6 @@ public class RegistrarSolicitante extends JDialog {
 		lblInformacin.setFont(new Font("Calibri", Font.PLAIN, 17));
 		lblInformacin.setBounds(109, 1, 130, 16);
 		paso.add(lblInformacin);
-		
-		txtCarrera = new TextFieldRedond(25);
-		txtCarrera.setForeground(new Color(0, 0, 51));
-		txtCarrera.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtCarrera.setBackground(SystemColor.controlHighlight);
-		txtCarrera.setBounds(0, 159, 294, 30);
-		paso.add(txtCarrera);
-		
-		JLabel label = new JLabel("Carrera");
-		label.setForeground(new Color(0, 0, 51));
-		label.setFont(new Font("Calibri", Font.BOLD, 18));
-		label.setBounds(0, 136, 200, 20);
-		paso.add(label);
-		
-		txtHabilidades = new TextFieldRedond(25);
-		txtHabilidades.setForeground(new Color(0, 0, 51));
-		txtHabilidades.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtHabilidades.setBackground(SystemColor.controlHighlight);
-		txtHabilidades.setBounds(0, 333, 500, 50);
-		paso.add(txtHabilidades);
-		
-		JLabel label_3 = new JLabel("Habilidades");
-		label_3.setForeground(new Color(0, 0, 51));
-		label_3.setFont(new Font("Calibri", Font.BOLD, 18));
-		label_3.setBounds(0, 308, 200, 20);
-		paso.add(label_3);
-		
-		JLabel label_4 = new JLabel("\u00C1rea t\u00E9cnica");
-		label_4.setForeground(new Color(0, 0, 51));
-		label_4.setFont(new Font("Calibri", Font.BOLD, 18));
-		label_4.setBounds(0, 218, 200, 20);
-		paso.add(label_4);
-		
-		txtAreaTecnico = new TextFieldRedond(25);
-		txtAreaTecnico.setForeground(new Color(0, 0, 51));
-		txtAreaTecnico.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtAreaTecnico.setBackground(SystemColor.controlHighlight);
-		txtAreaTecnico.setBounds(0, 243, 294, 30);
-		paso.add(txtAreaTecnico);
 
 		return paso;
 	}
@@ -845,10 +868,10 @@ public class RegistrarSolicitante extends JDialog {
 
 		caracterOculto = passwordField.getEchoChar();
 
-		lblVerPassword = new JLabel("aaa");
+		lblVerPassword = new JLabel("");
 		lblVerPassword.setOpaque(false);
 		lblVerPassword.setHorizontalAlignment(JLabel.CENTER);
-		lblVerPassword.setBounds(262, 179, 18, 18);
+		lblVerPassword.setBounds(268, 167, 18, 18);
 		lblVerPassword.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				alternarVisibilidadPassword();

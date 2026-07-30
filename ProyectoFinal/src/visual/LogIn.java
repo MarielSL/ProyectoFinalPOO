@@ -56,7 +56,7 @@ public class LogIn extends JDialog {
 		}
 	}
 
-	/**
+	/** 
 	 * Create the dialog.
 	 */
 	public LogIn() {
