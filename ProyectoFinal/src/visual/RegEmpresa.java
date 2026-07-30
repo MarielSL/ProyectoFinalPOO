@@ -18,11 +18,14 @@ import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.Color;
 import java.awt.Font;
 
 import java.awt.SystemColor;
 import javax.swing.JPasswordField;
+import javax.swing.text.AbstractDocument;
 import java.awt.Toolkit;
 import javax.swing.DefaultComboBoxModel;
 
@@ -37,6 +40,9 @@ public class RegEmpresa extends JDialog {
 	private TextFieldRedond txtCorreo;
 	private TextFieldRedond txtUser;
 	private JPasswordField passwordField;
+	private JLabel lblVerPassword;
+	private char caracterOculto;
+	private boolean passwordVisible = false;
 	private FotoPerfilRedond fotoPerfil;
 	private Empresa myEmpresa = null;
 	private BotonRedond btnGuardar;
@@ -168,6 +174,7 @@ public class RegEmpresa extends JDialog {
 		contentPanel.add(lblNewLabel_2);
 
 		txtTelefono = new TextFieldRedond(25);
+		((javax.swing.text.AbstractDocument) txtTelefono.getDocument()).setDocumentFilter(new FiltroTelefono());
 		txtTelefono.setFont(new Font("Calibri", Font.PLAIN, 15));
 		txtTelefono.setForeground(new Color(0, 0, 51));
 		txtTelefono.setBackground(SystemColor.controlHighlight);
@@ -263,6 +270,23 @@ public class RegEmpresa extends JDialog {
 		passwordField = new PasswordFieldRedond(25);
 		passwordField.setBackground(SystemColor.controlHighlight);
 		passwordField.setBounds(375, 238, 214, 26);
+
+		((AbstractDocument) passwordField.getDocument()).setDocumentFilter(new FiltroLongitudMaxima(14));
+
+		caracterOculto = passwordField.getEchoChar();
+
+		lblVerPassword = new JLabel("");
+		lblVerPassword.setOpaque(false);
+		lblVerPassword.setHorizontalAlignment(JLabel.CENTER);
+		lblVerPassword.setBounds(563, 242, 18, 18);
+		lblVerPassword.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				alternarVisibilidadPassword();
+			}
+		});
+		colocarImagen(lblVerPassword, "/img/ver.png");
+
+		contentPanel.add(lblVerPassword);
 		contentPanel.add(passwordField);
 
 		fotoPerfil = new FotoPerfilRedond(120);
@@ -319,6 +343,18 @@ public class RegEmpresa extends JDialog {
 		cbxTipo.setSelectedIndex(-1);
 		txtUser.setText("");
 		passwordField.setText("");
+	}
+
+	private void alternarVisibilidadPassword() {
+		if (passwordVisible) {
+			passwordField.setEchoChar(caracterOculto);
+			colocarImagen(lblVerPassword, "/img/ver.png");
+			passwordVisible = false;
+		} else {
+			passwordField.setEchoChar((char) 0);
+			colocarImagen(lblVerPassword, "/img/esconder.png");
+			passwordVisible = true;
+		}
 	}
 
 	private void colocarImagen(JLabel label, String ruta) {

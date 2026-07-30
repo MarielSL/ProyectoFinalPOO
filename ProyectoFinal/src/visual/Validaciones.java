@@ -59,9 +59,10 @@ public class Validaciones {
 	}
 	
 	public static boolean telefonoValido(String texto, int cantidadDigitos) {
-		if (!soloNumeros(texto)) {
+		if (texto == null) {
 			return false;
 		}
-		return texto.trim().length() == cantidadDigitos;
+		String soloDigitos = texto.replaceAll("[^0-9]", "");
+		return soloDigitos.length() == cantidadDigitos;
 	}
 }

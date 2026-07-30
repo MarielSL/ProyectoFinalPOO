@@ -9,6 +9,8 @@ import java.awt.Image;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -25,6 +27,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.AbstractDocument;
 import logico.BolsaEmpleo;
 import logico.Obrero;
 import logico.Persona;
@@ -69,6 +72,9 @@ public class RegistrarSolicitante extends JDialog {
 	private TextFieldRedond txtHabilidades;
 	private JTextField txtUser;
 	private JPasswordField passwordField;
+	private JLabel lblVerPassword;
+	private char caracterOculto;
+	private boolean passwordVisible = false;
 	private FotoPerfilRedond fotoPerfil;
 	private Persona mySolicitante = null;
 	private JSpinner spnExp;
@@ -467,6 +473,40 @@ public class RegistrarSolicitante extends JDialog {
 		actualizarDots();
 	}
 
+	private void alternarVisibilidadPassword() {
+		if (passwordVisible) {
+			passwordField.setEchoChar(caracterOculto);
+			colocarImagen(lblVerPassword, "/img/ver.png");
+			passwordVisible = false;
+		} else {
+			passwordField.setEchoChar((char) 0);
+			colocarImagen(lblVerPassword, "/img/esconder.png");
+			passwordVisible = true;
+		}
+	}
+
+	private void colocarImagen(JLabel label, String ruta) {
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+
+		int anchoImagen = icono.getIconWidth();
+		int altoImagen = icono.getIconHeight();
+
+		int anchoLabel = label.getWidth();
+		int altoLabel = label.getHeight();
+
+		double escalaAncho = (double) anchoLabel / anchoImagen;
+		double escalaAlto = (double) altoLabel / altoImagen;
+
+		double escala = Math.max(escalaAncho, escalaAlto);
+		int nuevoAncho = (int) (anchoImagen * escala);
+		int nuevoAlto = (int) (altoImagen * escala);
+
+		Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+		label.setIcon(iconoEscalado);
+		label.repaint();
+	}
+
 	private JPanel crearPaso1() {
 		JPanel paso = new JPanel();
 		paso.setOpaque(false);
@@ -488,6 +528,7 @@ public class RegistrarSolicitante extends JDialog {
 		lblTelefono.setBounds(330, 0, 200, 20);
 		paso.add(lblTelefono);
 		txtTelefono = new TextFieldRedond(25);
+		((javax.swing.text.AbstractDocument) txtTelefono.getDocument()).setDocumentFilter(new FiltroTelefono());
 		txtTelefono.setForeground(new Color(0, 0, 51));
 		txtTelefono.setBackground(SystemColor.controlHighlight);
 		txtTelefono.setFont(new Font("Calibri", Font.PLAIN, 18));
@@ -758,6 +799,23 @@ public class RegistrarSolicitante extends JDialog {
 		passwordField.setBackground(SystemColor.controlHighlight);
 		passwordField.setFont(new Font("Calibri", Font.PLAIN, 18));
 		passwordField.setBounds(0, 161, 294, 30);
+
+		((AbstractDocument) passwordField.getDocument()).setDocumentFilter(new FiltroLongitudMaxima(14));
+
+		caracterOculto = passwordField.getEchoChar();
+
+		lblVerPassword = new JLabel("");
+		lblVerPassword.setOpaque(false);
+		lblVerPassword.setHorizontalAlignment(JLabel.CENTER);
+		lblVerPassword.setBounds(268, 167, 18, 18);
+		lblVerPassword.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				alternarVisibilidadPassword();
+			}
+		});
+		colocarImagen(lblVerPassword, "/img/ver.png");
+
+		paso.add(lblVerPassword);
 		paso.add(passwordField);
 
 		fotoPerfil = new FotoPerfilRedond(114);
