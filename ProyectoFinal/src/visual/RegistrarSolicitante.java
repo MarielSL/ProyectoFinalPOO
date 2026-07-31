@@ -555,7 +555,7 @@ public class RegistrarSolicitante extends JDialog {
 		lblTelefono.setBounds(330, 43, 200, 20);
 		paso.add(lblTelefono);
 		txtTelefono = new TextFieldRedond(25);
-		((javax.swing.text.AbstractDocument) txtTelefono.getDocument()).setDocumentFilter(new FiltroTelefono());
+		((AbstractDocument) txtTelefono.getDocument()).setDocumentFilter(Validaciones.filtroTelefonoFormateado());
 		txtTelefono.setForeground(new Color(0, 0, 51));
 		txtTelefono.setBackground(SystemColor.controlHighlight);
 		txtTelefono.setFont(new Font("Calibri", Font.PLAIN, 18));
@@ -852,7 +852,7 @@ public class RegistrarSolicitante extends JDialog {
 		passwordField.setFont(new Font("Calibri", Font.PLAIN, 18));
 		passwordField.setBounds(0, 174, 294, 30);
 
-		((AbstractDocument) passwordField.getDocument()).setDocumentFilter(new FiltroLongitudMaxima(14));
+		((AbstractDocument) passwordField.getDocument()).setDocumentFilter(Validaciones.filtroLongitudMaxima(14));
 
 		caracterOculto = passwordField.getEchoChar();
 

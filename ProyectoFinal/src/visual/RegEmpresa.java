@@ -144,6 +144,9 @@ public class RegEmpresa extends JDialog {
 		txtRnc.setBackground(SystemColor.controlHighlight);
 		txtRnc.setColumns(10);
 
+		javax.swing.text.AbstractDocument docRnc = (javax.swing.text.AbstractDocument) txtRnc.getDocument();
+		docRnc.setDocumentFilter(Validaciones.filtroRncFormateado());
+
 		JLabel lblNewLabel_2 = new JLabel("Tel\u00E9fono:");
 		lblNewLabel_2.setForeground(new Color(0, 0, 51));
 		lblNewLabel_2.setBounds(62, 497, 92, 16);
@@ -153,7 +156,10 @@ public class RegEmpresa extends JDialog {
 		txtTelefono = new TextFieldRedond(25);
 		txtTelefono.setBounds(61, 519, 214, 26);
 		panel.add(txtTelefono);
-		((javax.swing.text.AbstractDocument) txtTelefono.getDocument()).setDocumentFilter(new FiltroTelefono());
+
+		javax.swing.text.AbstractDocument docTelefono = (javax.swing.text.AbstractDocument) txtTelefono.getDocument();
+		docTelefono.setDocumentFilter(Validaciones.filtroTelefonoFormateado());
+
 		txtTelefono.setFont(new Font("Calibri", Font.PLAIN, 15));
 		txtTelefono.setForeground(new Color(0, 0, 51));
 		txtTelefono.setBackground(SystemColor.controlHighlight);
@@ -344,7 +350,8 @@ public class RegEmpresa extends JDialog {
 			}
 		});
 
-		((AbstractDocument) passwordField.getDocument()).setDocumentFilter(new FiltroLongitudMaxima(14));
+		javax.swing.text.AbstractDocument docPassword = (javax.swing.text.AbstractDocument) passwordField.getDocument();
+		docPassword.setDocumentFilter(Validaciones.filtroLongitudMaxima(14));
 
 		caracterOculto = passwordField.getEchoChar();
 
