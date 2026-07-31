@@ -117,7 +117,7 @@ public class BarraAdmin extends JDialog {
 			btnDashboard.setFont(new Font("Calibri", Font.PLAIN, 20));
 			btnDashboard.setColorHover(new Color(255, 153, 102));
 			btnDashboard.setBackground(Color.WHITE);
-			btnDashboard.setBounds(117, 32, 221, 45);
+			btnDashboard.setBounds(117, 41, 221, 45);
 			panelBotones.add(btnDashboard);
 			
 			BotonConSombra btnOferta = new BotonConSombra("Dashboard", 25);
@@ -134,25 +134,9 @@ public class BarraAdmin extends JDialog {
 			btnOferta.setFont(new Font("Calibri", Font.PLAIN, 20));
 			btnOferta.setColorHover(new Color(255, 153, 102));
 			btnOferta.setBackground(Color.WHITE);
-			btnOferta.setBounds(117, 109, 221, 45);
+			btnOferta.setBounds(117, 127, 221, 45);
 			panelBotones.add(btnOferta);
 			
-			BotonConSombra btnSolicitantes = new BotonConSombra("Dashboard", 25);
-			btnSolicitantes.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-					VerSolicitantesAdmin ver = new VerSolicitantesAdmin();
-					setModal(true);
-					ver.setVisible(true);
-				}
-			});
-			btnSolicitantes.setText("Solicitantes");
-			btnSolicitantes.setHorizontalAlignment(SwingConstants.LEFT);
-			btnSolicitantes.setFont(new Font("Calibri", Font.PLAIN, 20));
-			btnSolicitantes.setColorHover(new Color(255, 153, 102));
-			btnSolicitantes.setBackground(Color.WHITE);
-			btnSolicitantes.setBounds(117, 186, 221, 45);
-			panelBotones.add(btnSolicitantes);
 			
 			BotonConSombra btnEmpresas = new BotonConSombra("Dashboard", 25);
 			btnEmpresas.addActionListener(new ActionListener() {
@@ -169,7 +153,7 @@ public class BarraAdmin extends JDialog {
 			btnEmpresas.setFont(new Font("Calibri", Font.PLAIN, 20));
 			btnEmpresas.setColorHover(new Color(255, 153, 102));
 			btnEmpresas.setBackground(Color.WHITE);
-			btnEmpresas.setBounds(117, 263, 221, 45);
+			btnEmpresas.setBounds(117, 213, 221, 45);
 			panelBotones.add(btnEmpresas);
 			
 			BotonConSombra btnReportes = new BotonConSombra("Dashboard", 25);
@@ -186,7 +170,7 @@ public class BarraAdmin extends JDialog {
 			btnReportes.setFont(new Font("Calibri", Font.PLAIN, 20));
 			btnReportes.setColorHover(new Color(255, 153, 102));
 			btnReportes.setBackground(Color.WHITE);
-			btnReportes.setBounds(117, 340, 221, 45);
+			btnReportes.setBounds(117, 299, 221, 45);
 			panelBotones.add(btnReportes);
 			
 			BotonConSombra btnUsuarios = new BotonConSombra("Dashboard", 25);
@@ -203,7 +187,7 @@ public class BarraAdmin extends JDialog {
 			btnUsuarios.setFont(new Font("Calibri", Font.PLAIN, 20));
 			btnUsuarios.setColorHover(new Color(255, 153, 102));
 			btnUsuarios.setBackground(Color.WHITE);
-			btnUsuarios.setBounds(117, 417, 221, 45);
+			btnUsuarios.setBounds(117, 385, 221, 45);
 			panelBotones.add(btnUsuarios);
 			
 			BotonConSombra btnRespaldo = new BotonConSombra("Dashboard", 25);
@@ -216,7 +200,7 @@ public class BarraAdmin extends JDialog {
 			btnRespaldo.setFont(new Font("Calibri", Font.PLAIN, 20));
 			btnRespaldo.setColorHover(new Color(255, 153, 102));
 			btnRespaldo.setBackground(Color.WHITE);
-			btnRespaldo.setBounds(117, 494, 221, 45);
+			btnRespaldo.setBounds(117, 471, 221, 45);
 			panelBotones.add(btnRespaldo);
 			
 			BotonConSombra btnLogout = new BotonConSombra("Dashboard", 25);
@@ -233,46 +217,41 @@ public class BarraAdmin extends JDialog {
 			btnLogout.setFont(new Font("Calibri", Font.PLAIN, 20));
 			btnLogout.setColorHover(new Color(255, 153, 102));
 			btnLogout.setBackground(Color.WHITE);
-			btnLogout.setBounds(117, 571, 221, 45);
+			btnLogout.setBounds(117, 557, 221, 45);
 			panelBotones.add(btnLogout);
 			
 			JLabel iconoDashboard = new JLabel("");
-			iconoDashboard.setBounds(53, 45, 30, 30);
+			iconoDashboard.setBounds(53, 54, 30, 30);
 			colocarImagen(iconoDashboard,"/img/hogar.png");
 			panelBotones.add(iconoDashboard);
 			
 			JLabel iconoEmpresas = new JLabel("");
-			iconoEmpresas.setBounds(53, 270, 30, 30);
+			iconoEmpresas.setBounds(53, 222, 30, 30);
 			colocarImagen(iconoEmpresas,"/img/maletin.png");
 			panelBotones.add(iconoEmpresas);
 			
-			JLabel iconoSolicitantes = new JLabel("");
-			iconoSolicitantes.setBounds(53, 195, 30, 30);
-			colocarImagen(iconoSolicitantes,"/img/portapapeles.png");
-			panelBotones.add(iconoSolicitantes);
-			
 			JLabel iconoReportes = new JLabel("");
-			iconoReportes.setBounds(53, 345, 30, 30);
+			iconoReportes.setBounds(53, 306, 30, 30);
 			colocarImagen(iconoReportes,"/img/notificacion.png");
 			panelBotones.add(iconoReportes);
 			
 			JLabel iconoUsuarios = new JLabel("");
-			iconoUsuarios.setBounds(56, 420, 30, 30);
+			iconoUsuarios.setBounds(56, 390, 30, 30);
 			colocarImagen(iconoUsuarios, "/img/usuarios.png");
 			panelBotones.add(iconoUsuarios);
 			
 			JLabel iconoGeneralidades = new JLabel("");
-			iconoGeneralidades.setBounds(53, 495, 30, 30);
+			iconoGeneralidades.setBounds(53, 474, 30, 30);
 			colocarImagen(iconoGeneralidades, "/img/configuracion.png");
 			panelBotones.add(iconoGeneralidades);
 			
 			JLabel iconoLogout = new JLabel("");
-			iconoLogout.setBounds(53, 570, 30, 30);
+			iconoLogout.setBounds(53, 558, 30, 30);
 			colocarImagen(iconoLogout,"/img/log_out.png");
 			panelBotones.add(iconoLogout);
 			
 			JLabel iconoOferta = new JLabel("");
-			iconoOferta.setBounds(56, 120, 30, 30);
+			iconoOferta.setBounds(56, 138, 30, 30);
 			colocarImagen(iconoOferta,"/img/oferta-de-trabajo.png");
 			panelBotones.add(iconoOferta);
 			

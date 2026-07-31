@@ -6,12 +6,15 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -79,13 +82,14 @@ public class VerReportesAdmin extends JFrame {
 	private void construirHeader(JPanel panel, int margen, int anchoContenido) {
 		PanelConSombra panelHeader = new PanelConSombra(25);
 		panelHeader.setBackground(new Color(0, 0, 51));
-		panelHeader.setBounds(0, 0, dim.width, 70);
+		panelHeader.setBounds(0, 0, 1920, 82);
 		panel.add(panelHeader);
 		panelHeader.setLayout(null);
 
 		BotonRedond btnAtras = new BotonRedond("", 18);
 		btnAtras.setBackground(new Color(0, 0, 51));
 		btnAtras.setBounds(20, 12, 46, 46);
+		colocarIconoBoton(btnAtras, "/img/menu-dots-vertical(White).png",25,25);
 		btnAtras.setBorderPainted(false);
 		btnAtras.setContentAreaFilled(false);
 		btnAtras.setFocusPainted(false);
@@ -100,7 +104,7 @@ public class VerReportesAdmin extends JFrame {
 		panelHeader.add(btnAtras);
 
 		JLabel lblTitulo = new JLabel("Reportes");
-		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblTitulo.setForeground(new Color(255, 51, 51));
 		lblTitulo.setBounds(74, 22, 400, 30);
 		panelHeader.add(lblTitulo);
@@ -108,6 +112,11 @@ public class VerReportesAdmin extends JFrame {
 		JLabel lblChevron = new JLabel();
 		lblChevron.setBounds(dim.width - 40, 26, 18, 18);
 		panelHeader.add(lblChevron);
+		
+		JLabel lblNewLabel_1 = new JLabel("");
+		lblNewLabel_1.setBounds(1784, 0, 114, 88);
+		colocarImagen(lblNewLabel_1, "/img/iconoLogo_FondoOscuro.png");
+		panelHeader.add(lblNewLabel_1);
 	}
 
 	private void construirReportes(JPanel panel, int margen, int anchoContenido) {
@@ -298,4 +307,37 @@ public class VerReportesAdmin extends JFrame {
 		}
 		return contador;
 	}
+	
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	    boton.setIcon(new ImageIcon(imagenEscalada));
+	}
+	
+	private void colocarImagen(JLabel label, String ruta) {
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+
+		int anchoLabel = label.getWidth();
+		int altoLabel = label.getHeight();
+
+		int anchoImagen = icono.getIconWidth();
+		int altoImagen = icono.getIconHeight();
+
+		double escalaAncho = (double) anchoLabel / anchoImagen;
+		double escalaAlto = (double) altoLabel / altoImagen;
+
+		double escala = Math.max(escalaAncho, escalaAlto);
+
+		int nuevoAncho = (int) (anchoImagen * escala);
+		int nuevoAlto = (int) (altoImagen * escala);
+
+		Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+
+		label.setIcon(iconoEscalado);
+		label.setText("");
+		label.setHorizontalAlignment(JLabel.CENTER);
+		label.setVerticalAlignment(JLabel.CENTER);
+	}
+	
 }

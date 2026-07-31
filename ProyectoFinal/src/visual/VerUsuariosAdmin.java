@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -23,8 +24,10 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -47,6 +50,7 @@ public class VerUsuariosAdmin extends JFrame {
 	private JPanel pnlTabla;
 	private JLabel lblIlustracion;
 	private JTable table;
+	private javax.swing.table.TableRowSorter<DefaultTableModel> sorterUsuarios; 
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -93,41 +97,70 @@ public class VerUsuariosAdmin extends JFrame {
 		construirBusqueda(panel, margen, anchoContenido);
 		construirContenido(panel, margen, anchoContenido);
 
+		PanelConSombra panelConSombra = new PanelConSombra(18);
+		panelConSombra.setLayout(null);
+		panelConSombra.setBackground(new Color(255, 224, 178));
+		panelConSombra.setBounds(1301, 110, 477, 90);
+		panel.add(panelConSombra);
+
+		JLabel label = new JLabel();
+		label.setBounds(12, 23, 40, 40);
+		colocarImagen(label,"/img/candidatos_naranja.png");
+		panelConSombra.add(label);
+
+		JLabel lblCandidatos = new JLabel("Candidatos");
+		lblCandidatos.setForeground(new Color(204, 102, 0));
+		lblCandidatos.setFont(new Font("Calibri", Font.BOLD, 17));
+		lblCandidatos.setBounds(64, 12, 674, 20);
+		panelConSombra.add(lblCandidatos);
+
+		JLabel label_2 = new JLabel(String.valueOf(contarCandidatos()));
+		label_2.setForeground(new Color(204, 102, 0));
+		label_2.setFont(new Font("Calibri", Font.BOLD, 35));
+		label_2.setBounds(64, 34, 674, 36);
+		panelConSombra.add(label_2);
+
 		cargarDatos();
 	}
 
 	private void construirHeader(JPanel panel, int margen, int anchoContenido) {
 		PanelConSombra panelHeader = new PanelConSombra(25);
 		panelHeader.setBackground(new Color(0, 0, 51));
-		panelHeader.setBounds(0, 0, dim.width, 70);
+		panelHeader.setBounds(0, 0, 1920, 90);
 		panel.add(panelHeader);
 		panelHeader.setLayout(null);
 
 		BotonRedond btnAtras = new BotonRedond("", 18);
 		btnAtras.setBackground(new Color(0, 0, 51));
-		btnAtras.setBounds(20, 12, 46, 46);
+		btnAtras.setBounds(12, 20, 46, 46);
 		btnAtras.setBorderPainted(false);
 		btnAtras.setContentAreaFilled(false);
 		btnAtras.setFocusPainted(false);
 		btnAtras.setOpaque(false);
+		colocarIconoBoton(btnAtras,"/img/menu-dots-vertical(White).png",25,25);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				HomeAdministrador home = new HomeAdministrador();
+				BarraAdmin home = new BarraAdmin();
 				home.setVisible(true);
 				dispose();
+
 			}
 		});
 		panelHeader.add(btnAtras);
 
 		JLabel lblTitulo = new JLabel("Usuarios");
-		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 35));
 		lblTitulo.setForeground(new Color(255, 51, 51));
-		lblTitulo.setBounds(74, 22, 400, 30);
+		lblTitulo.setBounds(77, 28, 400, 30);
 		panelHeader.add(lblTitulo);
+		
+		
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setBounds(1805, 0, 86, 90);
+		colocarImagen(lblNewLabel,"/img/iconoLogo_FondoOscuro.png");
+		panelHeader.add(lblNewLabel);
 
-		JLabel lblChevron = new JLabel();
-		lblChevron.setBounds(dim.width - 40, 26, 18, 18);
-		panelHeader.add(lblChevron);
+
 	}
 
 	private void construirTarjetas(JPanel panel, int margen, int anchoContenido) {
@@ -136,48 +169,55 @@ public class VerUsuariosAdmin extends JFrame {
 		int anchoTarjeta = (anchoCards - 24) / 2;
 
 		PanelConSombra panelTotalUsuarios = new PanelConSombra(18);
-		panelTotalUsuarios.setBackground(new Color(255, 224, 178));
-		panelTotalUsuarios.setBounds(125, 110, anchoTarjeta, 90);
+		panelTotalUsuarios.setBackground(new Color(195, 220, 255));
+		panelTotalUsuarios.setBounds(113, 110, 485, 90);
 		panel.add(panelTotalUsuarios);
 		panelTotalUsuarios.setLayout(null);
 
 		JLabel lblIconoTotal = new JLabel();
-		lblIconoTotal.setBounds(16, 16, 40, 40);
+		lblIconoTotal.setBounds(12, 23, 40, 40);
+		colocarImagen(lblIconoTotal, "/img/user_azul.png");
 		panelTotalUsuarios.add(lblIconoTotal);
 
-		JLabel lblTotalUsuarios = new JLabel("Total de usuarios");
-		lblTotalUsuarios.setFont(new Font("Calibri", Font.PLAIN, 15));
-		lblTotalUsuarios.setForeground(new Color(204, 102, 0));
+		JLabel lblTotalUsuarios = new JLabel("Total de Usuarios");
+		lblTotalUsuarios.setFont(new Font("Calibri", Font.BOLD, 17));
+		lblTotalUsuarios.setForeground(new Color(65, 95, 170));
 		lblTotalUsuarios.setBounds(64, 12, anchoTarjeta - 84, 20);
 		panelTotalUsuarios.add(lblTotalUsuarios);
 
 		JLabel lblTotalUsuariosNum = new JLabel(String.valueOf(contarTotalUsuarios()));
-		lblTotalUsuariosNum.setFont(new Font("Calibri", Font.BOLD, 30));
-		lblTotalUsuariosNum.setForeground(new Color(204, 102, 0));
-		lblTotalUsuariosNum.setBounds(64, 34, anchoTarjeta - 84, 36);
+		lblTotalUsuariosNum.setFont(new Font("Calibri", Font.BOLD, 35));
+		lblTotalUsuariosNum.setForeground(new Color(65, 95, 170));
+		lblTotalUsuariosNum.setBounds(64, 34, 72, 36);
 		panelTotalUsuarios.add(lblTotalUsuariosNum);
 
 		PanelConSombra panelAdministradores = new PanelConSombra(18);
 		panelAdministradores.setBackground(new Color(198, 239, 206));
-		panelAdministradores.setBounds(1008, 110, anchoTarjeta, 90);
+		panelAdministradores.setBounds(711, 110, 477, 90);
 		panel.add(panelAdministradores);
 		panelAdministradores.setLayout(null);
 
 		JLabel lblIconoAdmins = new JLabel();
-		lblIconoAdmins.setBounds(16, 16, 40, 40);
+		lblIconoAdmins.setBounds(12, 23, 40, 40);
+		colocarImagen(lblIconoAdmins, "/img/maletin_verde.png");
 		panelAdministradores.add(lblIconoAdmins);
 
-		JLabel lblAdministradores = new JLabel("Administradores");
-		lblAdministradores.setFont(new Font("Calibri", Font.PLAIN, 15));
+		JLabel lblAdministradores = new JLabel("Empresas");
+		lblAdministradores.setFont(new Font("Calibri", Font.BOLD, 17));
 		lblAdministradores.setForeground(new Color(46, 125, 50));
 		lblAdministradores.setBounds(64, 12, anchoTarjeta - 84, 20);
 		panelAdministradores.add(lblAdministradores);
 
-		JLabel lblAdministradoresNum = new JLabel(String.valueOf(contarAdministradores()));
-		lblAdministradoresNum.setFont(new Font("Calibri", Font.BOLD, 30));
+		JLabel lblAdministradoresNum = new JLabel(String.valueOf(contarEmpresas()));
+		lblAdministradoresNum.setFont(new Font("Calibri", Font.BOLD, 35));
 		lblAdministradoresNum.setForeground(new Color(46, 125, 50));
 		lblAdministradoresNum.setBounds(64, 34, anchoTarjeta - 84, 36);
 		panelAdministradores.add(lblAdministradoresNum);
+		
+		JLabel icono = new JLabel("");
+		icono.setBounds(1784, 0, 114, 88);
+		colocarImagen(icono, "/img/iconoLogo_FondoOscuro.png");
+		panelAdministradores.add(icono);
 	}
 
 	private void construirBusqueda(JPanel panel, int margen, int anchoContenido) {
@@ -197,10 +237,15 @@ public class VerUsuariosAdmin extends JFrame {
 		cbxRol.setFont(new Font("Calibri", Font.PLAIN, 15));
 		cbxRol.setForeground(Color.BLACK);
 		cbxRol.setBackground(Color.WHITE);
-		cbxRol.setModel(new DefaultComboBoxModel<String>(new String[] { "Todos", "Candidato", "Empresa", "Administrador" }));
+		cbxRol.setModel(new DefaultComboBoxModel<String>(new String[] { "Todos", "Candidato", "Empresa"}));
 		cbxRol.setSelectedIndex(0);
 		cbxRol.setBounds(anchoContenido - 220, 20, 190, 28);
-		panelBusqueda.add(cbxRol);
+		panelBusqueda.add(cbxRol);	
+		cbxRol.addActionListener(new ActionListener() {  
+			public void actionPerformed(ActionEvent e) {
+				aplicarFiltroRol();
+			}
+		});
 	}
 
 	private void construirContenido(JPanel panel, int margen, int anchoContenido) {
@@ -274,7 +319,11 @@ public class VerUsuariosAdmin extends JFrame {
 		table.setShowGrid(false);
 		table.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 15));
 		table.getTableHeader().setForeground(new Color(0, 0, 51));
+		table.setDefaultRenderer(Object.class, new RenderCentrado());
 		table.getColumnModel().getColumn(2).setCellRenderer(new RenderBadge());
+
+		sorterUsuarios = new javax.swing.table.TableRowSorter<DefaultTableModel>((DefaultTableModel) table.getModel()); 
+		table.setRowSorter(sorterUsuarios);
 
 		JScrollPane scrollTabla = new JScrollPane(table);
 		scrollTabla.setBorder(null);
@@ -304,14 +353,28 @@ public class VerUsuariosAdmin extends JFrame {
 		return losUsuarios.size();
 	}
 
-	private int contarAdministradores() {
+	private int contarCandidatos() {
 		ArrayList<Usuario> losUsuarios = BolsaEmpleo.getInstancia().getUsuarios();
 		if (losUsuarios == null) {
 			return 0;
 		}
 		int contador = 0;
 		for (Usuario usuario : losUsuarios) {
-			if (usuario.getTipoUser() == TipoUser.ADMINISTRADOR) {
+			if (usuario.getTipoUser() == TipoUser.CANDIDATO) {
+				contador++;
+			}
+		}
+		return contador;
+	}
+
+	private int contarEmpresas() {
+		ArrayList<Usuario> losUsuarios = BolsaEmpleo.getInstancia().getUsuarios();
+		if (losUsuarios == null) {
+			return 0;
+		}
+		int contador = 0;
+		for (Usuario usuario : losUsuarios) {
+			if (usuario.getTipoUser() == TipoUser.EMPRESA) {
 				contador++;
 			}
 		}
@@ -373,6 +436,12 @@ public class VerUsuariosAdmin extends JFrame {
 		}
 		return modelo;
 	}
+	
+	public class RenderCentrado extends DefaultTableCellRenderer {
+		public RenderCentrado() {
+			setHorizontalAlignment(SwingConstants.CENTER);
+		}
+	}
 
 	private class RenderBadge extends JLabel implements TableCellRenderer {
 
@@ -412,10 +481,28 @@ public class VerUsuariosAdmin extends JFrame {
 			int margenVertical = 6;
 			int margenHorizontal = 10;
 			g2.fillRoundRect(margenHorizontal, margenVertical,
-				getWidth() - margenHorizontal * 2, getHeight() - margenVertical * 2, 16, 16);
+					getWidth() - margenHorizontal * 2, getHeight() - margenVertical * 2, 16, 16);
 			g2.dispose();
 
 			super.paintComponent(g);
+		}
+	}
+
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+		boton.setIcon(new ImageIcon(imagenEscalada));
+	}
+
+	private void aplicarFiltroRol() {
+		if (sorterUsuarios == null) {
+			return;
+		}
+		String seleccionado = (String) cbxRol.getSelectedItem();
+		if (seleccionado == null || seleccionado.equals("Todos")) {
+			sorterUsuarios.setRowFilter(null);
+		} else {
+			sorterUsuarios.setRowFilter(RowFilter.regexFilter("(?i)^" + seleccionado + "$", 2));
 		}
 	}
 }
