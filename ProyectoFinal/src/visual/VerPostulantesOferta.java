@@ -11,6 +11,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import logico.BolsaEmpleo;
+import logico.DecisionCandidato;
+import logico.EstadoDecision;
 import logico.EstadoSolicitud;
 import logico.Obrero;
 import logico.Oferta;
@@ -715,13 +717,14 @@ public class VerPostulantesOferta extends JDialog {
 						row[1] = "Obrero";
 					}
 				}
-				if(match.getSolicitud().getEstado() == EstadoSolicitud.PENDIENTE) {
+				DecisionCandidato decision = oferta.buscarDecision(match.getSolicitud().getCandidato());
+				if(decision == null) {
 					row[2] = "Pendiente";
 				}
-				if(match.getSolicitud().getEstado() == EstadoSolicitud.RECHAZADA) {
+				if( decision.getEstado() == EstadoDecision.RECHAZADO) {
 					row[2] = "Rechazada";
 				}
-				if(match.getSolicitud().getEstado() == EstadoSolicitud.ACEPTADA) {
+				if(decision.getEstado() == EstadoDecision.CONTRATADO ) {
 					row[2] = "Aceptada";
 				}
 				

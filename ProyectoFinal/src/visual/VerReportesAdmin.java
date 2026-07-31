@@ -279,7 +279,7 @@ public class VerReportesAdmin extends JFrame {
 		}
 		int contador = 0;
 		for (SolicitudEmpleo solicitud : lasSolicitudes) {
-			if (solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
+			if (solicitud.getEstado() == EstadoSolicitud.ACTIVA) {
 				contador++;
 			}
 		}

@@ -283,7 +283,7 @@ public class RegSolicitud extends JDialog {
 				}
 				String id = "S-"+BolsaEmpleo.generadorIdSolicitud;
 				LocalDate fechaHoy = LocalDate.now();
-				SolicitudEmpleo solicitud = new SolicitudEmpleo(id, EstadoSolicitud.PENDIENTE, BolsaEmpleo.getInstancia().getLoginUser().getPersona(), fechaHoy, (AreaLaboral) cbxAreaLaboral.getSelectedItem(), (float) spnSueldo_1.getValue(), (Modalidad) cbxModalidad.getSelectedItem(), txtPuesto.getText(), (Jornada) cbxJornada.getSelectedItem());
+				SolicitudEmpleo solicitud = new SolicitudEmpleo(id, EstadoSolicitud.ACTIVA, BolsaEmpleo.getInstancia().getLoginUser().getPersona(), fechaHoy, (AreaLaboral) cbxAreaLaboral.getSelectedItem(), (float) spnSueldo_1.getValue(), (Modalidad) cbxModalidad.getSelectedItem(), txtPuesto.getText(), (Jornada) cbxJornada.getSelectedItem());
 				BolsaEmpleo.getInstancia().regSolicitud(solicitud,BolsaEmpleo.getInstancia().getLoginUser().getPersona());
 			}
 		});

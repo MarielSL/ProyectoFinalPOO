@@ -54,7 +54,7 @@ public class ReportePostulaciones extends JDialog {
 		int pendientes = 0;
 		if (lasSolicitudes != null) {
 			for (SolicitudEmpleo solicitud : lasSolicitudes) {
-				if (solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
+				if (solicitud.getEstado() == EstadoSolicitud.ACTIVA) {
 					pendientes++;
 				}
 			}

@@ -1,13 +1,18 @@
 package logico;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class DecisionCandidato {
+public class DecisionCandidato implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Persona candidato;
-	private EstadoCandidato estado;
+	private EstadoDecision estado;
 	
-	public DecisionCandidato(Persona candidato, EstadoCandidato estado) {
+	public DecisionCandidato(Persona candidato, EstadoDecision estado) {
 		super();
 		this.candidato = candidato;
 		this.estado = estado;
@@ -21,11 +26,11 @@ public class DecisionCandidato {
 		this.candidato = candidato;
 	}
 
-	public EstadoCandidato getEstado() {
+	public EstadoDecision getEstado() {
 		return estado;
 	}
 
-	public void setEstado(EstadoCandidato estado) {
+	public void setEstado(EstadoDecision estado) {
 		this.estado = estado;
 	}
 	

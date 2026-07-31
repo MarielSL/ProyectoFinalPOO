@@ -444,11 +444,19 @@ public class BolsaEmpleo implements Serializable {
 		ArrayList<ResultMatch> resultados = new ArrayList<ResultMatch>();
 
 		for (SolicitudEmpleo solicitud : solicitudes) {
-			float porcentaje = calcCoincidencia(oferta, solicitud);
-			 DecisionCandidato aux = BuscarCandidato(oferta.getDecisionesCandidatos(), solicitud.getCandidato());
-			if((aux.getEstado() == EstadoCandidato.PENDIENTE) ){
-				resultados.add(new ResultMatch(solicitud,porcentaje));
+
+			if (solicitud == null || solicitud.getCandidato() == null || solicitud.getEstado() != EstadoSolicitud.ACTIVA) {
+				continue;
 			}
+
+			DecisionCandidato aux = BuscarCandidato(oferta.getDecisionesCandidatos(), solicitud.getCandidato());
+			if (aux != null) {
+				continue;
+			}
+			
+			float porcentaje = calcCoincidencia(oferta, solicitud);
+			resultados.add(new ResultMatch(solicitud,porcentaje));
+
 		}
 
 		resultados.sort(new Comparator<ResultMatch>() {
@@ -472,6 +480,7 @@ public class BolsaEmpleo implements Serializable {
 
 		return cant;
 	}
+
 	public String idSolicitud(Persona candidato) {
 		boolean encontrado = false;
 		String id=null;
@@ -491,7 +500,7 @@ public class BolsaEmpleo implements Serializable {
 		DecisionCandidato aux = null;
 		boolean encontrado = false;
 		int ind = 0;
-		
+
 		while(!encontrado && ind < candidatos.size()){
 			if(candidato.getId().equals(candidatos.get(ind).getCandidato().getId())) {
 				aux = candidatos.get(ind);
@@ -499,8 +508,8 @@ public class BolsaEmpleo implements Serializable {
 			}
 			ind++;
 		}
-		
-		return null;
-		
+
+		return aux;
+
 	}
 }
