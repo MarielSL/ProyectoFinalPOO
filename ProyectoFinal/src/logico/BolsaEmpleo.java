@@ -109,7 +109,7 @@ public class BolsaEmpleo implements Serializable {
 	}
 
 	public void regSolicitud(SolicitudEmpleo solicitud, Persona persona) {
-		
+
 		persona.getSolicitudes().add(solicitud);
 		solicitudes.add(solicitud);
 		generadorIdSolicitud++;
@@ -441,13 +441,12 @@ public class BolsaEmpleo implements Serializable {
 	}
 
 	public ArrayList<ResultMatch> calcularMatch(Oferta oferta) {
-
-		ArrayList<ResultMatch> resultados =
-				new ArrayList<ResultMatch>();
+		ArrayList<ResultMatch> resultados = new ArrayList<ResultMatch>();
 
 		for (SolicitudEmpleo solicitud : solicitudes) {
 			float porcentaje = calcCoincidencia(oferta, solicitud);
-			if((solicitud.getEstado() == EstadoSolicitud.PENDIENTE) && porcentaje >= 60){
+			 DecisionCandidato aux = BuscarCandidato(oferta.getDecisionesCandidatos(), solicitud.getCandidato());
+			if((aux.getEstado() == EstadoCandidato.PENDIENTE) ){
 				resultados.add(new ResultMatch(solicitud,porcentaje));
 			}
 		}
@@ -460,11 +459,24 @@ public class BolsaEmpleo implements Serializable {
 
 		return resultados;
 	}
+
+	public int cantCandidatosCompatibles (Oferta oferta) {
+		int cant = 0;
+		ArrayList<ResultMatch> resultados = calcularMatch(oferta);
+
+		for (ResultMatch resultMatch : resultados) {
+			if(resultMatch.getPorcentaje() >= 60) {
+				cant++;
+			}
+		}
+
+		return cant;
+	}
 	public String idSolicitud(Persona candidato) {
 		boolean encontrado = false;
 		String id=null;
 		int ind = 0;
-		
+
 		while(!encontrado && ind <solicitudes.size()) {
 			if(solicitudes.get(ind).getCandidato().getId().equals(candidato.getId())) {
 				id = solicitudes.get(ind).getId();
@@ -474,6 +486,21 @@ public class BolsaEmpleo implements Serializable {
 		}
 		return id;
 	}
-	
 
+	public DecisionCandidato BuscarCandidato(ArrayList<DecisionCandidato> candidatos, Persona candidato) {
+		DecisionCandidato aux = null;
+		boolean encontrado = false;
+		int ind = 0;
+		
+		while(!encontrado && ind < candidatos.size()){
+			if(candidato.getId().equals(candidatos.get(ind).getCandidato().getId())) {
+				aux = candidatos.get(ind);
+				encontrado = true;
+			}
+			ind++;
+		}
+		
+		return null;
+		
+	}
 }

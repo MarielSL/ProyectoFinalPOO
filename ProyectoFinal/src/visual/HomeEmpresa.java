@@ -39,13 +39,15 @@ import logico.EstadoSolicitud;
 import logico.Oferta;
 import logico.SolicitudEmpleo;
 import javax.swing.JButton;
+import javax.swing.JSeparator;
+import java.awt.SystemColor;
 
 public class HomeEmpresa extends JFrame {
 
 	private JPanel contentPane;
 	private Dimension dim;
 	private Empresa empresa;
-	private JTable table;
+	private JLabel lblCandidatosComp;
 
 	/**
 	 * Launch the application.
@@ -91,8 +93,8 @@ public class HomeEmpresa extends JFrame {
 		layeredPane.add(panel, BorderLayout.CENTER);
 		panel.setBackground(new Color(245, 245, 245));
 		panel.setLayout(null);
-		
-		
+
+
 
 		int margen = 40;
 		int anchoContenido = dim.width - (margen * 2);
@@ -100,10 +102,10 @@ public class HomeEmpresa extends JFrame {
 		{
 			PanelRedond panelMenu = new PanelRedond(25);
 			panelMenu.setBackground(new Color(0, 0, 51));
-			panelMenu.setBounds(margen, 20, anchoContenido, 70);
+			panelMenu.setBounds(26, 20, anchoContenido, 70);
 			panel.add(panelMenu);
 			panelMenu.setLayout(null);
-			
+
 
 			String[] textosMenu = { "Inicio", "Publicar oferta", "Mis ofertas", "Ver perfil" };
 			int[] anchosMenu = { 70, 150, 110, 90 };
@@ -150,7 +152,7 @@ public class HomeEmpresa extends JFrame {
 						verOfertas.setVisible(true);
 						dispose();
 					}
-					
+
 				}
 			});
 			lblMisOfertas.setFont(new Font("Calibri", Font.PLAIN, 18));
@@ -172,11 +174,11 @@ public class HomeEmpresa extends JFrame {
 						verUserEmpresa.setVisible(true);
 						dispose();
 					}
-					
+
 				}
 			});
 			panelMenu.add(lblVerPerfil);
-			
+
 			BotonRedond btnMenu = new BotonRedond("",25);
 			btnMenu.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -205,8 +207,8 @@ public class HomeEmpresa extends JFrame {
 			panel.add(panelOfertasActivas);
 			panelOfertasActivas.setLayout(null);
 
-			JLabel lblOfertasActivas = new JLabel("ofertas activas");
-			lblOfertasActivas.setFont(new Font("Calibri", Font.PLAIN, 15));
+			JLabel lblOfertasActivas = new JLabel("Ofertas Activas");
+			lblOfertasActivas.setFont(new Font("Calibri", Font.PLAIN, 18));
 			lblOfertasActivas.setForeground(new Color(204, 102, 0));
 			lblOfertasActivas.setBounds(20, 14, anchoTarjeta - 40, 20);
 			panelOfertasActivas.add(lblOfertasActivas);
@@ -225,17 +227,17 @@ public class HomeEmpresa extends JFrame {
 			panel.add(panelSolicitudesPendientes);
 			panelSolicitudesPendientes.setLayout(null);
 
-			JLabel lblSolicitudesPendientes = new JLabel("Solicitudes pendientes");
-			lblSolicitudesPendientes.setFont(new Font("Calibri", Font.PLAIN, 15));
+			JLabel lblSolicitudesPendientes = new JLabel("Candidatos Compatibles");
+			lblSolicitudesPendientes.setFont(new Font("Calibri", Font.PLAIN, 18));
 			lblSolicitudesPendientes.setForeground(new Color(65, 95, 170));
 			lblSolicitudesPendientes.setBounds(20, 14, anchoTarjeta - 40, 20);
 			panelSolicitudesPendientes.add(lblSolicitudesPendientes);
 
-			JLabel lblSolicitudesPendientesNum = new JLabel(String.valueOf(contarSolicitudesPendientes()));
-			lblSolicitudesPendientesNum.setFont(new Font("Calibri", Font.BOLD, 30));
-			lblSolicitudesPendientesNum.setForeground(new Color(65, 95, 170));
-			lblSolicitudesPendientesNum.setBounds(20, 38, anchoTarjeta - 40, 36);
-			panelSolicitudesPendientes.add(lblSolicitudesPendientesNum);
+			lblCandidatosComp = new JLabel(String.valueOf(ContCandCompatibles()));
+			lblCandidatosComp.setFont(new Font("Calibri", Font.BOLD, 30));
+			lblCandidatosComp.setForeground(new Color(65, 95, 170));
+			lblCandidatosComp.setBounds(20, 38, anchoTarjeta - 40, 36);
+			panelSolicitudesPendientes.add(lblCandidatosComp);
 		}
 
 		{
@@ -245,8 +247,8 @@ public class HomeEmpresa extends JFrame {
 			panel.add(panelContratados);
 			panelContratados.setLayout(null);
 
-			JLabel lblContratados = new JLabel("Contratados este mes");
-			lblContratados.setFont(new Font("Calibri", Font.PLAIN, 15));
+			JLabel lblContratados = new JLabel("Contratados Este Mes");
+			lblContratados.setFont(new Font("Calibri", Font.PLAIN, 18));
 			lblContratados.setForeground(new Color(198, 40, 40));
 			lblContratados.setBounds(20, 14, anchoTarjeta - 40, 20);
 			panelContratados.add(lblContratados);
@@ -264,32 +266,24 @@ public class HomeEmpresa extends JFrame {
 
 			PanelConSombra panelSolicitudesRecientes = new PanelConSombra(20);
 			panelSolicitudesRecientes.setBackground(Color.WHITE);
-			panelSolicitudesRecientes.setBounds(margen, yTabla, anchoContenido, altoTabla);
+			panelSolicitudesRecientes.setBounds(26, 262, 1840, 761);
 			panel.add(panelSolicitudesRecientes);
 			panelSolicitudesRecientes.setLayout(null);
-
-			JLabel lblSolicitudesRecientes = new JLabel("Solicitudes recientes");
-			lblSolicitudesRecientes.setFont(new Font("Calibri", Font.BOLD, 20));
-			lblSolicitudesRecientes.setForeground(new Color(0, 0, 51));
-			lblSolicitudesRecientes.setBounds(24, 20, 400, 28);
-			panelSolicitudesRecientes.add(lblSolicitudesRecientes);
-
-			table = new JTable();
-			table.setModel(crearModeloSolicitudesRecientes());
-			table.setFont(new Font("Calibri", Font.PLAIN, 16));
-			table.setRowHeight(38);
-			table.setForeground(new Color(50, 50, 50));
-			table.setSelectionBackground(new Color(240, 240, 245));
-			table.setShowGrid(false);
-			table.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 15));
-			table.getTableHeader().setForeground(new Color(0, 0, 51));
-			table.getColumnModel().getColumn(3).setCellRenderer(new RenderEstado());
-
-			JScrollPane scrollSolicitudes = new JScrollPane(table);
-			scrollSolicitudes.setBorder(null);
-			scrollSolicitudes.setBounds(24, 60, anchoContenido - 48, altoTabla - 90);
-			panelSolicitudesRecientes.add(scrollSolicitudes);
+			
+			JSeparator separator = new JSeparator();
+			separator.setOrientation(SwingConstants.VERTICAL);
+			separator.setForeground(SystemColor.controlShadow);
+			separator.setBackground(SystemColor.controlShadow);
+			separator.setBounds(919, 67, 1, 600);
+			panelSolicitudesRecientes.add(separator);
 		}
+		
+		JLabel lblNewLabel = new JLabel("An\u00E1lisis de Coincidencias");
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setForeground(new Color(0, 0, 51));
+		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 26));
+		lblNewLabel.setBounds(809, 233, 274, 25);
+		panel.add(lblNewLabel);
 	}
 
 	private int contarOfertasActivas() {
@@ -305,25 +299,15 @@ public class HomeEmpresa extends JFrame {
 		return contador;
 	}
 
-	private int contarSolicitudesPendientes() {
+	private int ContCandCompatibles() {
 		if (empresa == null) {
 			return 0;
 		}
-		int contador = 0;
-		for (SolicitudEmpleo solicitud : BolsaEmpleo.getInstancia().getSolicitudes()) {
-			if (solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
-				boolean compatible = false;
-				for (Oferta oferta : empresa.getLasOfertas()) {
-					if (oferta.getEstado() == EstadoOferta.PENDIENTE && BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud) >= 60) {
-						compatible = true;
-					}
-				}
-				if (compatible) {
-					contador++;
-				}
-			}
+		int cant = 0;
+		for (Oferta oferta : empresa.getLasOfertas()) {
+			cant += BolsaEmpleo.getInstancia().cantCandidatosCompatibles(oferta);
 		}
-		return contador;
+		return cant;
 	}
 
 	private int contarContratadosEsteMes() {
@@ -447,16 +431,16 @@ public class HomeEmpresa extends JFrame {
 			int margenVertical = 6;
 			int margenHorizontal = 10;
 			g2.fillRoundRect(margenHorizontal, margenVertical,
-				getWidth() - margenHorizontal * 2, getHeight() - margenVertical * 2, 16, 16);
+					getWidth() - margenHorizontal * 2, getHeight() - margenVertical * 2, 16, 16);
 			g2.dispose();
 
 			super.paintComponent(g);
 		}
 	}
-	
+
 	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
-	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-	    boton.setIcon(new ImageIcon(imagenEscalada));
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }
