@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import logico.BolsaEmpleo;
+import logico.EstadoDecision;
 import logico.EstadoOferta;
 import logico.EstadoSolicitud;
 import logico.Obrero;
@@ -471,7 +472,8 @@ public class VerPostulante extends JFrame {
 				int select = JOptionPane.showConfirmDialog(null, "¿Está seguro de rechazar la solicitud?", "Advertencia", JOptionPane.YES_NO_OPTION);
 				if(select == JOptionPane.YES_OPTION) {
 					if(solicitud != null) {
-						solicitud.setEstado(EstadoSolicitud.RECHAZADA);
+						oferta.guardarDecision(solicitud.getCandidato(), EstadoDecision.RECHAZADO);
+						BolsaEmpleo.getInstancia().guardarDatos();
 						dispose();
 					}
 					else {
@@ -490,11 +492,14 @@ public class VerPostulante extends JFrame {
 		btnContratar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(solicitud != null) {
-					solicitud.setEstado(EstadoSolicitud.ACEPTADA);
+					oferta.guardarDecision(solicitud.getCandidato(), EstadoDecision.CONTRATADO);
+					solicitud.getCandidato().setEstadoEmpleo(true);
+					solicitud.setEstado(EstadoSolicitud.CERRADA);
 					oferta.setCantPuestos(oferta.getCantPuestos()-1);
 					if(oferta.getCantPuestos() == 0) {
 						oferta.setEstado(EstadoOferta.COMPLETADA);
 					}
+					BolsaEmpleo.getInstancia().guardarDatos();
 					dispose();
 				}
 				else {

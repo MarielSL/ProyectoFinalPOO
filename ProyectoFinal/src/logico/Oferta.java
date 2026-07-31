@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Oferta implements Serializable{
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private String id;
 	private Sexo sexo;
 	private TipoPersona tipoCandidato;
@@ -30,7 +30,7 @@ public class Oferta implements Serializable{
 	private AreaLaboral areaLaboral;
 	private ArrayList<DecisionCandidato> decisionesCandidatos;
 
-	
+
 	public Oferta(String id, Sexo sexo, TipoPersona tipoCandidato, String puesto, int cantPuestos, boolean licencia,
 			boolean dispMudar, EstadoOferta estado, Jornada jornada, String ciudad, float salario,
 			String descripPuesto, int aniosExp, Empresa empresa, Modalidad modalidad, LocalDate FechaPublicacion, AreaLaboral areaLaboral) {
@@ -195,11 +195,54 @@ public class Oferta implements Serializable{
 		this.decisionesCandidatos = candidatosRechazados;
 	}
 
+	public DecisionCandidato buscarDecision(Persona candidato) {
+
+		if (candidato == null) {
+			return null;
+		}
+
+		for (DecisionCandidato decision : decisionesCandidatos) {
+
+			if (decision.getCandidato() != null&& decision.getCandidato().getId().equals(candidato.getId())) {
+				return decision;
+			}
+		}
+
+		return null;
+	}
+
+	public void guardarDecision(Persona candidato, EstadoDecision estado) {
+
+		if (candidato == null) {
+			return;
+		}
+
+		DecisionCandidato decision = buscarDecision(candidato);
+
+		if (decision == null) {
+			decisionesCandidatos.add(new DecisionCandidato( candidato, estado));
+
+		} else {
+			decision.setEstado(estado);
+		}
+	}
+	
+	public int cantContratados () {
+		int cant = 0;
+		
+		if(decisionesCandidatos == null) {
+			return cant;
+		}
+		
+		for (DecisionCandidato decisionCandidato : decisionesCandidatos) {
+			if(decisionCandidato.getEstado() == EstadoDecision.CONTRATADO) {
+				cant++;
+			}
+		}
+		return cant;
+	}
 
 
-	
-	
-			
-	
+
 
 }

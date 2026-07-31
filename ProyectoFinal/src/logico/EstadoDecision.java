@@ -1,7 +1,6 @@
 package logico;
 
-public enum EstadoCandidato {
-	PENDIENTE,
+public enum EstadoDecision {
 	CONTRATADO,
 	RECHAZADO
 }

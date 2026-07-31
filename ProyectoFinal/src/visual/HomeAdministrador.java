@@ -34,6 +34,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import logico.BolsaEmpleo;
+import logico.DecisionCandidato;
 import logico.EstadoOferta;
 import logico.EstadoSolicitud;
 import logico.Oferta;
@@ -356,10 +357,8 @@ public class HomeAdministrador extends JFrame {
 
 	private int contarContratados() {
 		int contador = 0;
-		for (SolicitudEmpleo solicitud : BolsaEmpleo.getInstancia().getSolicitudes()) {
-			if (solicitud.getEstado() == EstadoSolicitud.ACEPTADA) {
-				contador++;
-			}
+		for (Oferta oferta : BolsaEmpleo.getInstancia().getOfertas()) {
+			contador += oferta.cantContratados();
 		}
 		return contador;
 	}
@@ -457,7 +456,7 @@ public class HomeAdministrador extends JFrame {
 	    return modelo;
 	}
 
-	private String formatearEstado(EstadoSolicitud estado) {
+	/*private String formatearEstado(EstadoSolicitud estado) {
 		if (estado == EstadoSolicitud.PENDIENTE) {
 			return "Pendiente";
 		}
@@ -468,7 +467,7 @@ public class HomeAdministrador extends JFrame {
 			return "Rechazada";
 		}
 		return "En Revisi\u00F3n";
-	}
+	}*/
 	
 	private String formatearEstadoOferta(EstadoOferta estado) {
 		if (estado == EstadoOferta.PENDIENTE) {

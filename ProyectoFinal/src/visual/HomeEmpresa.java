@@ -317,7 +317,7 @@ public class HomeEmpresa extends JFrame {
 		int contador = 0;
 		LocalDate hoy = LocalDate.now();
 		for (SolicitudEmpleo solicitud : BolsaEmpleo.getInstancia().getSolicitudes()) {
-			if (solicitud.getEstado() == EstadoSolicitud.ACEPTADA && solicitud.getFechaSolicitud().getMonthValue() == hoy.getMonthValue() && solicitud.getFechaSolicitud().getYear() == hoy.getYear()) {
+			if (solicitud.getEstado() == EstadoSolicitud.ACTIVA && solicitud.getFechaSolicitud().getMonthValue() == hoy.getMonthValue() && solicitud.getFechaSolicitud().getYear() == hoy.getYear()) {
 				boolean compatible = false;
 				for (Oferta oferta : empresa.getLasOfertas()) {
 					if (BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud) >= 60) {
@@ -365,7 +365,7 @@ public class HomeEmpresa extends JFrame {
 		return recientes;
 	}
 
-	private DefaultTableModel crearModeloSolicitudesRecientes() {
+	/*private DefaultTableModel crearModeloSolicitudesRecientes() {
 		DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Nombre", "Oferta", "Fecha", "Estado" }) {
 			public boolean isCellEditable(int fila, int columna) {
 				return false;
@@ -378,20 +378,17 @@ public class HomeEmpresa extends JFrame {
 			modelo.addRow(new Object[] { nombreCandidato, solicitud.getPuesto(), solicitud.getFechaSolicitud().format(formato), estadoTexto });
 		}
 		return modelo;
-	}
+	}*/
 
-	private String formatearEstado(EstadoSolicitud estado) {
-		if (estado == EstadoSolicitud.PENDIENTE) {
-			return "Pendiente";
-		}
-		if (estado == EstadoSolicitud.ACEPTADA) {
+	/*private String formatearEstado(EstadoSolicitud estado) {
+		if (estado == EstadoSolicitud.CERRADA) {
 			return "Aceptada";
 		}
 		if (estado == EstadoSolicitud.RECHAZADA) {
 			return "Rechazada";
 		}
 		return "En Revisi\u00F3n";
-	}
+	}*/
 
 	private class RenderEstado extends JLabel implements TableCellRenderer {
 
