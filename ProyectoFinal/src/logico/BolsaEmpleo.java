@@ -503,4 +503,5 @@ public class BolsaEmpleo implements Serializable {
 		return null;
 		
 	}
+
 }

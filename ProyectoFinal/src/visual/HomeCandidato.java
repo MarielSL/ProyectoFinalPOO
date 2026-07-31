@@ -254,7 +254,7 @@ public class HomeCandidato extends JFrame {
 	}
 
 	private void abrirVerOfertas() {
-		BuscarOfertas frame = new BuscarOfertas(candidato);
+		VerOfertasCandidato frame = new VerOfertasCandidato();
 		frame.setVisible(true);
 		dispose();
 	}

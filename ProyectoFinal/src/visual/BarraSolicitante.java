@@ -140,11 +140,11 @@ public class BarraSolicitante extends JDialog {
 		btnSolicitudes.setBounds(117, 111, 189, 49);
 		panelBotones.add(btnSolicitudes);
 		
-		BotonConSombra btnOfertas = new BotonConSombra("Buscar Ofertas", 25);
+		BotonConSombra btnOfertas = new BotonConSombra("Ver Ofertas", 25);
 		btnOfertas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				BuscarOfertas soli = new BuscarOfertas(null);
+				VerOfertasCandidato soli = new VerOfertasCandidato();
 				soli.setVisible(true);
 				
 			}
