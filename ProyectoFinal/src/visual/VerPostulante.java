@@ -109,7 +109,7 @@ public class VerPostulante extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 
-		JLabel lblNewLabel = new JLabel("Ver Postulante");
+		JLabel lblNewLabel = new JLabel("Ver Candidato");
 		lblNewLabel.setForeground(new Color(255, 153, 0));
 		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblNewLabel.setBounds(350, 18, 187, 32);

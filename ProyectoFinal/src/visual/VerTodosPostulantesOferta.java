@@ -183,11 +183,19 @@ public class VerTodosPostulantesOferta extends JFrame {
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		panel_2.add(scrollPane, BorderLayout.NORTH);
-		String[] headers = {"#", "Nombre del Postulante", "Perfil Laboral", "Coincidencia", "Fecha de Aplicación", "Estado"};
+		panel_2.add(scrollPane, BorderLayout.CENTER);
+		String[] headers = {"#", "Nombre del Candidato", "Perfil Laboral", "Coincidencia", "Fecha de Aplicación", "Estado"};
 		model = new DefaultTableModel();
 		model.setColumnIdentifiers(headers);
 		table = new JTable();
+		table.setRowHeight(40);
+		table.setFont(new Font("Calibri", Font.PLAIN, 18));
+		table.setIntercellSpacing(new Dimension(0, 8));
+		table.setShowVerticalLines(false);
+		table.setSelectionBackground(Color.decode("#e3ebfe"));
+		table.setSelectionForeground(Color.decode("#06002c"));
+		table.setFillsViewportHeight(true);
+		
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -235,7 +243,7 @@ public class VerTodosPostulantesOferta extends JFrame {
 		contentPane.add(btnAtras);
 		colocarIconoBoton(btnAtras,"/img/arrow-small-right.png", 70,70);
 
-		JLabel lblNewLabel_1 = new JLabel("Todos los Postulantes");
+		JLabel lblNewLabel_1 = new JLabel("Todos los Candidatos");
 		lblNewLabel_1.setForeground(new Color(255, 153, 0));
 		lblNewLabel_1.setFont(new Font("Calibri", Font.BOLD, 40));
 		lblNewLabel_1.setBounds(776, 23, 362, 37);

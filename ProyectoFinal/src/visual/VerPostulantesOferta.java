@@ -122,7 +122,7 @@ public class VerPostulantesOferta extends JDialog {
 		lblNewLabel.setBounds(30, 13, 50, 50);
 		contentPanel.add(lblNewLabel);
 		
-		JLabel lblNewLabel_1 = new JLabel("Ranking de Postulantes");
+		JLabel lblNewLabel_1 = new JLabel("Ranking de Candidatos");
 		lblNewLabel_1.setForeground(new Color(255, 153, 0));
 		lblNewLabel_1.setFont(new Font("Calibri", Font.BOLD, 40));
 		lblNewLabel_1.setBounds(751, 15, 400, 49);
@@ -200,7 +200,7 @@ public class VerPostulantesOferta extends JDialog {
 			panel_Info.add(label_1);
 			colocarImagen(label_1, "/img/users.png");
 			
-			JLabel lblSubTitle3 = new JLabel("Postulantes");
+			JLabel lblSubTitle3 = new JLabel("Candidatos");
 			lblSubTitle3.setForeground(SystemColor.controlDkShadow);
 			lblSubTitle3.setFont(new Font("Calibri", Font.PLAIN, 18));
 			lblSubTitle3.setBounds(848, 11, 94, 20);
@@ -218,7 +218,7 @@ public class VerPostulantesOferta extends JDialog {
 			panel.add(lblTrophyIcon);
 			colocarImagen(lblTrophyIcon,"/img/trophy.png");
 			
-			JLabel lblTopPostulantes = new JLabel("Top 3 Postulantes");
+			JLabel lblTopPostulantes = new JLabel("Top 3 Candidatos");
 			lblTopPostulantes.setForeground(new Color(0, 0, 51));
 			lblTopPostulantes.setFont(new Font("Calibri", Font.BOLD, 30));
 			lblTopPostulantes.setBounds(119, 135, 234, 32);
@@ -483,7 +483,7 @@ public class VerPostulantesOferta extends JDialog {
 			panel_OtrosPostu.setGrosorBorde(1);
 			panel_OtrosPostu.setLayout(null);
 			
-			JLabel lblNewLabel_4 = new JLabel("Resto de Postulantes");
+			JLabel lblNewLabel_4 = new JLabel("Resto de Candidatos");
 			lblNewLabel_4.setForeground(new Color(0, 0, 51));
 			lblNewLabel_4.setFont(new Font("Calibri", Font.BOLD, 22));
 			lblNewLabel_4.setBounds(34, 13, 212, 22);
