@@ -108,10 +108,10 @@ public class BolsaEmpleo implements Serializable {
 		guardarDatos();
 	}
 
-	public void regSolicitud(String idOferta, SolicitudEmpleo solicitud) {
-		Oferta aux = buscarOferta(idOferta);
+	public void regSolicitud(SolicitudEmpleo solicitud, Persona persona) {
+		
+		persona.getSolicitudes().add(solicitud);
 		solicitudes.add(solicitud);
-		loginUser.getPersona().getSolicitudes().add(solicitud);
 		generadorIdSolicitud++;
 		guardarDatos();
 	}

@@ -185,6 +185,10 @@ public class RegistrarSolicitante extends JDialog {
 				lblNewLabel.setBounds(0, 0, 1902, 993);
 				colocarImagen(lblNewLabel,"/img/Registrar_Solicitante_Fondo.png");
 				panel.add(lblNewLabel);
+				
+				JPanel panel_2 = new JPanel();
+				panel_2.setBounds(0, 0, 10, 10);
+				panel.add(panel_2);
 		btnAtras.setVisible(false);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -600,7 +604,14 @@ public class RegistrarSolicitante extends JDialog {
 		cbxSexo.setFont(new Font("Calibri", Font.PLAIN, 18));
 		cbxSexo.setBackground(SystemColor.controlHighlight);
 		cbxSexo.setBounds(0, 332, 180, 30);
-		cbxSexo.setModel(new DefaultComboBoxModel<Sexo>(Sexo.values()));
+		cbxSexo.removeAll();
+		
+		for (Sexo sexo : Sexo.values()) {
+			if(sexo != Sexo.CUALQUIERA) {
+				cbxSexo.addItem(sexo);
+			}
+		}
+		
 		cbxSexo.setSelectedIndex(-1);
 		cbxSexo.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
 			protected javax.swing.plaf.basic.ComboPopup createPopup() {
