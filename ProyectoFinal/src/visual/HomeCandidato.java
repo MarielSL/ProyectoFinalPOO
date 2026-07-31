@@ -103,7 +103,7 @@ public class HomeCandidato extends JFrame {
 		{
 			PanelRedond panelNav = new PanelRedond(25);
 			panelNav.setBackground(new Color(0, 0, 51));
-			panelNav.setBounds(margen, 20, anchoContenido, 70);
+			panelNav.setBounds(26, 20, anchoContenido, 70);
 			panel.add(panelNav);
 			panelNav.setLayout(null);
 			

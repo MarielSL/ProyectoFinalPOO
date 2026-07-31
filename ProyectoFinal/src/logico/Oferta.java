@@ -28,6 +28,8 @@ public class Oferta implements Serializable{
 	private Modalidad modalidad;
 	private LocalDate FechaPublicacion;
 	private AreaLaboral areaLaboral;
+	private ArrayList<DecisionCandidato> decisionesCandidatos;
+
 	
 	public Oferta(String id, Sexo sexo, TipoPersona tipoCandidato, String puesto, int cantPuestos, boolean licencia,
 			boolean dispMudar, EstadoOferta estado, Jornada jornada, String ciudad, float salario,
@@ -50,6 +52,7 @@ public class Oferta implements Serializable{
 		this.modalidad = modalidad;
 		this.FechaPublicacion = FechaPublicacion;
 		this.areaLaboral = areaLaboral;
+		this.decisionesCandidatos = new ArrayList<>();
 	}
 
 	public Sexo getSexo() {
@@ -183,6 +186,18 @@ public class Oferta implements Serializable{
 	public void setAreaLaboral(AreaLaboral areaLaboral) {
 		this.areaLaboral = areaLaboral;
 	}
+
+	public ArrayList<DecisionCandidato> getDecisionesCandidatos() {
+		return decisionesCandidatos;
+	}
+
+	public void setDecisionesCandidatos(ArrayList<DecisionCandidato> candidatosRechazados) {
+		this.decisionesCandidatos = candidatosRechazados;
+	}
+
+
+
+	
 	
 			
 	
