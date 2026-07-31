@@ -29,20 +29,5 @@ public class DecisionCandidato {
 		this.estado = estado;
 	}
 	
-	public DecisionCandidato BuscarCandidato(ArrayList<DecisionCandidato> candidatos, Persona candidato) {
-		DecisionCandidato aux = null;
-		boolean encontrado = false;
-		int ind = 0;
-		
-		while(!encontrado && ind < candidatos.size()){
-			if(candidato.getId().equals(candidatos.get(ind).getCandidato().getId())) {
-				aux = candidatos.get(ind);
-				encontrado = true;
-			}
-			ind++;
-		}
-		
-		return null;
-		
-	}
+	
 }
