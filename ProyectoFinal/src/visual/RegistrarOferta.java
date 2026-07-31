@@ -1,12 +1,13 @@
 package visual;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
@@ -20,7 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
+import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
@@ -34,241 +35,275 @@ import logico.Modalidad;
 import logico.Oferta;
 import logico.Sexo;
 import logico.TipoPersona;
-import java.awt.Toolkit;
 
 public class RegistrarOferta extends JDialog {
+
 	private final JPanel contentPanel = new JPanel();
+	private Dimension dim = getToolkit().getScreenSize();
 	private Empresa empresa;
-	private CardLayout stepsLayout;
-	private JPanel pnlSteps;
-	private int pasoActual = 1;
-	private JLabel[] dots = new JLabel[3];
-	private BotonRedond btnAtras;
-	private BotonRedond btnSiguiente;
+	private JLabel lblLogo;
+	private JLabel lblFondo;
 	private TextFieldRedond txtPuesto;
-	private JSpinner spnCantPuestos;
+	private SpinnerRedond spnCantPuestos;
 	private JTextArea txtDescripcion;
 	private ComboBoxRedond<Sexo> cbxSexo;
 	private ComboBoxRedond<TipoPersona> cbxTipoCandidato;
-	private JSpinner spnAniosExp;
+	private SpinnerRedond spnAniosExp;
 	private JCheckBox chkLicencia;
 	private JCheckBox chkMudarse;
 	private ComboBoxRedond<Jornada> cbxJornada;
 	private ComboBoxRedond<Modalidad> cbxModalidad;
 	private TextFieldRedond txtCiudad;
-	private JSpinner spnSalario;
-	private JLabel lblTitulo1;
-	private JLabel lblIcon;
-	
-	/**
-	 * Launch the application.
-	 */
+	private SpinnerRedond spnSalario;
+	private BotonRedond btnPublicar;
+
 	public static void main(String[] args) {
-		try {
-			RegistrarOferta dialog = new RegistrarOferta(null);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					RegistrarOferta dialog = new RegistrarOferta(null);
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
-	/**
-	 * Create the dialog.
-	 */
 	public RegistrarOferta(Empresa empresa) {
-		
-		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarOferta.class.getResource("/img/AppIconoFull.png")));
-		
 		this.empresa = empresa;
+		setResizable(false);
+		setModal(true);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistrarOferta.class.getResource("/img/AppIconoFull.png")));
 		setTitle("Publicar Oferta");
-		setBounds(100, 100, 734, 560);
+		setBounds(0, 0, dim.width, dim.height - 55);
 		setLocationRelativeTo(null);
-		
+
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(255, 255, 255));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
+
 		JPanel panel = new JPanel();
-		panel.setBackground(new Color(255, 255, 255));
-		panel.setBounds(0, 0, 724, 550);
+		panel.setBackground(Color.WHITE);
+		panel.setBounds(0, 0, 950, 1005);
 		contentPanel.add(panel);
 		panel.setLayout(null);
-		JPanel panelTitulo = new JPanel();
-		panelTitulo.setBackground(new Color(0, 0, 51));
-		panelTitulo.setBounds(0, 0, 717, 65);
-		panel.add(panelTitulo);
-		panelTitulo.setLayout(null);
-		
-		BotonRedond btnMenu = new BotonRedond("",25);
-		btnMenu.addActionListener(new ActionListener() {
+
+		lblLogo = new JLabel("New label");
+		lblLogo.setIcon(new ImageIcon(RegistrarOferta.class.getResource("/img/HireLink_logo_full.png")));
+		lblLogo.setBounds(58, 40, 320, 90);
+		panel.add(lblLogo);
+		colocarImagen(lblLogo, "/img/HireLink_logo_full.png");
+
+		JLabel lblTitulo = new JLabel("Publicar Oferta");
+		lblTitulo.setForeground(new Color(0, 0, 51));
+		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 38));
+		lblTitulo.setBounds(58, 150, 500, 44);
+		panel.add(lblTitulo);
+
+		JLabel lblSubtitulo = new JLabel("Publica tu vacante y encuentra el talento ideal.");
+		lblSubtitulo.setForeground(new Color(102, 102, 102));
+		lblSubtitulo.setFont(new Font("Calibri", Font.PLAIN, 22));
+		lblSubtitulo.setBounds(58, 198, 650, 28);
+		panel.add(lblSubtitulo);
+
+		JSeparator separator = new JSeparator();
+		separator.setForeground(SystemColor.activeCaptionBorder);
+		separator.setBounds(58, 244, 873, 2);
+		panel.add(separator);
+
+		JLabel lblPuesto = new JLabel("Puesto");
+		lblPuesto.setForeground(new Color(0, 0, 51));
+		lblPuesto.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblPuesto.setBounds(58, 275, 300, 24);
+		panel.add(lblPuesto);
+
+		txtPuesto = new TextFieldRedond(25);
+		txtPuesto.setForeground(new Color(0, 0, 51));
+		txtPuesto.setBackground(SystemColor.controlHighlight);
+		txtPuesto.setFont(new Font("Calibri", Font.PLAIN, 20));
+		txtPuesto.setBounds(58, 305, 873, 36);
+		panel.add(txtPuesto);
+
+		JLabel lblTipoCandidato = new JLabel("Tipo de candidato");
+		lblTipoCandidato.setForeground(new Color(0, 0, 51));
+		lblTipoCandidato.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblTipoCandidato.setBounds(58, 365, 275, 24);
+		panel.add(lblTipoCandidato);
+
+		cbxTipoCandidato = new ComboBoxRedond<TipoPersona>(25);
+		cbxTipoCandidato.setForeground(new Color(0, 0, 51));
+		cbxTipoCandidato.setFont(new Font("Calibri", Font.PLAIN, 18));
+		cbxTipoCandidato.setBackground(SystemColor.controlHighlight);
+		cbxTipoCandidato.setBounds(58, 395, 275, 36);
+		cbxTipoCandidato.setModel(new DefaultComboBoxModel<TipoPersona>(TipoPersona.values()));
+		cbxTipoCandidato.setSelectedIndex(-1);
+		panel.add(cbxTipoCandidato);
+
+		JLabel lblSexo = new JLabel("Sexo requerido");
+		lblSexo.setForeground(new Color(0, 0, 51));
+		lblSexo.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblSexo.setBounds(357, 365, 275, 24);
+		panel.add(lblSexo);
+
+		cbxSexo = new ComboBoxRedond<Sexo>(25);
+		cbxSexo.setForeground(new Color(0, 0, 51));
+		cbxSexo.setFont(new Font("Calibri", Font.PLAIN, 18));
+		cbxSexo.setBackground(SystemColor.controlHighlight);
+		cbxSexo.setBounds(357, 395, 275, 36);
+		cbxSexo.setModel(new DefaultComboBoxModel<Sexo>(Sexo.values()));
+		cbxSexo.setSelectedIndex(-1);
+		panel.add(cbxSexo);
+
+		JLabel lblCantPuestos = new JLabel("Cantidad de puestos");
+		lblCantPuestos.setForeground(new Color(0, 0, 51));
+		lblCantPuestos.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblCantPuestos.setBounds(656, 365, 275, 24);
+		panel.add(lblCantPuestos);
+
+		spnCantPuestos = new SpinnerRedond(25);
+		spnCantPuestos.setModel(new SpinnerNumberModel(1, 1, 100, 1));
+		spnCantPuestos.setFont(new Font("Calibri", Font.PLAIN, 18));
+		spnCantPuestos.setForeground(new Color(0, 0, 51));
+		spnCantPuestos.setBackground(SystemColor.controlHighlight);
+		spnCantPuestos.setBounds(656, 395, 200, 36);
+		panel.add(spnCantPuestos);
+		spnCantPuestos.aplicarColorSpinner(spnCantPuestos, SystemColor.controlHighlight);
+
+		JLabel lblJornada = new JLabel("Jornada");
+		lblJornada.setForeground(new Color(0, 0, 51));
+		lblJornada.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblJornada.setBounds(58, 455, 275, 24);
+		panel.add(lblJornada);
+
+		cbxJornada = new ComboBoxRedond<Jornada>(25);
+		cbxJornada.setForeground(new Color(0, 0, 51));
+		cbxJornada.setFont(new Font("Calibri", Font.PLAIN, 18));
+		cbxJornada.setBackground(SystemColor.controlHighlight);
+		cbxJornada.setBounds(58, 485, 275, 36);
+		cbxJornada.setModel(new DefaultComboBoxModel<Jornada>(Jornada.values()));
+		cbxJornada.setSelectedIndex(-1);
+		panel.add(cbxJornada);
+
+		JLabel lblModalidad = new JLabel("Modalidad");
+		lblModalidad.setForeground(new Color(0, 0, 51));
+		lblModalidad.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblModalidad.setBounds(357, 455, 275, 24);
+		panel.add(lblModalidad);
+
+		cbxModalidad = new ComboBoxRedond<Modalidad>(25);
+		cbxModalidad.setForeground(new Color(0, 0, 51));
+		cbxModalidad.setFont(new Font("Calibri", Font.PLAIN, 18));
+		cbxModalidad.setBackground(SystemColor.controlHighlight);
+		cbxModalidad.setBounds(357, 485, 275, 36);
+		cbxModalidad.setModel(new DefaultComboBoxModel<Modalidad>(Modalidad.values()));
+		cbxModalidad.setSelectedIndex(-1);
+		panel.add(cbxModalidad);
+
+		JLabel lblCiudad = new JLabel("Ciudad");
+		lblCiudad.setForeground(new Color(0, 0, 51));
+		lblCiudad.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblCiudad.setBounds(656, 455, 275, 24);
+		panel.add(lblCiudad);
+
+		txtCiudad = new TextFieldRedond(25);
+		txtCiudad.setForeground(new Color(0, 0, 51));
+		txtCiudad.setBackground(SystemColor.controlHighlight);
+		txtCiudad.setFont(new Font("Calibri", Font.PLAIN, 18));
+		txtCiudad.setBounds(656, 485, 275, 36);
+		panel.add(txtCiudad);
+
+		JLabel lblSalario = new JLabel("Salario ofrecido");
+		lblSalario.setForeground(new Color(0, 0, 51));
+		lblSalario.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblSalario.setBounds(58, 555, 275, 24);
+		panel.add(lblSalario);
+
+		spnSalario = new SpinnerRedond(25);
+		spnSalario.setModel(new SpinnerNumberModel(0, 0, 1000000, 500));
+		spnSalario.setFont(new Font("Calibri", Font.PLAIN, 18));
+		spnSalario.setForeground(new Color(0, 0, 51));
+		spnSalario.setBackground(SystemColor.controlHighlight);
+		spnSalario.setBounds(58, 585, 275, 36);
+		panel.add(spnSalario);
+		spnSalario.aplicarColorSpinner(spnSalario, SystemColor.controlHighlight);
+
+		JLabel lblAniosExp = new JLabel("Años de experiencia");
+		lblAniosExp.setForeground(new Color(0, 0, 51));
+		lblAniosExp.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblAniosExp.setBounds(357, 555, 275, 24);
+		panel.add(lblAniosExp);
+
+		spnAniosExp = new SpinnerRedond(25);
+		spnAniosExp.setModel(new SpinnerNumberModel(0, 0, 50, 1));
+		spnAniosExp.setFont(new Font("Calibri", Font.PLAIN, 18));
+		spnAniosExp.setForeground(new Color(0, 0, 51));
+		spnAniosExp.setBackground(SystemColor.controlHighlight);
+		spnAniosExp.setBounds(357, 585, 200, 36);
+		panel.add(spnAniosExp);
+		spnAniosExp.aplicarColorSpinner(spnAniosExp, SystemColor.controlHighlight);
+
+		chkLicencia = new JCheckBox("Requiere licencia de conducir");
+		chkLicencia.setForeground(new Color(0, 0, 51));
+		chkLicencia.setFont(new Font("Calibri", Font.PLAIN, 18));
+		chkLicencia.setOpaque(false);
+		chkLicencia.setBounds(656, 590, 320, 30);
+		panel.add(chkLicencia);
+
+		chkMudarse = new JCheckBox("Requiere disponibilidad para mudarse");
+		chkMudarse.setForeground(new Color(0, 0, 51));
+		chkMudarse.setFont(new Font("Calibri", Font.PLAIN, 18));
+		chkMudarse.setOpaque(false);
+		chkMudarse.setBounds(58, 640, 420, 30);
+		panel.add(chkMudarse);
+
+		JLabel lblDescripcion = new JLabel("Descripción del puesto");
+		lblDescripcion.setForeground(new Color(0, 0, 51));
+		lblDescripcion.setFont(new Font("Calibri", Font.BOLD, 20));
+		lblDescripcion.setBounds(58, 695, 300, 24);
+		panel.add(lblDescripcion);
+
+		txtDescripcion = new JTextArea();
+		txtDescripcion.setForeground(new Color(0, 0, 51));
+		txtDescripcion.setBackground(SystemColor.controlHighlight);
+		txtDescripcion.setFont(new Font("Calibri", Font.PLAIN, 18));
+		txtDescripcion.setLineWrap(true);
+		txtDescripcion.setWrapStyleWord(true);
+		JScrollPane scrollDescripcion = new JScrollPane(txtDescripcion);
+		scrollDescripcion.setBounds(58, 725, 873, 160);
+		panel.add(scrollDescripcion);
+
+		btnPublicar = new BotonRedond("Publicar", 25);
+		btnPublicar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BarraEmpresa menu = new BarraEmpresa();
-				menu.setVisible(true);
+				if (!validarDatos()) {
+					return;
+				}
+				registrarOferta();
 			}
 		});
-		btnMenu.setBackground(new Color(0, 0, 51));
-		btnMenu.setColorHover(new Color(0, 51, 102));
-		btnMenu.setBounds(17, 5, 55, 55);
-		colocarIconoBoton(btnMenu,"/img/menu-dots-vertical(White).png",25,25);
-		btnMenu.setMargin(new Insets(0, 0, 0, 0));
-		btnMenu.setBorderPainted(false);
-		btnMenu.setContentAreaFilled(false);
-		btnMenu.setFocusPainted(false);
-		btnMenu.setOpaque(false);
-		panelTitulo.add(btnMenu);
-		
-		lblTitulo1 = new JLabel("Publica una nueva oportunidad laboral");
-		lblTitulo1.setForeground(new Color(255, 153, 0));
-		lblTitulo1.setFont(new Font("Calibri", Font.BOLD, 24));
-		lblTitulo1.setBounds(146, 18, 571, 35);
-		panelTitulo.add(lblTitulo1);
-		
-		lblIcon = new JLabel("New label");
-		lblIcon.setIcon(new ImageIcon(RegistrarOferta.class.getResource("/img/briefcase.png")));
-		lblIcon.setBounds(106, 20, 30, 30);
-		panelTitulo.add(lblIcon);
-		PanelRedond cardBlanca = new PanelRedond(20);
-		cardBlanca.setBackground(new Color(255, 255, 255));
-		cardBlanca.setBounds(27, 75, 664, 330);
-		panel.add(cardBlanca);
-		cardBlanca.setLayout(null);
-		stepsLayout = new CardLayout();
-		pnlSteps = new JPanel(stepsLayout);
-		pnlSteps.setOpaque(false);
-		pnlSteps.setBounds(20, 15, 624, 300);
-		cardBlanca.add(pnlSteps);
-		
-		pnlSteps.add(crearPaso1(), "paso1");
-		pnlSteps.add(crearPaso2(), "paso2");
-		pnlSteps.add(crearPaso3(), "paso3");
-		
-		int xDot = 312;
-		for (int i = 0; i < 3; i++) {
-			JLabel dot = new JLabel("\u25CF", JLabel.CENTER);
-			dot.setFont(new Font("Calibri", Font.PLAIN, 22));
-			dot.setBounds(xDot, 420, 20, 20);
-			dots[i] = dot;
-			panel.add(dot);
-			xDot += 30;
-		}
-		btnAtras = new BotonRedond("Atr\u00E1s", 25);
-		btnAtras.setFont(new Font("Calibri", Font.PLAIN, 18));
-		btnAtras.setBackground(new Color(220, 220, 220));
-		btnAtras.setForeground(new Color(0, 0, 51));
-		btnAtras.setBounds(27, 460, 110, 34);
-		btnAtras.setVisible(false);
-		btnAtras.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				irAtras();
-				actualizarTitulo(pasoActual);
-			}
-		});
-		panel.add(btnAtras);
-		btnSiguiente = new BotonRedond("Continuar", 25);
-		btnSiguiente.setFont(new Font("Calibri", Font.PLAIN, 18));
-		btnSiguiente.setBackground(new Color(255, 153, 0));
-		btnSiguiente.setForeground(new Color(0, 0, 51));
-		btnSiguiente.setBounds(577, 460, 114, 34);
-		btnSiguiente.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				irSiguiente();
-				actualizarTitulo(pasoActual);
-			}
-		});
-		panel.add(btnSiguiente);
-		actualizarDots();
-		actualizarTitulo(pasoActual);
+		btnPublicar.setBackground(new Color(255, 153, 0));
+		btnPublicar.setForeground(new Color(0, 0, 51));
+		btnPublicar.setFont(new Font("Calibri", Font.BOLD, 20));
+		btnPublicar.setBounds(711, 912, 220, 50);
+		panel.add(btnPublicar);
 
-		
+		lblFondo = new JLabel("New label");
+		lblFondo.setIcon(new ImageIcon(RegistrarOferta.class.getResource("/img/Fondo_Registrar_Oferta.png")));
+		lblFondo.setBounds(0, 0, 1914, 1005);
+		contentPanel.add(lblFondo);
+		colocarImagen(lblFondo, "/img/Fondo_Registrar_Oferta.png");
 	}
 
-	private void actualizarTitulo(int paso) {
-		if(paso == 1) {
-			lblTitulo1.setText("Datos del Puesto");
-			colocarImagen(lblIcon, "/img/edit (1).png");
-
-		}
-		if(paso==2) {
-			lblTitulo1.setText("Requisistos del Candidato");
-			colocarImagen(lblIcon, "/img/user.png");
-			
-		}
-		if(paso == 3) {
-			lblTitulo1.setText("Condiciones del Trabajo");
-			colocarImagen(lblIcon, "/img/briefcase.png");
-		}
-	}
-
-	private void irSiguiente() {
-		
-		if (pasoActual == 1) {
-			if (!validarPaso1())
-				return;
-			stepsLayout.show(pnlSteps, "paso2");
-			pasoActual = 2;
-			btnAtras.setVisible(true);
-			
-		} else if (pasoActual == 2) {
-			if (!validarPaso2())
-				return;
-			stepsLayout.show(pnlSteps, "paso3");
-			pasoActual = 3;
-			btnSiguiente.setText("Publicar");
-			
-		} else {
-			if (!validarPaso3())
-				return;
-			registrarOferta();
-			return;
-		}
-		actualizarDots();
-	}
-
-	private void irAtras() {
-		
-		if (pasoActual == 3) {
-			stepsLayout.show(pnlSteps, "paso2");
-			pasoActual = 2;
-			btnSiguiente.setText("Continuar");
-			
-		} else if (pasoActual == 2) {
-			stepsLayout.show(pnlSteps, "paso1");
-			pasoActual = 1;
-			btnAtras.setVisible(false);
-		}
-		
-		actualizarDots();
-	}
-
-	private void actualizarDots() {
-		for (int i = 0; i < 3; i++) {
-			if (i + 1 == pasoActual) {
-				dots[i].setForeground(new Color(255, 153, 0));
-			} else {
-				dots[i].setForeground(new Color(200, 200, 200));
-			}
-		}
-	}
-
-	private boolean validarPaso1() {
-		if (!Validaciones.camposLlenos(txtPuesto.getText(), txtDescripcion.getText())) {
-			JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
-		return true;
-	}
-
-	private boolean validarPaso2() {
-		if (cbxSexo.getSelectedIndex() == -1 || cbxTipoCandidato.getSelectedIndex() == -1) {
-			JOptionPane.showMessageDialog(null, "Debe seleccionar el sexo y el tipo de candidato.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
-		return true;
-	}
-
-	private boolean validarPaso3() {
-		if (!Validaciones.camposLlenos(txtCiudad.getText()) || cbxJornada.getSelectedIndex() == -1 || cbxModalidad.getSelectedIndex() == -1) {
+	private boolean validarDatos() {
+		if (!Validaciones.camposLlenos(txtPuesto.getText(), txtDescripcion.getText(), txtCiudad.getText())
+				|| cbxSexo.getSelectedIndex() == -1
+				|| cbxTipoCandidato.getSelectedIndex() == -1
+				|| cbxJornada.getSelectedIndex() == -1
+				|| cbxModalidad.getSelectedIndex() == -1) {
 			JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
@@ -287,12 +322,19 @@ public class RegistrarOferta extends JDialog {
 		Modalidad modalidad = (Modalidad) cbxModalidad.getSelectedItem();
 		int aniosExp = (Integer) spnAniosExp.getValue();
 		float salario = ((Number) spnSalario.getValue()).floatValue();
-		Oferta oferta = new Oferta(id, sexo, tipoCandidato, txtPuesto.getText(), (Integer) spnCantPuestos.getValue(), chkLicencia.isSelected(), chkMudarse.isSelected(), EstadoOferta.PENDIENTE, jornada, txtCiudad.getText(), salario, txtDescripcion.getText(), aniosExp, empresa, modalidad, LocalDate.now(),AreaLaboral.INGENIERIA);
+
+		Oferta oferta = new Oferta(id, sexo, tipoCandidato, txtPuesto.getText(), (Integer) spnCantPuestos.getValue(),
+				chkLicencia.isSelected(), chkMudarse.isSelected(), EstadoOferta.PENDIENTE, jornada,
+				txtCiudad.getText(), salario, txtDescripcion.getText(), aniosExp, empresa, modalidad,
+				LocalDate.now(), AreaLaboral.INGENIERIA);
+
 		BolsaEmpleo.getInstancia().refOferta(oferta);
-		if(empresa != null) {
+
+		if (empresa != null) {
 			empresa.agregarOferta(oferta);
 		}
-		JOptionPane.showMessageDialog(null, "Se ha publicado la oferta.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
+
+		JOptionPane.showMessageDialog(null, "Se ha publicado la oferta.", "Información", JOptionPane.INFORMATION_MESSAGE);
 		clear();
 	}
 
@@ -309,195 +351,35 @@ public class RegistrarOferta extends JDialog {
 		cbxModalidad.setSelectedIndex(-1);
 		txtCiudad.setText("");
 		spnSalario.setValue(0);
-		stepsLayout.show(pnlSteps, "paso1");
-		pasoActual = 1;
-		btnAtras.setVisible(false);
-		btnSiguiente.setText("Continuar");
-		actualizarDots();
 	}
 
-	private JPanel crearPaso1() {
-		JPanel paso = new JPanel();
-		paso.setOpaque(false);
-		paso.setLayout(null);
-		JLabel lblPuesto = new JLabel("Puesto");
-		lblPuesto.setForeground(new Color(0, 0, 51));
-		lblPuesto.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblPuesto.setBounds(0, 0, 200, 20);
-		paso.add(lblPuesto);
-		txtPuesto = new TextFieldRedond(25);
-		txtPuesto.setForeground(new Color(0, 0, 51));
-		txtPuesto.setBackground(SystemColor.controlHighlight);
-		txtPuesto.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtPuesto.setBounds(0, 25, 294, 30);
-		paso.add(txtPuesto);
-		JLabel lblCantPuestos = new JLabel("Cantidad de puestos");
-		lblCantPuestos.setForeground(new Color(0, 0, 51));
-		lblCantPuestos.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblCantPuestos.setBounds(330, 0, 220, 20);
-		paso.add(lblCantPuestos);
-		spnCantPuestos = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
-		spnCantPuestos.setFont(new Font("Calibri", Font.PLAIN, 18));
-		spnCantPuestos.setBounds(330, 25, 100, 30);
-		paso.add(spnCantPuestos);
-		JLabel lblDescripcion = new JLabel("Descripci\u00F3n del puesto");
-		lblDescripcion.setForeground(new Color(0, 0, 51));
-		lblDescripcion.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblDescripcion.setBounds(0, 75, 300, 20);
-		paso.add(lblDescripcion);
-		txtDescripcion = new JTextArea();
-		txtDescripcion.setForeground(new Color(0, 0, 51));
-		txtDescripcion.setBackground(SystemColor.controlHighlight);
-		txtDescripcion.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtDescripcion.setLineWrap(true);
-		txtDescripcion.setWrapStyleWord(true);
-		JScrollPane scrollDescripcion = new JScrollPane(txtDescripcion);
-		scrollDescripcion.setBounds(0, 100, 624, 160);
-		paso.add(scrollDescripcion);
-		return paso;
-	}
-
-	private JPanel crearPaso2() {
-		JPanel paso = new JPanel();
-		paso.setOpaque(false);
-		paso.setLayout(null);
-		JLabel lblSexo = new JLabel("Sexo requerido");
-		lblSexo.setForeground(new Color(0, 0, 51));
-		lblSexo.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblSexo.setBounds(0, 0, 200, 20);
-		paso.add(lblSexo);
-		cbxSexo = new ComboBoxRedond<Sexo>(25);
-		cbxSexo.setForeground(new Color(0, 0, 51));
-		cbxSexo.setFont(new Font("Calibri", Font.PLAIN, 18));
-		cbxSexo.setBackground(SystemColor.controlHighlight);
-		cbxSexo.setBounds(0, 25, 294, 30);
-		cbxSexo.setModel(new DefaultComboBoxModel<Sexo>(Sexo.values()));
-		cbxSexo.setSelectedIndex(-1);
-		paso.add(cbxSexo);
-		JLabel lblTipoCandidato = new JLabel("Tipo de candidato");
-		lblTipoCandidato.setForeground(new Color(0, 0, 51));
-		lblTipoCandidato.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblTipoCandidato.setBounds(330, 0, 220, 20);
-		paso.add(lblTipoCandidato);
-		cbxTipoCandidato = new ComboBoxRedond<TipoPersona>(25);
-		cbxTipoCandidato.setForeground(new Color(0, 0, 51));
-		cbxTipoCandidato.setFont(new Font("Calibri", Font.PLAIN, 18));
-		cbxTipoCandidato.setBackground(SystemColor.controlHighlight);
-		cbxTipoCandidato.setBounds(330, 25, 294, 30);
-		cbxTipoCandidato.setModel(new DefaultComboBoxModel<TipoPersona>(TipoPersona.values()));
-		cbxTipoCandidato.setSelectedIndex(-1);
-		paso.add(cbxTipoCandidato);
-		JLabel lblAniosExp = new JLabel("A\u00F1os de experiencia m\u00EDnima");
-		lblAniosExp.setForeground(new Color(0, 0, 51));
-		lblAniosExp.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblAniosExp.setBounds(0, 75, 280, 20);
-		paso.add(lblAniosExp);
-		spnAniosExp = new JSpinner(new SpinnerNumberModel(0, 0, 50, 1));
-		spnAniosExp.setFont(new Font("Calibri", Font.PLAIN, 18));
-		spnAniosExp.setBounds(0, 100, 100, 30);
-		paso.add(spnAniosExp);
-		chkLicencia = new JCheckBox("Requiere licencia de conducir");
-		chkLicencia.setForeground(new Color(0, 0, 51));
-		chkLicencia.setFont(new Font("Calibri", Font.PLAIN, 18));
-		chkLicencia.setOpaque(false);
-		chkLicencia.setBounds(0, 150, 280, 25);
-		paso.add(chkLicencia);
-		chkMudarse = new JCheckBox("Requiere disponibilidad para mudarse");
-		chkMudarse.setForeground(new Color(0, 0, 51));
-		chkMudarse.setFont(new Font("Calibri", Font.PLAIN, 18));
-		chkMudarse.setOpaque(false);
-		chkMudarse.setBounds(0, 185, 330, 25);
-		paso.add(chkMudarse);
-		return paso;
-	}
-
-	private JPanel crearPaso3() {
-		JPanel paso = new JPanel();
-		paso.setOpaque(false);
-		paso.setLayout(null);
-		JLabel lblJornada = new JLabel("Jornada");
-		lblJornada.setForeground(new Color(0, 0, 51));
-		lblJornada.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblJornada.setBounds(0, 0, 200, 20);
-		paso.add(lblJornada);
-		cbxJornada = new ComboBoxRedond<Jornada>(25);
-		cbxJornada.setForeground(new Color(0, 0, 51));
-		cbxJornada.setFont(new Font("Calibri", Font.PLAIN, 18));
-		cbxJornada.setBackground(SystemColor.controlHighlight);
-		cbxJornada.setBounds(0, 25, 294, 30);
-		cbxJornada.setModel(new DefaultComboBoxModel<Jornada>(Jornada.values()));
-		cbxJornada.setSelectedIndex(-1);
-		paso.add(cbxJornada);
-		JLabel lblModalidad = new JLabel("Modalidad");
-		lblModalidad.setForeground(new Color(0, 0, 51));
-		lblModalidad.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblModalidad.setBounds(330, 0, 220, 20);
-		paso.add(lblModalidad);
-		cbxModalidad = new ComboBoxRedond<Modalidad>(25);
-		cbxModalidad.setForeground(new Color(0, 0, 51));
-		cbxModalidad.setFont(new Font("Calibri", Font.PLAIN, 18));
-		cbxModalidad.setBackground(SystemColor.controlHighlight);
-		cbxModalidad.setBounds(330, 25, 294, 30);
-		cbxModalidad.setModel(new DefaultComboBoxModel<Modalidad>(Modalidad.values()));
-		cbxModalidad.setSelectedIndex(-1);
-		paso.add(cbxModalidad);
-		JLabel lblCiudad = new JLabel("Ciudad");
-		lblCiudad.setForeground(new Color(0, 0, 51));
-		lblCiudad.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblCiudad.setBounds(0, 75, 200, 20);
-		paso.add(lblCiudad);
-		txtCiudad = new TextFieldRedond(25);
-		txtCiudad.setForeground(new Color(0, 0, 51));
-		txtCiudad.setBackground(SystemColor.controlHighlight);
-		txtCiudad.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtCiudad.setBounds(0, 100, 294, 30);
-		paso.add(txtCiudad);
-		JLabel lblSalario = new JLabel("Salario ofrecido");
-		lblSalario.setForeground(new Color(0, 0, 51));
-		lblSalario.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblSalario.setBounds(330, 75, 220, 20);
-		paso.add(lblSalario);
-		spnSalario = new JSpinner(new SpinnerNumberModel(0, 0, 1000000, 500));
-		spnSalario.setFont(new Font("Calibri", Font.PLAIN, 18));
-		spnSalario.setBounds(330, 100, 150, 30);
-		paso.add(spnSalario);
-		return paso;
-	}
 	private void colocarImagen(JLabel label, String ruta) {
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
 
-		 ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		int anchoLabel = label.getWidth();
+		int altoLabel = label.getHeight();
 
-		    int anchoLabel = label.getWidth();
-		    int altoLabel = label.getHeight();
+		int anchoImagen = icono.getIconWidth();
+		int altoImagen = icono.getIconHeight();
 
-		    int anchoImagen = icono.getIconWidth();
-		    int altoImagen = icono.getIconHeight();
+		double escalaAncho = (double) anchoLabel / anchoImagen;
+		double escalaAlto = (double) altoLabel / altoImagen;
+		double escala = Math.max(escalaAncho, escalaAlto);
 
-		    double escalaAncho = (double) anchoLabel / anchoImagen;
-		    double escalaAlto = (double) altoLabel / altoImagen;
+		int nuevoAncho = (int) (anchoImagen * escala);
+		int nuevoAlto = (int) (altoImagen * escala);
 
-		    double escala = Math.max(escalaAncho, escalaAlto);
+		Image imagenEscalada = icono.getImage().getScaledInstance(
+				nuevoAncho,
+				nuevoAlto,
+				Image.SCALE_SMOOTH
+		);
 
-		    int nuevoAncho = (int) (anchoImagen * escala);
-		    int nuevoAlto = (int) (altoImagen * escala);
+		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 
-		    Image imagenEscalada = icono.getImage().getScaledInstance(
-		            nuevoAncho,
-		            nuevoAlto,
-		            Image.SCALE_SMOOTH
-		    );
-
-		    ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-
-		    label.setIcon(iconoEscalado);
-		    label.setText("");
-		    label.setHorizontalAlignment(JLabel.CENTER);
-		    label.setVerticalAlignment(JLabel.CENTER);
-	}
-	
-	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
-	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-	    boton.setIcon(new ImageIcon(imagenEscalada));
+		label.setIcon(iconoEscalado);
+		label.setText("");
+		label.setHorizontalAlignment(JLabel.CENTER);
+		label.setVerticalAlignment(JLabel.CENTER);
 	}
 }
