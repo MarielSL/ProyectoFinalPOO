@@ -247,10 +247,7 @@ public class HomeCandidato extends JFrame {
 			lblTitulo.setBounds(24, 20, 400, 28);
 			panelTabla.add(lblTitulo);
 
-			modeloRecientes = new DefaultTableModel(
-				new Object[][] {},
-				new String[] { "Oferta", "Fecha", "Estado" }
-			) {
+			modeloRecientes = new DefaultTableModel(new Object[][] {},new String[] { "Oferta", "Fecha", "Estado" }) {
 				public boolean isCellEditable(int fila, int columna) {
 					return false;
 				}

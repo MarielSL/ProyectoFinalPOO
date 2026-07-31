@@ -12,9 +12,13 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -23,10 +27,15 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableRowSorter;
 
 import logico.BolsaEmpleo;
 import logico.Empresa;
@@ -43,6 +52,7 @@ public class VerEmpresasAdmin extends JFrame {
 	private JPanel pnlTabla;
 	private JLabel lblIlustracion;
 	private JTable table;
+	private TableRowSorter<DefaultTableModel> sorterEmpresas;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -95,17 +105,18 @@ public class VerEmpresasAdmin extends JFrame {
 	private void construirHeader(JPanel panel, int margen, int anchoContenido) {
 		PanelConSombra panelHeader = new PanelConSombra(25);
 		panelHeader.setBackground(new Color(0, 0, 51));
-		panelHeader.setBounds(0, 0, dim.width, 70);
+		panelHeader.setBounds(0, 0, 1920, 90);
 		panel.add(panelHeader);
 		panelHeader.setLayout(null);
 
 		BotonRedond btnAtras = new BotonRedond("", 18);
 		btnAtras.setBackground(new Color(0, 0, 51));
-		btnAtras.setBounds(20, 12, 46, 46);
+		btnAtras.setBounds(12, 26, 46, 46);
 		btnAtras.setBorderPainted(false);
 		btnAtras.setContentAreaFilled(false);
 		btnAtras.setFocusPainted(false);
 		btnAtras.setOpaque(false);
+		colocarIconoBoton(btnAtras,"/img/menu-dots-vertical(White).png",25,25);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				BarraAdmin home = new BarraAdmin();
@@ -116,14 +127,19 @@ public class VerEmpresasAdmin extends JFrame {
 		panelHeader.add(btnAtras);
 
 		JLabel lblTitulo = new JLabel("Empresas");
-		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 35));
 		lblTitulo.setForeground(new Color(255, 51, 51));
-		lblTitulo.setBounds(74, 22, 400, 30);
+		lblTitulo.setBounds(70, 29, 400, 30);
 		panelHeader.add(lblTitulo);
 
 		JLabel lblChevron = new JLabel();
 		lblChevron.setBounds(dim.width - 40, 26, 18, 18);
 		panelHeader.add(lblChevron);
+		
+		JLabel lblNewLabel_1 = new JLabel("");
+		lblNewLabel_1.setBounds(1784, 0, 114, 88);
+		colocarImagen(lblNewLabel_1, "/img/iconoLogo_FondoOscuro.png");
+		panelHeader.add(lblNewLabel_1);
 	}
 
 	private void construirTarjetas(JPanel panel, int margen, int anchoContenido) {
@@ -184,15 +200,46 @@ public class VerEmpresasAdmin extends JFrame {
 		panelBusqueda.setLayout(null);
 
 		JLabel lblIconoBuscar = new JLabel();
-		lblIconoBuscar.setBounds(20, 18, 22, 22);
+		lblIconoBuscar.setBounds(22, 20, 22, 22);
 		panelBusqueda.add(lblIconoBuscar);
 
 		txtBuscar = new TextFieldRedond(18);
+		txtBuscar.setText("Buscar");
 		txtBuscar.setFont(new Font("Calibri", Font.PLAIN, 16));
-		txtBuscar.setForeground(new Color(0, 0, 51));
+		txtBuscar.setForeground(Color.GRAY);
 		txtBuscar.setBackground(new Color(245, 245, 245));
 		txtBuscar.setBounds(50, 14, anchoContenido - 480, 32);
 		panelBusqueda.add(txtBuscar);
+
+		txtBuscar.addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				if (txtBuscar.getText().equals("Buscar")) {
+					txtBuscar.setText("");
+					txtBuscar.setForeground(Color.BLACK);
+				}
+			}
+
+			public void focusLost(FocusEvent e) {
+				if (txtBuscar.getText().isEmpty()) {
+					txtBuscar.setText("Buscar");
+					txtBuscar.setForeground(Color.GRAY);
+				}
+			}
+		});
+
+		txtBuscar.getDocument().addDocumentListener(new DocumentListener() {
+			public void insertUpdate(DocumentEvent e) {
+				aplicarFiltros();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				aplicarFiltros();
+			}
+
+			public void changedUpdate(DocumentEvent e) {
+				aplicarFiltros();
+			}
+		});
 
 		JLabel lblEstado = new JLabel("Estado");
 		lblEstado.setFont(new Font("Calibri", Font.PLAIN, 13));
@@ -208,6 +255,12 @@ public class VerEmpresasAdmin extends JFrame {
 		cbxEstado.setSelectedIndex(0);
 		cbxEstado.setBounds(anchoContenido - 420, 20, 190, 28);
 		panelBusqueda.add(cbxEstado);
+
+		cbxEstado.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				aplicarFiltros();
+			}
+		});
 
 		JLabel lblTipo = new JLabel("Tipo");
 		lblTipo.setFont(new Font("Calibri", Font.PLAIN, 13));
@@ -228,6 +281,17 @@ public class VerEmpresasAdmin extends JFrame {
 		cbxTipo.setSelectedIndex(0);
 		cbxTipo.setBounds(anchoContenido - 210, 20, 190, 28);
 		panelBusqueda.add(cbxTipo);
+
+		cbxTipo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				aplicarFiltros();
+			}
+		});
+
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setBounds(25, 20, 17, 17);
+		colocarImagen(lblNewLabel, "/img/lupa.png");
+		panelBusqueda.add(lblNewLabel);
 	}
 
 	private void construirContenido(JPanel panel, int margen, int anchoContenido) {
@@ -301,7 +365,12 @@ public class VerEmpresasAdmin extends JFrame {
 		table.setShowGrid(false);
 		table.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 15));
 		table.getTableHeader().setForeground(new Color(0, 0, 51));
+
+		table.setDefaultRenderer(Object.class, new RenderCentrado());
 		table.getColumnModel().getColumn(4).setCellRenderer(new RenderEstado());
+
+		sorterEmpresas = new TableRowSorter<DefaultTableModel>((DefaultTableModel) table.getModel());
+		table.setRowSorter(sorterEmpresas);
 
 		JScrollPane scrollTabla = new JScrollPane(table);
 		scrollTabla.setBorder(null);
@@ -321,6 +390,37 @@ public class VerEmpresasAdmin extends JFrame {
 		}
 		pnlVacio.setVisible(false);
 		pnlTabla.setVisible(true);
+	}
+
+	private void aplicarFiltros() {
+		if (sorterEmpresas == null) {
+			return;
+		}
+
+		List<RowFilter<Object, Object>> filtros = new ArrayList<RowFilter<Object, Object>>();
+
+		String estadoSeleccionado = (String) cbxEstado.getSelectedItem();
+		if (estadoSeleccionado != null && estadoSeleccionado.equals("Activas")) {
+			filtros.add(RowFilter.regexFilter("(?i)^Activa$", 4));
+		} else if (estadoSeleccionado != null && estadoSeleccionado.equals("Inactivas")) {
+			filtros.add(RowFilter.regexFilter("(?i)^Inactiva$", 4));
+		}
+
+		String tipoSeleccionado = (String) cbxTipo.getSelectedItem();
+		if (tipoSeleccionado != null && !tipoSeleccionado.equals("Todos")) {
+			filtros.add(RowFilter.regexFilter("(?i)^" + tipoSeleccionado + "$", 2));
+		}
+
+		String texto = txtBuscar.getText();
+		if (texto != null && !texto.isEmpty() && !texto.equals("Buscar")) {
+			filtros.add(RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(texto)));
+		}
+
+		if (filtros.isEmpty()) {
+			sorterEmpresas.setRowFilter(null);
+		} else {
+			sorterEmpresas.setRowFilter(RowFilter.andFilter(filtros));
+		}
 	}
 
 	private int contarTotalEmpresas() {
@@ -404,6 +504,12 @@ public class VerEmpresasAdmin extends JFrame {
 		return modelo;
 	}
 
+	public class RenderCentrado extends DefaultTableCellRenderer {
+		public RenderCentrado() {
+			setHorizontalAlignment(SwingConstants.CENTER);
+		}
+	}
+
 	private class RenderEstado extends JLabel implements TableCellRenderer {
 
 		public RenderEstado() {
@@ -443,8 +549,16 @@ public class VerEmpresasAdmin extends JFrame {
 			g2.dispose();
 
 			super.paintComponent(g);
-		
-		
+
+
 		}
 	}
+
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	    boton.setIcon(new ImageIcon(imagenEscalada));
+	}
+
+
 }
