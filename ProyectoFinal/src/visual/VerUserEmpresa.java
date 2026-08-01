@@ -38,6 +38,7 @@ public class VerUserEmpresa extends JFrame {
 	private BotonRedond btnNewButton;
 	private JLabel lblFotoFondo;
 	private Dimension dim;
+	private BotonRedond btnVolver;
 
 	/**
 	 * Launch the application.
@@ -233,6 +234,21 @@ public class VerUserEmpresa extends JFrame {
 		contentPane.add(lblFotoFondo);
 		colocarImagen(lblFotoFondo,"/img/Fondo-Ver Usuario.png");
 		
+		btnVolver = new BotonRedond(" \u2190  Volver", 30);
+		btnVolver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				HomeEmpresa volver = new HomeEmpresa();
+				volver.setVisible(true);
+				dispose();
+			}
+		});
+		btnVolver.setForeground(new Color(0, 0, 51));
+		btnVolver.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnVolver.setColorHover(new Color(255, 220, 183));
+		btnVolver.setBackground(new Color(255, 235, 215));
+		contentPane.add(btnVolver);
+		Escalador.b(btnVolver, 56, 886, 159, 47);
+		
 		loadUsuario();
 
 	}
@@ -311,5 +327,4 @@ public class VerUserEmpresa extends JFrame {
 	    label.setHorizontalAlignment(JLabel.CENTER);
 	    label.setVerticalAlignment(JLabel.CENTER);
 	}
-	
 }

@@ -77,7 +77,7 @@ public class VerOfertasEmpresa extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		dim = getToolkit().getScreenSize();
-		setSize(dim.width, dim.height);
+		setSize(dim.width, dim.height - 55);
 		setLocationRelativeTo(null);
 
 		JLayeredPane layeredPane = new JLayeredPane();
@@ -96,6 +96,21 @@ public class VerOfertasEmpresa extends JFrame {
 		construirTarjetas(panel, margen, anchoContenido);
 		construirBusqueda(panel, margen, anchoContenido);
 		construirContenido(panel, margen, anchoContenido);
+		
+		BotonRedond botonRedond = new BotonRedond(" \u2190  Volver", 30);
+		botonRedond.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				HomeEmpresa volver = new HomeEmpresa();
+				volver.setVisible(true);
+				dispose();
+			}
+		});
+		botonRedond.setForeground(new Color(0, 0, 51));
+		botonRedond.setFont(new Font("Calibri", Font.PLAIN, 20));
+		botonRedond.setColorHover(new Color(255, 220, 183));
+		botonRedond.setBackground(new Color(255, 235, 215));
+		botonRedond.setBounds(40, 908, 220, 50);
+		panel.add(botonRedond);
 
 		cargarDatos();
 	}
@@ -256,7 +271,7 @@ public class VerOfertasEmpresa extends JFrame {
 
 		PanelConSombra panelContenedor = new PanelConSombra(20);
 		panelContenedor.setBackground(Color.WHITE);
-		panelContenedor.setBounds(margen, yContenido, anchoContenido, altoContenido);
+		panelContenedor.setBounds(40, 296, 1840, 606);
 		panel.add(panelContenedor);
 		panelContenedor.setLayout(new CardLayout(0, 0));
 
@@ -278,14 +293,14 @@ public class VerOfertasEmpresa extends JFrame {
 		lblIlustracion.setBounds(0, 40, 1, 1);
 		panelVacio.add(lblIlustracion);
 
-		JLabel lblTitulo = new JLabel("Aun no has publicado ninguna oferta");
+		JLabel lblTitulo = new JLabel("A\u00FAn no has publicado ninguna oferta");
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
 		lblTitulo.setForeground(new Color(0, 0, 51));
 		lblTitulo.setBounds(919, 361, 1, 1);
 		panelVacio.add(lblTitulo);
 
-		JLabel lblSubtitulo = new JLabel("Cuando publiques una nueva oferta aparecera aqui para que puedas gestionarla facilmente.");
+		JLabel lblSubtitulo = new JLabel("Cuando publiques una nueva oferta aparecer\u00E1 aqu\u00ED para que puedas gestionarla facilmente.");
 		lblSubtitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSubtitulo.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblSubtitulo.setForeground(new Color(130, 130, 130));
@@ -398,6 +413,4 @@ public class VerOfertasEmpresa extends JFrame {
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
-	
-	
 }

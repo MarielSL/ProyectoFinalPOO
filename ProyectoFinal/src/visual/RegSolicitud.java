@@ -66,6 +66,7 @@ public class RegSolicitud extends JDialog {
 	private ComboBoxRedond cbxJornada;
 	private ComboBoxRedond cbxModalidad;
 	private BotonRedond btnCancelar;
+	private BotonRedond btnVolver;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -110,7 +111,7 @@ public class RegSolicitud extends JDialog {
 		lblTitulo = new JLabel("Crea tu Solicitud de Empleo");
 		lblTitulo.setForeground(new Color(0, 0, 51));
 		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 40));
-		lblTitulo.setBounds(58, 216, 477, 40);
+		lblTitulo.setBounds(58, 216, 571, 40);
 		panel.add(lblTitulo);
 
 		lblNewLabel = new JLabel("Define tus preferencias laborales.");
@@ -287,7 +288,7 @@ public class RegSolicitud extends JDialog {
 					LocalDate fechaHoy = LocalDate.now();
 					SolicitudEmpleo solicitud = new SolicitudEmpleo(id, EstadoSolicitud.ACTIVA, BolsaEmpleo.getInstancia().getLoginUser().getPersona(), fechaHoy, (AreaLaboral) cbxAreaLaboral.getSelectedItem(), ((float) (Integer) spnSueldo_1.getValue()), (Modalidad) cbxModalidad.getSelectedItem(), txtPuesto.getText(), (Jornada) cbxJornada.getSelectedItem());
 					BolsaEmpleo.getInstancia().regSolicitud(solicitud,BolsaEmpleo.getInstancia().getLoginUser().getPersona());
-					
+
 					VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral();
 					ver.setVisible(true);
 					dispose();
@@ -299,22 +300,22 @@ public class RegSolicitud extends JDialog {
 					solicitud.setModalidad( (Modalidad) cbxModalidad.getSelectedItem());
 					solicitud.setSueldoEsperado((float)((Integer) spnSueldo_1.getValue()));
 					BolsaEmpleo.getInstancia().modSolicitud(solicitud);
-					
+
 					VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral();
 					ver.setVisible(true);
 					dispose();
 				}
-				
+
 			}
 		});
 		btnCrear.setBackground(new Color(255, 153, 0));
 		btnCrear.setForeground(new Color(0, 0, 51));
 		btnCrear.setFont(new Font("Calibri", Font.BOLD, 22));
-		btnCrear.setBounds(677, 903, 170, 46);
+		btnCrear.setBounds(677, 903, 220, 50);
 		panel.add(btnCrear);
-		
-		BotonRedond btnCancelar = new BotonRedond("Cancelar", 35);
-		btnCancelar.addActionListener(new ActionListener() {
+
+		btnVolver = new BotonRedond(" \u2190  Volver", 30);
+		btnVolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(solicitud == null) {
 					HomeCandidato home = new HomeCandidato();
@@ -322,7 +323,7 @@ public class RegSolicitud extends JDialog {
 
 					home.setVisible(true);
 					home.toFront();
-		            home.requestFocus();
+					home.requestFocus();
 					dispose();
 				}
 				else {
@@ -332,24 +333,25 @@ public class RegSolicitud extends JDialog {
 					ver.toFront();
 					ver.requestFocus();
 				}
+
 			}
 		});
-		btnCancelar.setForeground(new Color(0, 0, 51));
-		btnCancelar.setFont(new Font("Calibri", Font.BOLD, 22));
-		btnCancelar.setBackground(Color.decode("#ffc5c5"));
-		btnCancelar.setColorHover(Color.decode("#feaaaa"));
-		btnCancelar.setBounds(58, 903, 170, 46);
-		panel.add(btnCancelar);
-		
+		btnVolver.setForeground(new Color(0, 0, 51));
+		btnVolver.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnVolver.setColorHover(new Color(255, 220, 183));
+		btnVolver.setBackground(new Color(255, 235, 215));
+		btnVolver.setBounds(58, 903, 220, 50);
+		panel.add(btnVolver);
+
 
 		lblFondo = new JLabel("New label");
 		lblFondo.setIcon(new ImageIcon(RegSolicitud.class.getResource("/img/Fondo-Registrar-Solicitud.png")));
 		lblFondo.setBounds(0, 0, 1914, 1005);
 		contentPanel.add(lblFondo);
 		colocarImagen(lblFondo,"/img/Fondo-Registrar-Solicitud.png");
-		
+
 		loadSolicitud(solicitud);
-		
+
 		if(solicitud != null) {
 			lblTitulo.setText("Modifica tu Solicitud Empleo.");
 			btnCrear.setText("Modificar");

@@ -48,6 +48,7 @@ public class VerOfertasCandidato extends JFrame {
     private JTable table;
     private TableRowSorter<DefaultTableModel> sorterOfertas;
     private ArrayList<Oferta> listaOfertas;
+    private BotonRedond btnVolver;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -95,6 +96,21 @@ public class VerOfertasCandidato extends JFrame {
 
         cargarDatos();
         construirContenido(panel, margen, anchoContenido);
+        
+        btnVolver = new BotonRedond(" \u2190  Volver", 30);
+        btnVolver.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		HomeCandidato volver = new HomeCandidato();
+        		volver.setVisible(true);
+        		dispose();
+        	}
+        });
+        btnVolver.setForeground(new Color(0, 0, 51));
+        btnVolver.setFont(new Font("Calibri", Font.PLAIN, 20));
+        btnVolver.setColorHover(new Color(255, 220, 183));
+        btnVolver.setBackground(new Color(255, 235, 215));
+        btnVolver.setBounds(40, 902, 220, 50);
+        panel.add(btnVolver);
     }
 
     private void construirHeader(JPanel panel, int margen, int anchoContenido) {
@@ -219,7 +235,7 @@ public class VerOfertasCandidato extends JFrame {
 
         PanelConSombra panelContenedor = new PanelConSombra(20);
         panelContenedor.setBackground(Color.WHITE);
-        panelContenedor.setBounds(margen, yContenido, anchoContenido, altoContenido);
+        panelContenedor.setBounds(40, 190, 1840, 699);
         panel.add(panelContenedor);
         panelContenedor.setLayout(null);
 
@@ -228,7 +244,7 @@ public class VerOfertasCandidato extends JFrame {
         panelContenedor.add(pnlVacio);
 
         pnlTabla = crearTabla(anchoContenido, altoContenido);
-        pnlTabla.setBounds(0, 0, anchoContenido, altoContenido);
+        pnlTabla.setBounds(0, 0, 1840, 686);
         panelContenedor.add(pnlTabla);
 
         boolean hayOfertas = listaOfertas != null && !listaOfertas.isEmpty();

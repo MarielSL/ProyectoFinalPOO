@@ -283,7 +283,8 @@ public class HomeCandidato extends JFrame {
 			{
 				lblEstadoBusquedaValor.setText("Inactiva");
 			}
-			lblMayorCoincidenciaValor.setText(BolsaEmpleo.getInstancia().CalcMayorCoincidenciaSolicitud(solicitud) + "%");
+			float porcentaje = BolsaEmpleo.getInstancia().CalcMayorCoincidenciaSolicitud(solicitud);
+			lblMayorCoincidenciaValor.setText(String.format("%.2f%%", porcentaje));
 			
 			
 		}

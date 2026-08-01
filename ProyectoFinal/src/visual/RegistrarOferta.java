@@ -290,6 +290,21 @@ public class RegistrarOferta extends JDialog {
 		btnPublicar.setFont(new Font("Calibri", Font.BOLD, 20));
 		btnPublicar.setBounds(711, 912, 220, 50);
 		panel.add(btnPublicar);
+		
+		BotonRedond botonRedond = new BotonRedond(" \u2190  Volver", 30);
+		botonRedond.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				HomeEmpresa volver = new HomeEmpresa();
+				volver.setVisible(true);
+				dispose();
+			}
+		});
+		botonRedond.setForeground(new Color(0, 0, 51));
+		botonRedond.setFont(new Font("Calibri", Font.PLAIN, 20));
+		botonRedond.setColorHover(new Color(255, 220, 183));
+		botonRedond.setBackground(new Color(255, 235, 215));
+		botonRedond.setBounds(58, 912, 220, 50);
+		panel.add(botonRedond);
 
 		lblFondo = new JLabel("New label");
 		lblFondo.setIcon(new ImageIcon(RegistrarOferta.class.getResource("/img/Fondo_Registrar_Oferta.png")));

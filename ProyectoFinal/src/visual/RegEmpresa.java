@@ -311,10 +311,18 @@ public class RegEmpresa extends JDialog {
 		BotonRedond botonRedond = new BotonRedond("    Volver", 25);
 		botonRedond.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SeleccionTipoUser volver = new SeleccionTipoUser();
-				volver.setVisible(true);
-				volver.setModal(true);
-				dispose();
+				if(myEmpresa == null) {
+					SeleccionTipoUser volver = new SeleccionTipoUser();
+					volver.setVisible(true);
+					volver.setModal(true);
+					dispose();
+				}
+				else {
+					VerUserEmpresa volver = new VerUserEmpresa();
+					volver.setVisible(true);
+					dispose();
+				}
+				
 				
 			}
 		});

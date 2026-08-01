@@ -66,6 +66,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 	private JLabel lblEstadoIcon;
 	private JLabel lblFechaSolicitud;
 	private Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
+	private BotonRedond btnVolver;
 
 
 	/**
@@ -436,32 +437,32 @@ public class VerMiSolicitudLaboral extends JFrame {
 			}
 		});
 		btnModificar.setFont(new Font("Calibri", Font.BOLD, 22));
-		btnModificar.setBounds(1648, 855, 163, 45);
+		btnModificar.setBounds(1600, 860, 220, 50);
 		btnModificar.setBackground(Color.decode("#ffebd7"));
 		btnModificar.setForeground(new Color(0, 0, 51));
 		btnModificar.setColorHover(Color.decode("#ffdcb7"));
 		panelFondo.add(btnModificar);
-
-		BotonRedond btnCancelar = new BotonRedond("Cancelar", 35);
-		btnCancelar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				HomeCandidato home = new HomeCandidato();
-				home.setVisible(true);
-				dispose();
-			}
-		});
-		btnCancelar.setForeground(new Color(0, 0, 51));
-		btnCancelar.setFont(new Font("Calibri", Font.BOLD, 22));
-		btnCancelar.setBackground(Color.decode("#ffc5c5"));
-		btnCancelar.setColorHover(Color.decode("#feaaaa"));
-		btnCancelar.setBounds(1407, 855, 170, 46);
-		panelFondo.add(btnCancelar);
 
 		JLabel lblDefineLoQue = new JLabel("Define lo que buscas y conecta con oportunidades ideales.");
 		lblDefineLoQue.setForeground(SystemColor.textInactiveText);
 		lblDefineLoQue.setFont(new Font("Calibri", Font.PLAIN, 25));
 		lblDefineLoQue.setBounds(106, 155, 611, 25);
 		panelFondo.add(lblDefineLoQue);
+		
+		btnVolver = new BotonRedond(" \u2190  Volver", 30);
+		btnVolver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				HomeCandidato volver = new HomeCandidato();
+				volver.setVisible(true);
+				dispose();
+			}
+		});
+		btnVolver.setForeground(new Color(0, 0, 51));
+		btnVolver.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnVolver.setColorHover(new Color(255, 220, 183));
+		btnVolver.setBackground(new Color(255, 235, 215));
+		btnVolver.setBounds(26, 860, 220, 50);
+		panelFondo.add(btnVolver);
 
 		if(user != null && user.getPersona() != null && user.getPersona().getSolicitud() != null) {
 			Persona candidato = user.getPersona();
