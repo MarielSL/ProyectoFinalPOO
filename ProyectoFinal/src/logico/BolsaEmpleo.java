@@ -558,4 +558,22 @@ public class BolsaEmpleo implements Serializable {
 			regUser(admin);
 		}
 	}
+	
+	public float CalcMayorCoincidenciaSolicitud (SolicitudEmpleo solicitud) {
+		float mayor = 0;
+		float actual = 0;
+		
+		for (Oferta oferta : ofertas) {
+			if (oferta.getEstado() == EstadoOferta.PENDIENTE) {
+				actual = calcCoincidencia(oferta, solicitud);
+				
+				if(actual > mayor) {
+					mayor = actual;
+				}
+			}
+			
+		}
+		
+		return mayor;
+	}
 }
