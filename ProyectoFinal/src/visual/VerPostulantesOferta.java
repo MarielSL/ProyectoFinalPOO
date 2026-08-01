@@ -25,6 +25,7 @@ import logico.Universitario;
 
 import java.awt.Color;
 import javax.swing.JLabel;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import java.awt.SystemColor;
@@ -42,6 +43,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Insets;
 
 public class VerPostulantesOferta extends JDialog {
 
@@ -116,13 +118,6 @@ public class VerPostulantesOferta extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
-		
-		JLabel lblNewLabel = new JLabel(":");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setForeground(Color.WHITE);
-		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 35));
-		lblNewLabel.setBounds(30, 13, 50, 50);
-		contentPanel.add(lblNewLabel);
 		
 		JLabel lblNewLabel_1 = new JLabel("Ranking de Candidatos");
 		lblNewLabel_1.setForeground(new Color(255, 153, 0));
@@ -558,6 +553,24 @@ public class VerPostulantesOferta extends JDialog {
 			contentPanel.add(panel);
 			panel.setLayout(null);
 		}
+		
+		BotonRedond botonRedond = new BotonRedond("",30);
+		botonRedond.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BarraEmpresa menu = new BarraEmpresa();
+				menu.setVisible(true);
+			}
+		});
+		botonRedond.setOpaque(false);
+		botonRedond.setMargin(new Insets(0, 0, 0, 0));
+		botonRedond.setFocusPainted(false);
+		botonRedond.setContentAreaFilled(false);
+		botonRedond.setBorderPainted(false);
+		botonRedond.setBackground(new Color(0, 0, 51));
+		botonRedond.setBounds(11, 12, 60, 60);
+		colocarIconoBoton(botonRedond, "/img/menu-dots-vertical(White).png", 25, 25);
+		contentPanel.add(botonRedond);
+		
 		if(oferta!=null) {
 			int cantSolicitantes = BolsaEmpleo.getInstancia().getSolicitudes().size();
 			
@@ -730,6 +743,12 @@ public class VerPostulantesOferta extends JDialog {
 				
 			}
 		}
+	}
+	
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 
 	private void colocarImagen(JLabel label, String ruta) {
