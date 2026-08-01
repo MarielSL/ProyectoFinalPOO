@@ -136,19 +136,27 @@ public class VerReportesAdmin extends JFrame {
 			"Vista general de la plataforma",
 			"Crea un reporte a tu medida"
 		};
+		String[] iconos = {
+			"/img/maletin_rojo.png",
+			"/img/esquema-de-trabajador-de-oficina.png",
+			"/img/archivo.png",
+			"/img/ciudad.png",
+			"/img/analisis-de-los-datos.png",
+			"/img/filtrar.png",
+		};
 
 		int indice = 0;
 		for (int fila = 0; fila < filas; fila++) {
 			for (int col = 0; col < columnas; col++) {
 				int x = margen + col * (anchoTarjeta + espacio);
 				int y = yInicio + fila * (altoTarjeta + espacio);
-				crearTarjetaReporte(panel, x, y, anchoTarjeta, altoTarjeta, titulos[indice], subtitulos[indice], indice);
+				crearTarjetaReporte(panel, x, y, anchoTarjeta, altoTarjeta, titulos[indice], subtitulos[indice], iconos[indice], indice);
 				indice++;
 			}
 		}
 	}
 
-	private void crearTarjetaReporte(JPanel panel, int x, int y, int ancho, int alto, String titulo, String subtitulo, int indiceReporte) {
+	private void crearTarjetaReporte(JPanel panel, int x, int y, int ancho, int alto, String titulo, String subtitulo, String rutaIcono, int indiceReporte) {
 		PanelConSombra tarjeta = new PanelConSombra(20);
 		tarjeta.setBackground(Color.WHITE);
 		tarjeta.setBounds(x, y, ancho, alto);
@@ -158,6 +166,7 @@ public class VerReportesAdmin extends JFrame {
 
 		JLabel lblIcono = new JLabel();
 		lblIcono.setBounds(24, 24, 40, 40);
+		colocarImagen(lblIcono, rutaIcono);
 		tarjeta.add(lblIcono);
 
 		JLabel lblTitulo = new JLabel(titulo);

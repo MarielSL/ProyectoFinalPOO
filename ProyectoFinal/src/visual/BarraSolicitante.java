@@ -159,23 +159,6 @@ public class BarraSolicitante extends JDialog {
 		
 		BotonConSombra btnMensajes = new BotonConSombra("Mis Solicitudes", 25);
 		
-		btnMensajes.setBackground(new Color(255, 255, 255));
-		btnMensajes.setText("Mensajes");
-		btnMensajes.setHorizontalAlignment(SwingConstants.LEFT);
-		btnMensajes.setFont(new Font("Calibri", Font.PLAIN, 20));
-		btnMensajes.setColorHover(new Color(255, 153, 0));
-		btnMensajes.setBounds(117, 271, 189, 49);
-		panelBotones.add(btnMensajes);
-		
-		BotonConSombra btnNotificaciones = new BotonConSombra("Mis Solicitudes", 25);
-		btnNotificaciones.setBackground(new Color(255, 255, 255));
-		btnNotificaciones.setText("Notificaciones");
-		btnNotificaciones.setHorizontalAlignment(SwingConstants.LEFT);
-		btnNotificaciones.setFont(new Font("Calibri", Font.PLAIN, 20));
-		btnNotificaciones.setColorHover(new Color(255, 153, 0));
-		btnNotificaciones.setBounds(117, 351, 189, 49);
-		panelBotones.add(btnNotificaciones);
-		
 		JLabel iconoDashboard = new JLabel("");
 		iconoDashboard.setBounds(75, 48, 30, 30);
 		colocarImagen(iconoDashboard, "/img/hogar.png");
@@ -191,16 +174,6 @@ public class BarraSolicitante extends JDialog {
 		colocarImagen(iconoOfertas, "/img/correo-electronico.png");
 		panelBotones.add(iconoOfertas);
 		
-		JLabel iconoMensajes = new JLabel("");
-		iconoMensajes.setBounds(75, 282, 30, 30);
-		colocarImagen(iconoMensajes, "/img/mensaje.png");
-		panelBotones.add(iconoMensajes);
-		
-		JLabel iconoNotificaciones = new JLabel("");
-		iconoNotificaciones.setBounds(75, 360, 30, 30);
-		colocarImagen(iconoNotificaciones, "/img/notificacion.png");
-		panelBotones.add(iconoNotificaciones);
-		
 		BotonConSombra btnCerrarSessin = new BotonConSombra("Mis Solicitudes", 25);
 		btnCerrarSessin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -215,11 +188,11 @@ public class BarraSolicitante extends JDialog {
 		btnCerrarSessin.setFont(new Font("Calibri", Font.PLAIN, 20));
 		btnCerrarSessin.setColorHover(new Color(255, 153, 0));
 		btnCerrarSessin.setBackground(Color.WHITE);
-		btnCerrarSessin.setBounds(117, 431, 189, 49);
+		btnCerrarSessin.setBounds(117, 271, 189, 49);
 		panelBotones.add(btnCerrarSessin);
 		
 		JLabel iconoCerrarSession = new JLabel("");
-		iconoCerrarSession.setBounds(75, 438, 30, 30);
+		iconoCerrarSession.setBounds(75, 281, 30, 30);
 		colocarImagen(iconoCerrarSession, "/img/log_out.png");
 		panelBotones.add(iconoCerrarSession);
 		
