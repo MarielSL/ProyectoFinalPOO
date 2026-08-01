@@ -29,6 +29,7 @@ import javax.swing.JPasswordField;
 import javax.swing.text.AbstractDocument;
 import java.awt.Toolkit;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.SwingConstants;
 
 public class RegEmpresa extends JDialog {
 
@@ -101,6 +102,14 @@ public class RegEmpresa extends JDialog {
 		panel.setBounds(0, 0, 999, 993);
 		contentPanel.add(panel);
 		panel.setLayout(null);
+		
+		JLabel labelVolverIcon = new JLabel("");
+		labelVolverIcon.setIcon(new ImageIcon(RegEmpresa.class.getResource("/img/arrow-small-right (Navy Blue).png")));
+		labelVolverIcon.setVerticalAlignment(SwingConstants.CENTER);
+		labelVolverIcon.setHorizontalAlignment(SwingConstants.CENTER);
+		labelVolverIcon.setBounds(47, 887, 50, 50);
+		colocarImagen(labelVolverIcon, "/img/arrow-small-right (Navy Blue).png");
+		panel.add(labelVolverIcon);
 
 		JLabel lblNewLabel_1 = new JLabel("Nombre de la Empresa:");
 		lblNewLabel_1.setForeground(new Color(0, 0, 51));
@@ -298,6 +307,27 @@ public class RegEmpresa extends JDialog {
 			}
 		});
 		colocarImagen(lblVerPassword, "/img/ver.png");
+		
+		BotonRedond botonRedond = new BotonRedond("    Volver", 25);
+		botonRedond.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SeleccionTipoUser volver = new SeleccionTipoUser();
+				volver.setVisible(true);
+				volver.setModal(true);
+				dispose();
+				
+			}
+		});
+		botonRedond.setVerticalTextPosition(SwingConstants.TOP);
+		botonRedond.setText("    Volver");
+		botonRedond.setIconTextGap(6);
+		botonRedond.setHorizontalTextPosition(SwingConstants.CENTER);
+		botonRedond.setForeground(new Color(0, 0, 51));
+		botonRedond.setFont(new Font("Calibri", Font.PLAIN, 18));
+		botonRedond.setColorHover(new Color(255, 220, 183));
+		botonRedond.setBackground(new Color(255, 235, 215));
+		botonRedond.setBounds(37, 883, 194, 57);
+		panel.add(botonRedond);
 		btnGuardar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!validarDatos()) {
@@ -368,10 +398,10 @@ public class RegEmpresa extends JDialog {
 			JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-		if (!Validaciones.soloNumeros(txtRnc.getText())) {
+		/*if (!Validaciones.soloNumeros(txtRnc.getText())) {
 			JOptionPane.showMessageDialog(null, "El RNC solo debe contener n\u00FAmeros.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
-		}
+		}*/
 		if (!Validaciones.telefonoValido(txtTelefono.getText(), 10)) {
 			JOptionPane.showMessageDialog(null, "El tel\u00E9fono debe tener 10 d\u00EDgitos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
@@ -450,5 +480,4 @@ public class RegEmpresa extends JDialog {
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
-
 }

@@ -23,8 +23,10 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import logico.BolsaEmpleo;
 import logico.EstadoOferta;
+import logico.EstadoSolicitud;
 import logico.Oferta;
 import logico.Persona;
+import logico.SolicitudEmpleo;
 import logico.Usuario;
 
 import java.awt.SystemColor;
@@ -34,6 +36,8 @@ public class HomeCandidato extends JFrame {
 	private JPanel contentPane;
 	private Dimension dim;
 	private Persona candidato;
+	private JLabel lblEstadoBusquedaValor;
+	private JLabel lblMayorCoincidenciaValor;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -169,10 +173,23 @@ public class HomeCandidato extends JFrame {
 			lblEstadoBusqueda.setBounds(20, 14, anchoTarjeta - 40, 20);
 			panelEstadoBusqueda.add(lblEstadoBusqueda);
 
-			JLabel lblEstadoBusquedaValor = new JLabel("Estado");
+			lblEstadoBusquedaValor = new JLabel("Estado");
+			Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
+			if((user == null || user.getPersona() == null) || user.getPersona().getSolicitud() == null) {
+				lblEstadoBusquedaValor.setText("Por Crear");
+				lblEstadoBusquedaValor.setCursor(new Cursor(Cursor.HAND_CURSOR));
+				lblEstadoBusquedaValor.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						RegSolicitud registrar = new RegSolicitud(null);
+						registrar.setVisible(true);
+						dispose();
+					}
+				});
+			}
+
 			lblEstadoBusquedaValor.setFont(new Font("Calibri", Font.BOLD, 26));
 			lblEstadoBusquedaValor.setForeground(new Color(204, 102, 0));
-			lblEstadoBusquedaValor.setBounds(20, 38, anchoTarjeta - 40, 36);
+			lblEstadoBusquedaValor.setBounds(20, 38, 189, 36);
 			panelEstadoBusqueda.add(lblEstadoBusquedaValor);
 		}
 
@@ -209,7 +226,7 @@ public class HomeCandidato extends JFrame {
 			lblMayorCoincidencia.setBounds(20, 14, anchoTarjeta - 40, 20);
 			panelMayorCoincidencia.add(lblMayorCoincidencia);
 
-			JLabel lblMayorCoincidenciaValor = new JLabel("0%");
+			lblMayorCoincidenciaValor = new JLabel("0%");
 			lblMayorCoincidenciaValor.setFont(new Font("Calibri", Font.BOLD, 30));
 			lblMayorCoincidenciaValor.setForeground(new Color(46, 125, 50));
 			lblMayorCoincidenciaValor.setBounds(20, 38, anchoTarjeta - 40, 36);
@@ -251,6 +268,25 @@ public class HomeCandidato extends JFrame {
 			lblGrafico2.setBounds(920, 0, 920, 761);
 			panelGraficos.add(lblGrafico2);
 		}
+
+		Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
+
+		if(user != null && user.getPersona() != null && user.getPersona().getSolicitud() != null) {
+			Persona candidato = user.getPersona();
+			SolicitudEmpleo solicitud = candidato.getSolicitud();
+
+			if(solicitud.getEstado() == EstadoSolicitud.ACTIVA) {
+				lblEstadoBusquedaValor.setText("Activa");
+			}
+			else
+			{
+				lblEstadoBusquedaValor.setText("Inactiva");
+			}
+			lblMayorCoincidenciaValor.setText(BolsaEmpleo.getInstancia().CalcMayorCoincidenciaSolicitud(solicitud) + "%");
+			
+			
+		}
+
 	}
 
 	private int contarOfertasDisponibles() {

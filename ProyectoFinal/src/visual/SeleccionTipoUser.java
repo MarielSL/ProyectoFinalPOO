@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
 
 public class SeleccionTipoUser extends JDialog {
+	private BotonRedond btnrdndVolver;
 
 	/**
 	 * Launch the application.
@@ -56,9 +57,16 @@ public class SeleccionTipoUser extends JDialog {
 				
 				PanelRedond panel_1 = new PanelRedond(30);
 				panel_1.setBackground(new Color(255, 255, 255));
-				panel_1.setBounds(72, 69, 508, 239);
+				panel_1.setBounds(72, 55, 508, 253);
 				panel.add(panel_1);
 				panel_1.setLayout(null);
+				
+				JLabel label = new JLabel("");
+				label.setIcon(new ImageIcon(SeleccionTipoUser.class.getResource("/img/arrow-small-right (Navy Blue).png")));
+				label.setBounds(26, 201, 35, 35);
+				panel_1.add(label);
+				colocarImagen(label, "/img/arrow-small-right (Navy Blue).png");
+				
 				
 				PanelRedond panel_2 = new PanelRedond(30);
 				panel_2.setBackground(new Color(0, 0, 51));
@@ -69,19 +77,19 @@ public class SeleccionTipoUser extends JDialog {
 				JLabel lblNewLabel = new JLabel("Registrar");
 				lblNewLabel.setForeground(new Color(255, 153, 0));
 				lblNewLabel.setBackground(new Color(0, 0, 51));
-				lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 20));
-				lblNewLabel.setBounds(153, 13, 93, 29);
+				lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 25));
+				lblNewLabel.setBounds(143, 10, 102, 29);
 				panel_2.add(lblNewLabel);
 				
 				JLabel iconEmpresa = new JLabel("New label");
 				iconEmpresa.setIcon(new ImageIcon(SeleccionTipoUser.class.getResource("/img/empresa_icon.png")));
-				iconEmpresa.setBounds(73, 153, 30, 30);
+				iconEmpresa.setBounds(70, 138, 30, 30);
 				panel_1.add(iconEmpresa);
 				colocarImagen(iconEmpresa,"/img/empresa_icon.png");
 				
 				JLabel iconSolicitante = new JLabel("");
 				iconSolicitante.setIcon(new ImageIcon(SeleccionTipoUser.class.getResource("/img/candidato_icon.png")));
-				iconSolicitante.setBounds(306, 153, 35, 35);
+				iconSolicitante.setBounds(305, 138, 35, 35);
 				panel_1.add(iconSolicitante);
 				colocarImagen(iconSolicitante, "/img/candidato_icon.png");
 				
@@ -102,11 +110,11 @@ public class SeleccionTipoUser extends JDialog {
 						
 					}
 				});
-				btnEmpresa.setBounds(60, 149, 155, 39);
+				btnEmpresa.setBounds(60, 134, 155, 39);
 				panel_1.add(btnEmpresa);
 				
 				BotonRedond btnSolicitante = new BotonRedond("Solicitante", 25);
-				btnSolicitante.setText("   Solicitante");
+				btnSolicitante.setText("    Solicitante");
 				btnSolicitante.setVerticalTextPosition(SwingConstants.TOP);       
 				btnSolicitante.setHorizontalTextPosition(SwingConstants.CENTER); 
 				btnSolicitante.setIconTextGap(6);
@@ -120,8 +128,28 @@ public class SeleccionTipoUser extends JDialog {
 				btnSolicitante.setFont(new Font("Calibri", Font.PLAIN, 18));
 				btnSolicitante.setForeground(new Color(0, 0, 51));
 				btnSolicitante.setBackground(new Color(255, 153, 0));
-				btnSolicitante.setBounds(300, 149, 148, 39);
+				btnSolicitante.setBounds(300, 134, 148, 39);
 				panel_1.add(btnSolicitante);	
+				
+				BotonRedond btnrdndVolver = new BotonRedond("    Volver", 25);
+				btnrdndVolver.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						LogIn volver = new LogIn();
+						volver.setVisible(true);
+						volver.setModal(true);
+						dispose();
+					}
+				});
+				btnrdndVolver.setVerticalTextPosition(SwingConstants.TOP);
+				btnrdndVolver.setText("    Volver");
+				btnrdndVolver.setIconTextGap(6);
+				btnrdndVolver.setHorizontalTextPosition(SwingConstants.CENTER);
+				btnrdndVolver.setForeground(new Color(0, 0, 51));
+				btnrdndVolver.setFont(new Font("Calibri", Font.PLAIN, 18));
+				btnrdndVolver.setBackground(Color.decode("#ffebd7"));
+				btnrdndVolver.setColorHover(Color.decode("#ffdcb7"));
+				btnrdndVolver.setBounds(24, 201, 126, 35);
+				panel_1.add(btnrdndVolver);
 				
 				JLabel lblNewLabel_2 = new JLabel("New label");
 				lblNewLabel_2.setIcon(new ImageIcon(LogIn.class.getResource("/img/Fondo-General.png")));

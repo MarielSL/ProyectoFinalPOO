@@ -161,7 +161,7 @@ public class RegistrarSolicitante extends JDialog {
 		btnAtras.setBounds(109, 805, 212, 57);
 		panel_1.add(btnAtras);
 		btnAtras.setFont(new Font("Calibri", Font.PLAIN, 20));
-		btnAtras.setBackground(new Color(255, 255, 255));
+		btnAtras.setBackground(Color.decode("#9bceff"));
 		btnAtras.setForeground(new Color(0, 0, 51));
 		
 		JLabel lblNewLabel_3 = new JLabel("Logo");
