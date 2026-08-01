@@ -124,11 +124,11 @@ public class BarraSolicitante extends JDialog {
 		panelBotones.add(btnDashboard);
 		
 		
-		BotonConSombra btnSolicitudes = new BotonConSombra("Mis Solicitudes", 25);
+		BotonConSombra btnSolicitudes = new BotonConSombra("Mi Solicitud", 25);
 		btnSolicitudes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				VerSolicitudesAplicadas soli = new VerSolicitudesAplicadas();
+				VerMiSolicitudLaboral soli = new VerMiSolicitudLaboral();
 				soli.setVisible(true);
 				
 			}

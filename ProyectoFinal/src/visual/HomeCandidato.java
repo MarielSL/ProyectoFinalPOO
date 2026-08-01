@@ -101,17 +101,17 @@ public class HomeCandidato extends JFrame {
 			});
 			panelMenu.add(lblVerOfertas);
 
-			JLabel lblMiBusqueda = new JLabel("Mi b\u00FAsqueda laboral");
-			lblMiBusqueda.setFont(new Font("Calibri", Font.PLAIN, 18));
-			lblMiBusqueda.setForeground(Color.WHITE);
-			lblMiBusqueda.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			lblMiBusqueda.setBounds(938, 26, 170, 20);
-			lblMiBusqueda.addMouseListener(new MouseAdapter() {
+			JLabel lblMiSolicitud = new JLabel("Mi Solicitud Laboral");
+			lblMiSolicitud.setFont(new Font("Calibri", Font.PLAIN, 18));
+			lblMiSolicitud.setForeground(Color.WHITE);
+			lblMiSolicitud.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			lblMiSolicitud.setBounds(938, 26, 170, 20);
+			lblMiSolicitud.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
-					abrirMiBusquedaLaboral();
+					abrirMiSolicitudLaboral();
 				}
 			});
-			panelMenu.add(lblMiBusqueda);
+			panelMenu.add(lblMiSolicitud);
 
 			JLabel lblVerPerfil = new JLabel("Ver perfil");
 			lblVerPerfil.setFont(new Font("Calibri", Font.PLAIN, 18));
@@ -259,8 +259,8 @@ public class HomeCandidato extends JFrame {
 		dispose();
 	}
 
-	private void abrirMiBusquedaLaboral() {
-		VerSolicitudesAplicadas frame = new VerSolicitudesAplicadas();
+	private void abrirMiSolicitudLaboral() {
+		VerMiSolicitudLaboral frame = new VerMiSolicitudLaboral();
 		frame.setVisible(true);
 		dispose();
 	}
