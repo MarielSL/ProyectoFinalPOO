@@ -190,10 +190,18 @@ public class RegistrarSolicitante extends JDialog {
 		BotonRedond btnVolver = new BotonRedond(" \u2190  Volver",30);
 		btnVolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SeleccionTipoUser volver = new SeleccionTipoUser();
-				volver.setVisible(true);
-				volver.setModal(true);
-				dispose();
+				if(mySolicitante == null) {
+					SeleccionTipoUser volver = new SeleccionTipoUser();
+					volver.setVisible(true);
+					volver.setModal(true);
+					dispose();
+				}
+				else {
+					VerUserSolicitante volver = new VerUserSolicitante();
+					volver.setVisible(true);
+					dispose();
+				}
+				
 			}
 		});
 		btnVolver.setForeground(new Color(0, 0, 51));

@@ -10,7 +10,11 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import logico.BolsaEmpleo;
+import logico.Obrero;
 import logico.Persona;
+import logico.Sexo;
+import logico.Tecnico;
+import logico.Universitario;
 import logico.Usuario;
 
 import javax.swing.JLabel;
@@ -46,6 +50,7 @@ public class VerUserSolicitante extends JFrame {
 	private JLabel lblNewLabel_8;
 	private JLabel lblNewLabel_9;
 	private TextFieldRedond txtTipo;
+	private BotonRedond btnVolver;
 
 	/**
 	 * Launch the application.
@@ -69,7 +74,7 @@ public class VerUserSolicitante extends JFrame {
 	public VerUserSolicitante() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(VerUserSolicitante.class.getResource("/img/AppIconoFull.png")));
 		setForeground(new Color(0, 0, 51));
-		setFont(new Font("Calibri", Font.PLAIN, Escalador.t(16)));
+		//setFont(new Font("Calibri", Font.PLAIN, Escalador.t(16)));
 		setTitle("Ver Usuario");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 793, 548);
@@ -88,9 +93,9 @@ public class VerUserSolicitante extends JFrame {
 		contentPane.add(userIcon);
 
 		if ((BolsaEmpleo.getInstancia().getLoginUser() == null) || (BolsaEmpleo.getInstancia().getLoginUser().getFotoPerfil() == null)) {
-		    colocarImagen(userIcon, "/img/User Icon.png");
+			colocarImagen(userIcon, "/img/User Icon.png");
 		} else {
-		    colocarImagenDesdeArchivo(userIcon, BolsaEmpleo.getInstancia().getLoginUser().getFotoPerfil());
+			colocarImagenDesdeArchivo(userIcon, BolsaEmpleo.getInstancia().getLoginUser().getFotoPerfil());
 		}
 
 		JLabel lblNewLabel = new JLabel("Usuario");
@@ -174,7 +179,7 @@ public class VerUserSolicitante extends JFrame {
 		txtCorreo.setEditable(false);
 		txtCorreo.setBackground(SystemColor.controlHighlight);
 		txtCorreo.setFont(new Font("Calibri", Font.PLAIN, Escalador.t(20)));
-		Escalador.b(txtCorreo, 459, 460, 340, 30);
+		Escalador.b(txtCorreo, 459, 462, 340, 30);
 		contentPane.add(txtCorreo);
 		txtCorreo.setColumns(10);
 		txtCorreo.setFocusable(false);
@@ -191,7 +196,7 @@ public class VerUserSolicitante extends JFrame {
 
 		JLabel lblNewLabel_6 = new JLabel("Ciudad");
 		lblNewLabel_6.setFont(new Font("Calibri", Font.PLAIN, Escalador.t(20)));
-		Escalador.b(lblNewLabel_6, 119, 594, 137, 16);
+		Escalador.b(lblNewLabel_6, 462, 594, 137, 16);
 		contentPane.add(lblNewLabel_6);
 
 		txtTelef = new TextFieldRedond(25);
@@ -206,7 +211,7 @@ public class VerUserSolicitante extends JFrame {
 
 		JLabel lblNewLabel_7 = new JLabel("Sexo");
 		lblNewLabel_7.setFont(new Font("Calibri", Font.PLAIN, Escalador.t(20)));
-		Escalador.b(lblNewLabel_7, 462, 594, 56, 16);
+		Escalador.b(lblNewLabel_7, 119, 594, 56, 16);
 		contentPane.add(lblNewLabel_7);
 
 		txtCiudad = new TextFieldRedond(25);
@@ -214,7 +219,7 @@ public class VerUserSolicitante extends JFrame {
 		txtCiudad.setEditable(false);
 		txtCiudad.setBackground(SystemColor.controlHighlight);
 		txtCiudad.setFont(new Font("Calibri", Font.PLAIN, Escalador.t(20)));
-		Escalador.b(txtCiudad, 119, 629, 194, 30);
+		Escalador.b(txtCiudad, 462, 629, 350, 30);
 		contentPane.add(txtCiudad);
 		txtCiudad.setColumns(10);
 		txtCiudad.setFocusable(false);
@@ -224,7 +229,7 @@ public class VerUserSolicitante extends JFrame {
 		txtSexo.setEditable(false);
 		txtSexo.setBackground(SystemColor.controlHighlight);
 		txtSexo.setFont(new Font("Calibri", Font.PLAIN, Escalador.t(20)));
-		Escalador.b(txtSexo, 462, 629, 164, 30);
+		Escalador.b(txtSexo, 119, 629, 164, 30);
 		contentPane.add(txtSexo);
 		txtSexo.setColumns(10);
 		txtSexo.setFocusable(false);
@@ -290,6 +295,21 @@ public class VerUserSolicitante extends JFrame {
 		btnMenu.setFocusPainted(false);
 		btnMenu.setOpaque(false);
 		contentPane.add(btnMenu);
+		
+		btnVolver = new BotonRedond(" \u2190  Volver", 30);
+		btnVolver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				HomeCandidato volver = new HomeCandidato();
+				volver.setVisible(true);
+				dispose();
+			}
+		});
+		btnVolver.setForeground(new Color(0, 0, 51));
+		btnVolver.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnVolver.setColorHover(new Color(255, 220, 183));
+		btnVolver.setBackground(new Color(255, 235, 215));
+		contentPane.add(btnVolver);
+		Escalador.b(btnVolver, 46, 891, 159, 47);
 
 		loadUsuario();
 	}
@@ -304,17 +324,49 @@ public class VerUserSolicitante extends JFrame {
 		if(candidato.isEstadoEmpleo()) {
 			txtEstado.setText("Contratado");
 		}
-		
+
 		else {
 			txtEstado.setText("Desempleado");
 		}
-		
+
 		txtNombre.setText(candidato.getNombre() + " " + BolsaEmpleo.getInstancia().getLoginUser().getPersona().getApellido());
 		txtCorreo.setText(user.getCorreo());
 		txtFechNacim.setText(candidato.getFechNacim().toString());
 		txtTelef.setText(candidato.getTelefono());
 		txtCiudad.setText(candidato.getCiudad());
 		txtSexo.setText(candidato.getSexo().toString().toLowerCase());
+
+		if(candidato instanceof Universitario) {
+			if(candidato.getSexo() == Sexo.FEMENINO) {
+				txtTipo.setText("Universitaria");
+			}
+			else {
+				txtTipo.setText("Universitario");
+
+			}
+		}
+
+
+		if(candidato instanceof Tecnico) {
+			if(candidato.getSexo() == Sexo.FEMENINO) {
+				txtTipo.setText("Técnica");
+			}
+			else {
+				txtTipo.setText("Técnico");
+
+			}
+		}
+
+
+		if(candidato instanceof Obrero) {
+			if(candidato.getSexo() == Sexo.FEMENINO) {
+				txtTipo.setText("Obrera");
+			}
+			else {
+				txtTipo.setText("Obrero");
+			}
+		}
+
 	}
 
 	private void colocarImagen(JLabel label, String ruta) {
@@ -354,28 +406,26 @@ public class VerUserSolicitante extends JFrame {
 		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
 		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
-	
+
 	private void colocarImagenDesdeArchivo(JLabel label, String rutaAbsoluta) {
-	    ImageIcon icono = new ImageIcon(rutaAbsoluta);
+		ImageIcon icono = new ImageIcon(rutaAbsoluta);
 
-	    int anchoLabel = label.getWidth();
-	    int altoLabel = label.getHeight();
-	    int anchoImagen = icono.getIconWidth();
-	    int altoImagen = icono.getIconHeight();
+		int anchoLabel = label.getWidth();
+		int altoLabel = label.getHeight();
+		int anchoImagen = icono.getIconWidth();
+		int altoImagen = icono.getIconHeight();
 
-	    double escalaAncho = (double) anchoLabel / anchoImagen;
-	    double escalaAlto = (double) altoLabel / altoImagen;
-	    double escala = Math.max(escalaAncho, escalaAlto);
+		double escalaAncho = (double) anchoLabel / anchoImagen;
+		double escalaAlto = (double) altoLabel / altoImagen;
+		double escala = Math.max(escalaAncho, escalaAlto);
 
-	    int nuevoAncho = (int) (anchoImagen * escala);
-	    int nuevoAlto = (int) (altoImagen * escala);
+		int nuevoAncho = (int) (anchoImagen * escala);
+		int nuevoAlto = (int) (altoImagen * escala);
 
-	    Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
-	    label.setIcon(new ImageIcon(imagenEscalada));
-	    label.setText("");
-	    label.setHorizontalAlignment(JLabel.CENTER);
-	    label.setVerticalAlignment(JLabel.CENTER);
+		Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+		label.setIcon(new ImageIcon(imagenEscalada));
+		label.setText("");
+		label.setHorizontalAlignment(JLabel.CENTER);
+		label.setVerticalAlignment(JLabel.CENTER);
 	}
-	
-	
 }
