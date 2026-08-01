@@ -285,15 +285,19 @@ public class RegSolicitud extends JDialog {
 				if(solicitud == null) {
 					String id = "S-"+BolsaEmpleo.generadorIdSolicitud;
 					LocalDate fechaHoy = LocalDate.now();
-					SolicitudEmpleo solicitud = new SolicitudEmpleo(id, EstadoSolicitud.ACTIVA, BolsaEmpleo.getInstancia().getLoginUser().getPersona(), fechaHoy, (AreaLaboral) cbxAreaLaboral.getSelectedItem(), (float) spnSueldo_1.getValue(), (Modalidad) cbxModalidad.getSelectedItem(), txtPuesto.getText(), (Jornada) cbxJornada.getSelectedItem());
+					SolicitudEmpleo solicitud = new SolicitudEmpleo(id, EstadoSolicitud.ACTIVA, BolsaEmpleo.getInstancia().getLoginUser().getPersona(), fechaHoy, (AreaLaboral) cbxAreaLaboral.getSelectedItem(), ((float) (Integer) spnSueldo_1.getValue()), (Modalidad) cbxModalidad.getSelectedItem(), txtPuesto.getText(), (Jornada) cbxJornada.getSelectedItem());
 					BolsaEmpleo.getInstancia().regSolicitud(solicitud,BolsaEmpleo.getInstancia().getLoginUser().getPersona());
+					
+					VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral();
+					ver.setVisible(true);
+					dispose();
 				}
 				else {
 					solicitud.setPuesto(txtPuesto.getText());
 					solicitud.setAreaLaboral((AreaLaboral) cbxAreaLaboral.getSelectedItem());
 					solicitud.setJornada((Jornada) cbxJornada.getSelectedItem());
 					solicitud.setModalidad( (Modalidad) cbxModalidad.getSelectedItem());
-					solicitud.setSueldoEsperado((float) spnSueldo_1.getValue());
+					solicitud.setSueldoEsperado((float)((Integer) spnSueldo_1.getValue()));
 					BolsaEmpleo.getInstancia().modSolicitud(solicitud);
 					
 					VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral();
