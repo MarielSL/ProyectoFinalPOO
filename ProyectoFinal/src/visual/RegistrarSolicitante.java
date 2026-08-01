@@ -828,6 +828,7 @@ public class RegistrarSolicitante extends JDialog {
 		return paso;
 	}
 
+
 	private JPanel crearPaso4() {
 		JPanel paso = new JPanel();
 		paso.setOpaque(false);
@@ -886,11 +887,11 @@ public class RegistrarSolicitante extends JDialog {
 		lblUsuario.setBounds(109, 1, 130, 16);
 		paso.add(lblUsuario);
 		
-		JLabel label_1 = new JLabel("Paso 3 de 4");
-		label_1.setForeground(new Color(1, 88, 248));
-		label_1.setFont(new Font("Calibri", Font.PLAIN, 18));
-		label_1.setBounds(0, 0, 105, 16);
-		paso.add(label_1);
+		JLabel lblPasoDe_1 = new JLabel("Paso 4 de 4");
+		lblPasoDe_1.setForeground(new Color(1, 88, 248));
+		lblPasoDe_1.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblPasoDe_1.setBounds(0, 0, 105, 16);
+		paso.add(lblPasoDe_1);
 
 		return paso;
 	}
