@@ -44,6 +44,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import java.awt.Toolkit;
+import javax.swing.JButton;
 
 public class RegistrarSolicitante extends JDialog {
 
@@ -77,8 +78,13 @@ public class RegistrarSolicitante extends JDialog {
 	private FotoPerfilRedond fotoPerfil;
 	private Persona mySolicitante = null;
 	private JSpinner spnExp;
-	private TextFieldRedond txtCarrera;
-	private TextFieldRedond txtAreaTecnico;
+	private JButton btnVolver;
+	private JPanel panel_TiposSolicitante;
+	private JPanel panelUniversitario;
+	private JPanel panelTecnico;
+	private JPanel panelObrero;
+	private JTextField txtCarrera;
+	private TextFieldRedond txtTecnico;
 	private TextFieldRedond txtHabilidades;
 
 	public static void main(String[] args) {
@@ -102,7 +108,7 @@ public class RegistrarSolicitante extends JDialog {
 			setTitle("Modificar Solicitante");
 		}
 
-		setBounds(0, 0, dim.width, dim.height-40);
+		setBounds(0, 0, dim.width, dim.height-55);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -138,9 +144,9 @@ public class RegistrarSolicitante extends JDialog {
 			xDot += 30;
 		}
 		loadSolicitante();
-		
-		
-		
+
+
+
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
 		panel_1.setBounds(1031, 0, 871, 993);
@@ -149,7 +155,7 @@ public class RegistrarSolicitante extends JDialog {
 		btnSiguiente = new BotonRedond("Continuar", 25);
 		btnSiguiente.setColorHover(new Color(210, 105, 30));
 		btnSiguiente.setText("Continuar  \u2192");
-		btnSiguiente.setBounds(647, 805, 212, 57);
+		btnSiguiente.setBounds(647, 787, 212, 57);
 		panel_1.add(btnSiguiente);
 		btnSiguiente.setFont(new Font("Calibri", Font.PLAIN, 20));
 		btnSiguiente.setBackground(new Color(255, 153, 0));
@@ -158,37 +164,53 @@ public class RegistrarSolicitante extends JDialog {
 		btnAtras.setColorHover(new Color(30, 144, 255));
 		btnAtras.setText(" \u2190  Atr\u00E1s");
 		BorderFactory.createLineBorder(new Color(255, 153, 0));
-		btnAtras.setBounds(109, 805, 212, 57);
+		btnAtras.setBounds(109, 787, 212, 57);
 		panel_1.add(btnAtras);
 		btnAtras.setFont(new Font("Calibri", Font.PLAIN, 20));
 		btnAtras.setBackground(Color.decode("#9bceff"));
 		btnAtras.setForeground(new Color(0, 0, 51));
-		
+
 		JLabel lblNewLabel_3 = new JLabel("Logo");
 		lblNewLabel_3.setBounds(109, 38, 277, 84);
 		colocarImagen(lblNewLabel_3,"/img/HireLink_logo_full.png");
 		panel_1.add(lblNewLabel_3);
-		
+
 		JLabel lblNewLabel_4 = new JLabel("Crea tu cuenta");
 		lblNewLabel_4.setFont(new Font("Calibri", Font.BOLD, 28));
 		lblNewLabel_4.setForeground(new Color(0, 0, 51));
 		lblNewLabel_4.setBounds(109, 123, 212, 49);
 		panel_1.add(lblNewLabel_4);
-		
+
 		JLabel lblRegistrareParaAcceder = new JLabel("Registrare para acceder a las ofertas laborales");
 		lblRegistrareParaAcceder.setForeground(SystemColor.controlDkShadow);
 		lblRegistrareParaAcceder.setFont(new Font("Calibri", Font.PLAIN, 17));
 		lblRegistrareParaAcceder.setBounds(109, 166, 387, 16);
 		panel_1.add(lblRegistrareParaAcceder);
-		
-				JLabel lblNewLabel = new JLabel("New label");
-				lblNewLabel.setBounds(0, 0, 1902, 993);
-				colocarImagen(lblNewLabel,"/img/Registrar_Solicitante_Fondo.png");
-				panel.add(lblNewLabel);
-				
-				JPanel panel_2 = new JPanel();
-				panel_2.setBounds(0, 0, 10, 10);
-				panel.add(panel_2);
+
+		BotonRedond btnVolver = new BotonRedond(" \u2190  Volver",30);
+		btnVolver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SeleccionTipoUser volver = new SeleccionTipoUser();
+				volver.setVisible(true);
+				volver.setModal(true);
+				dispose();
+			}
+		});
+		btnVolver.setForeground(new Color(0, 0, 51));
+		btnVolver.setFont(new Font("Calibri", Font.PLAIN, 20));
+		btnVolver.setBounds(30, 911, 212, 57);
+		btnVolver.setBackground(Color.decode("#ffebd7"));
+		btnVolver.setColorHover(Color.decode("#ffdcb7"));
+		panel_1.add(btnVolver);
+
+		JLabel lblNewLabel = new JLabel("New label");
+		lblNewLabel.setBounds(0, 0, 1902, 993);
+		colocarImagen(lblNewLabel,"/img/Registrar_Solicitante_Fondo.png");
+		panel.add(lblNewLabel);
+
+		JPanel panel_2 = new JPanel();
+		panel_2.setBounds(0, 0, 10, 10);
+		panel.add(panel_2);
 		btnAtras.setVisible(false);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -202,7 +224,7 @@ public class RegistrarSolicitante extends JDialog {
 		});
 		actualizarDots();
 		if (mySolicitante != null) {
-		    cbxTipo.setEnabled(false);
+			cbxTipo.setEnabled(false);
 		}
 
 
@@ -214,8 +236,8 @@ public class RegistrarSolicitante extends JDialog {
 			return;
 		}
 
-		txtNombre.setText("Ingresa tu nombre");
-		txtApellido.setText("Ingresa tu apellido");
+		txtNombre.setText(mySolicitante.getNombre());
+		txtApellido.setText(mySolicitante.getApellido());
 
 		if(mySolicitante instanceof Universitario) {
 			Universitario aux = (Universitario) mySolicitante;
@@ -225,7 +247,7 @@ public class RegistrarSolicitante extends JDialog {
 
 		if(mySolicitante instanceof Tecnico) {
 			Tecnico aux = (Tecnico) mySolicitante;
-			txtAreaTecnico.setText(aux.getTecnico());
+			txtTecnico.setText(aux.getTecnico());
 			cbxTipo.setSelectedItem(TipoPersona.TECNICO);
 		}
 
@@ -235,11 +257,11 @@ public class RegistrarSolicitante extends JDialog {
 			cbxTipo.setSelectedItem(TipoPersona.OBRERO);
 		}
 
-		txtCedula.setText("Ingresa tu c\u00E9dula");
+		txtCedula.setText(mySolicitante.getCedula());
 		txtCiudad.setText(mySolicitante.getCiudad());
-		txtCorreo.setText("ejemplo@correo.com");
+		txtCorreo.setText(mySolicitante.getUser().getCorreo());
 		txtDireccion.setText(mySolicitante.getDireccion());
-		txtTelefono.setText("Ingresa tu tel\u00E9fono");
+		txtTelefono.setText(mySolicitante.getTelefono());
 		txtUser.setText(mySolicitante.getUser().getUsername());
 		passwordField.setText(mySolicitante.getUser().getPassword());
 		cbxSexo.setSelectedItem(mySolicitante.getSexo());
@@ -258,12 +280,10 @@ public class RegistrarSolicitante extends JDialog {
 		if(mySolicitante.isEstadoEmpleo()) {
 			chkEmpleado.setSelected(true);
 		}
-		
-		fotoPerfil.cargarImagen(mySolicitante.getUser().getFotoPerfil());
-	
+
 	}
 
-	
+
 	private void irSiguiente() {
 		if (pasoActual == 1) {
 			if (!validarPaso1()) return;
@@ -366,7 +386,7 @@ public class RegistrarSolicitante extends JDialog {
 			JOptionPane.showMessageDialog(null, "Debe indicar la carrera.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-		if (tipo == TipoPersona.TECNICO && !Validaciones.camposLlenos(txtAreaTecnico.getText())) {
+		if (tipo == TipoPersona.TECNICO && !Validaciones.camposLlenos(txtTecnico.getText())) {
 			JOptionPane.showMessageDialog(null, "Debe indicar el \u00E1rea t\u00E9cnica.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
@@ -400,7 +420,6 @@ public class RegistrarSolicitante extends JDialog {
 		if(mySolicitante == null) {
 			String contrasena = new String(passwordField.getPassword());
 			Usuario newUser = new Usuario("U-" + BolsaEmpleo.generadorIdUser, txtUser.getText(), contrasena, txtCorreo.getText(), null, null, TipoUser.CANDIDATO, null);
-			newUser.setFotoPerfil(fotoPerfil.getRutaFotoPerfil());
 			this.user = newUser;
 
 			String id = "P-" + BolsaEmpleo.generadorIdPersona;
@@ -409,7 +428,7 @@ public class RegistrarSolicitante extends JDialog {
 				persona = new Universitario(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user,(int) spnExp.getValue(), txtCarrera.getText());
 
 			} else if (tipo == TipoPersona.TECNICO) {
-				persona = new Tecnico(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, (int) spnExp.getValue(),txtAreaTecnico.getText());
+				persona = new Tecnico(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, (int) spnExp.getValue(),txtTecnico.getText());
 
 			} else {
 				persona = new Obrero(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user,(int) spnExp.getValue(), txtHabilidades.getText());
@@ -445,15 +464,12 @@ public class RegistrarSolicitante extends JDialog {
 			mySolicitante.setTelefono(txtTelefono.getText());
 			mySolicitante.setYearsExp((int) spnExp.getValue());
 
-			
+
 			Usuario user = mySolicitante.getUser();
-			
+
 			user.setCorreo(txtCorreo.getText());
 			user.setUsername(txtUser.getText());
 			user.setPassword(new String (passwordField.getPassword()));
-			if (fotoPerfil.getRutaFotoPerfil() != null) {          
-			    user.setFotoPerfil(fotoPerfil.getRutaFotoPerfil()); 
-			}    
 
 			if(tipo == TipoPersona.UNIVERSITARIO) {
 				Universitario uni = (Universitario) mySolicitante;
@@ -463,7 +479,7 @@ public class RegistrarSolicitante extends JDialog {
 
 			if(tipo == TipoPersona.TECNICO) {
 				Tecnico tecnico = (Tecnico) mySolicitante;
-				tecnico.setTecnico(txtAreaTecnico.getText());
+				tecnico.setTecnico(txtTecnico.getText());
 				BolsaEmpleo.getInstancia().modSolicitante(tecnico);
 			}
 			if(tipo == TipoPersona.OBRERO) {
@@ -474,7 +490,7 @@ public class RegistrarSolicitante extends JDialog {
 			}
 			BolsaEmpleo.getInstancia().modUsuario(BolsaEmpleo.getInstancia().getLoginUser());
 			BolsaEmpleo.getInstancia().modSolicitante(mySolicitante);
-			
+
 			VerUserSolicitante verUser = new VerUserSolicitante();
 			verUser.setVisible(true);
 			dispose();
@@ -495,7 +511,7 @@ public class RegistrarSolicitante extends JDialog {
 		chkEmpleado.setSelected(false);
 		cbxTipo.setSelectedIndex(-1);
 		txtCarrera.setText("");
-		txtAreaTecnico.setText("");
+		txtTecnico.setText("");
 		txtHabilidades.setText("");
 		stepsLayout.show(pnlSteps, "paso1");
 		pasoActual = 1;
@@ -611,13 +627,13 @@ public class RegistrarSolicitante extends JDialog {
 		cbxSexo.setBackground(SystemColor.controlHighlight);
 		cbxSexo.setBounds(0, 332, 180, 30);
 		cbxSexo.removeAll();
-		
+
 		for (Sexo sexo : Sexo.values()) {
 			if(sexo != Sexo.CUALQUIERA) {
 				cbxSexo.addItem(sexo);
 			}
 		}
-		
+
 		cbxSexo.setSelectedIndex(-1);
 		cbxSexo.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
 			protected javax.swing.plaf.basic.ComboPopup createPopup() {
@@ -648,13 +664,13 @@ public class RegistrarSolicitante extends JDialog {
 		spnFechaNacim.setFont(new Font("Calibri", Font.PLAIN, 18));
 		spnFechaNacim.setBounds(210, 332, 150, 30);
 		paso.add(spnFechaNacim);
-		
+
 		JLabel lblNewLabel_5 = new JLabel("Paso 1 de 4");
 		lblNewLabel_5.setBounds(0, 0, 105, 16);
 		paso.add(lblNewLabel_5);
 		lblNewLabel_5.setForeground(new Color(1, 88, 248));
 		lblNewLabel_5.setFont(new Font("Calibri", Font.PLAIN, 18));
-		
+
 		JLabel lblNewLabel_6 = new JLabel("Datos personales");
 		lblNewLabel_6.setBounds(109, 1, 130, 16);
 		paso.add(lblNewLabel_6);
@@ -715,13 +731,13 @@ public class RegistrarSolicitante extends JDialog {
 		chkEmpleado.setOpaque(false);
 		chkEmpleado.setBounds(0, 273, 250, 25);
 		paso.add(chkEmpleado);
-		
+
 		JLabel lblPasoDe = new JLabel("Paso 2 de 4");
 		lblPasoDe.setForeground(new Color(1, 88, 248));
 		lblPasoDe.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblPasoDe.setBounds(0, 0, 105, 16);
 		paso.add(lblPasoDe);
-		
+
 		JLabel lblLocalizacin = new JLabel("Localizaci\u00F3n");
 		lblLocalizacin.setForeground(SystemColor.controlDkShadow);
 		lblLocalizacin.setFont(new Font("Calibri", Font.PLAIN, 17));
@@ -731,104 +747,174 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	private JPanel crearPaso3() {
+		
 		JPanel paso = new JPanel();
 		paso.setOpaque(false);
 		paso.setLayout(null);
+
 		JLabel lblTipo = new JLabel("Tipo de solicitante");
-		lblTipo.setBounds(0, 45, 200, 20);
+		lblTipo.setBounds(2, 45, 200, 20);
 		lblTipo.setForeground(new Color(0, 0, 51));
 		lblTipo.setFont(new Font("Calibri", Font.BOLD, 18));
 		paso.add(lblTipo);
+
 		cbxTipo = new ComboBoxRedond<TipoPersona>(25);
 		cbxTipo.setBounds(0, 70, 225, 30);
 		cbxTipo.setForeground(new Color(0, 0, 51));
 		cbxTipo.setFont(new Font("Calibri", Font.PLAIN, 18));
 		cbxTipo.setBackground(SystemColor.controlHighlight);
-		cbxTipo.setModel(new DefaultComboBoxModel<TipoPersona>(new TipoPersona[] { TipoPersona.UNIVERSITARIO, TipoPersona.TECNICO, TipoPersona.OBRERO }));
+
+		cbxTipo.setModel(new DefaultComboBoxModel<TipoPersona>(new TipoPersona[] {TipoPersona.UNIVERSITARIO,TipoPersona.TECNICO,TipoPersona.OBRERO}));
 		cbxTipo.setSelectedIndex(-1);
+
 		cbxTipo.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
+			@Override
 			protected javax.swing.plaf.basic.ComboPopup createPopup() {
 				javax.swing.plaf.basic.BasicComboPopup popup = new javax.swing.plaf.basic.BasicComboPopup(comboBox) {
+					@Override
 					protected JScrollPane createScroller() {
-						JScrollPane scroll = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-						scroll.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(0, 0, 51), 1, true));
+						JScrollPane scroll = new JScrollPane(list,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+						scroll.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 51),1,true));
 						return scroll;
 					}
 				};
-				popup.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(0, 0, 51), 1, true));
+
+				popup.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 51),1,true));
 				return popup;
 			}
 		});
+
 		paso.add(cbxTipo);
 
-		JLabel lblNewLabel_2 = new JLabel("A\u00F1os de Experiencia");
-		lblNewLabel_2.setForeground(new Color(0, 0, 51));
-		lblNewLabel_2.setBounds(352, 47, 175, 16);
-		lblNewLabel_2.setFont(new Font("Calibri", Font.BOLD, 18));
-		paso.add(lblNewLabel_2);
+		JLabel lblExperiencia = new JLabel("Años de Experiencia");
+		lblExperiencia.setForeground(new Color(0, 0, 51));
+		lblExperiencia.setBounds(352, 47, 175, 20);
+		lblExperiencia.setFont(new Font("Calibri", Font.BOLD, 18));
+		paso.add(lblExperiencia);
 
-		spnExp = new JSpinner();
+		spnExp = new JSpinner(new SpinnerNumberModel(0, 0, 60, 1));
 		spnExp.setBounds(352, 70, 85, 30);
 		spnExp.setForeground(new Color(0, 0, 51));
 		spnExp.setBackground(SystemColor.controlHighlight);
 		spnExp.setFont(new Font("Calibri", Font.PLAIN, 18));
 		paso.add(spnExp);
+
+		JLabel lblPaso = new JLabel("Paso 3 de 4");
+		lblPaso.setForeground(new Color(1, 88, 248));
+		lblPaso.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblPaso.setBounds(0, 0, 105, 16);
+		paso.add(lblPaso);
+
+		JLabel lblInformacion = new JLabel("Información");
+		lblInformacion.setForeground(SystemColor.controlDkShadow);
+		lblInformacion.setFont(new Font("Calibri", Font.PLAIN, 17));
+		lblInformacion.setBounds(109, 1, 130, 16);
+		paso.add(lblInformacion);
+
+	
+		CardLayout cardTipoLayout = new CardLayout();
+
+		panel_TiposSolicitante = new JPanel(cardTipoLayout);
+		panel_TiposSolicitante.setOpaque(false);
+		panel_TiposSolicitante.setBounds(0, 125, 553, 287);
+		paso.add(panel_TiposSolicitante);
+
 		
-		JLabel lblPasode = new JLabel("Paso 3 de 4");
-		lblPasode.setForeground(new Color(1, 88, 248));
-		lblPasode.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblPasode.setBounds(0, 0, 105, 16);
-		paso.add(lblPasode);
+		JPanel panelVacio = new JPanel();
+		panelVacio.setOpaque(false);
+		panelVacio.setLayout(null);
+
+		JLabel lblSeleccione = new JLabel("Seleccione un tipo de solicitante para completar la información.");
+		lblSeleccione.setForeground(SystemColor.controlDkShadow);
+		lblSeleccione.setFont(new Font("Calibri", Font.PLAIN, 17));
+		lblSeleccione.setBounds(2, 35, 500, 25);
+		panelVacio.add(lblSeleccione);
+
 		
-		JLabel lblInformacin = new JLabel("Informaci\u00F3n");
-		lblInformacin.setForeground(SystemColor.controlDkShadow);
-		lblInformacin.setFont(new Font("Calibri", Font.PLAIN, 17));
-		lblInformacin.setBounds(109, 1, 130, 16);
-		paso.add(lblInformacin);
-		
+		panelUniversitario = new JPanel();
+		panelUniversitario.setOpaque(false);
+		panelUniversitario.setLayout(null);
+
+		JLabel lblCarrera = new JLabel("Carrera");
+		lblCarrera.setForeground(new Color(0, 0, 51));
+		lblCarrera.setFont(new Font("Calibri", Font.BOLD, 18));
+		lblCarrera.setBounds(2, 39, 100, 20);
+		panelUniversitario.add(lblCarrera);
+
 		txtCarrera = new TextFieldRedond(25);
+		txtCarrera.setBackground(SystemColor.controlHighlight);
 		txtCarrera.setForeground(new Color(0, 0, 51));
 		txtCarrera.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtCarrera.setBackground(SystemColor.controlHighlight);
-		txtCarrera.setBounds(0, 159, 294, 30);
-		paso.add(txtCarrera);
-		
-		JLabel label = new JLabel("Carrera");
-		label.setForeground(new Color(0, 0, 51));
-		label.setFont(new Font("Calibri", Font.BOLD, 18));
-		label.setBounds(0, 136, 200, 20);
-		paso.add(label);
-		
+		txtCarrera.setBounds(2, 72, 350, 30);
+		panelUniversitario.add(txtCarrera);
+
+		panelTecnico = new JPanel();
+		panelTecnico.setOpaque(false);
+		panelTecnico.setLayout(null);
+
+		JLabel lblTecnico = new JLabel("Área técnica");
+		lblTecnico.setForeground(new Color(0, 0, 51));
+		lblTecnico.setFont(new Font("Calibri", Font.BOLD, 18));
+		lblTecnico.setBounds(2, 39, 150, 20);
+		panelTecnico.add(lblTecnico);
+
+		txtTecnico = new TextFieldRedond(25);
+		txtTecnico.setForeground(new Color(0, 0, 51));
+		txtTecnico.setFont(new Font("Calibri", Font.PLAIN, 18));
+		txtTecnico.setBackground(SystemColor.controlHighlight);
+		txtTecnico.setBounds(2, 72, 350, 30);
+		panelTecnico.add(txtTecnico);
+
+		panelObrero = new JPanel();
+		panelObrero.setOpaque(false);
+		panelObrero.setLayout(null);
+
+		JLabel lblHabilidades = new JLabel("Habilidades");
+		lblHabilidades.setForeground(new Color(0, 0, 51));
+		lblHabilidades.setFont(new Font("Calibri", Font.BOLD, 18));
+		lblHabilidades.setBounds(2, 39, 150, 20);
+		panelObrero.add(lblHabilidades);
+
 		txtHabilidades = new TextFieldRedond(25);
 		txtHabilidades.setForeground(new Color(0, 0, 51));
 		txtHabilidades.setFont(new Font("Calibri", Font.PLAIN, 18));
 		txtHabilidades.setBackground(SystemColor.controlHighlight);
-		txtHabilidades.setBounds(0, 333, 500, 50);
-		paso.add(txtHabilidades);
-		
-		JLabel label_3 = new JLabel("Habilidades");
-		label_3.setForeground(new Color(0, 0, 51));
-		label_3.setFont(new Font("Calibri", Font.BOLD, 18));
-		label_3.setBounds(0, 308, 200, 20);
-		paso.add(label_3);
-		
-		JLabel label_4 = new JLabel("\u00C1rea t\u00E9cnica");
-		label_4.setForeground(new Color(0, 0, 51));
-		label_4.setFont(new Font("Calibri", Font.BOLD, 18));
-		label_4.setBounds(0, 218, 200, 20);
-		paso.add(label_4);
-		
-		txtAreaTecnico = new TextFieldRedond(25);
-		txtAreaTecnico.setForeground(new Color(0, 0, 51));
-		txtAreaTecnico.setFont(new Font("Calibri", Font.PLAIN, 18));
-		txtAreaTecnico.setBackground(SystemColor.controlHighlight);
-		txtAreaTecnico.setBounds(0, 243, 294, 30);
-		paso.add(txtAreaTecnico);
+		txtHabilidades.setBounds(2, 72, 350, 30);
+		panelObrero.add(txtHabilidades);
+
+
+		panel_TiposSolicitante.add(panelVacio, "VACIO");
+		panel_TiposSolicitante.add(panelUniversitario, "UNIVERSITARIO");
+		panel_TiposSolicitante.add(panelTecnico, "TECNICO");
+		panel_TiposSolicitante.add(panelObrero, "OBRERO");
+
+	
+		cbxTipo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				TipoPersona tipoSeleccionado =(TipoPersona) cbxTipo.getSelectedItem();
+
+				if (tipoSeleccionado == null) {
+					cardTipoLayout.show(panel_TiposSolicitante,"VACIO");
+
+				} else if (tipoSeleccionado == TipoPersona.UNIVERSITARIO) {
+					cardTipoLayout.show(panel_TiposSolicitante,"UNIVERSITARIO");
+
+				} else if (tipoSeleccionado == TipoPersona.TECNICO) {
+					cardTipoLayout.show(panel_TiposSolicitante,"TECNICO");
+
+				} else if (tipoSeleccionado == TipoPersona.OBRERO) {
+					cardTipoLayout.show(panel_TiposSolicitante,"OBRERO");
+				}
+
+				panel_TiposSolicitante.revalidate();
+				panel_TiposSolicitante.repaint();
+			}
+		});
 
 		return paso;
 	}
-
-
 	private JPanel crearPaso4() {
 		JPanel paso = new JPanel();
 		paso.setOpaque(false);
@@ -880,13 +966,13 @@ public class RegistrarSolicitante extends JDialog {
 		fotoPerfil = new FotoPerfilRedond(114);
 		fotoPerfil.setBounds(449, 38, 200, 206);
 		paso.add(fotoPerfil);
-		
+
 		JLabel lblUsuario = new JLabel("Usuario");
 		lblUsuario.setForeground(SystemColor.controlDkShadow);
 		lblUsuario.setFont(new Font("Calibri", Font.PLAIN, 17));
 		lblUsuario.setBounds(109, 1, 130, 16);
 		paso.add(lblUsuario);
-		
+
 		JLabel lblPasoDe_1 = new JLabel("Paso 4 de 4");
 		lblPasoDe_1.setForeground(new Color(1, 88, 248));
 		lblPasoDe_1.setFont(new Font("Calibri", Font.PLAIN, 18));
