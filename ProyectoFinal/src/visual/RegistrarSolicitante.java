@@ -280,6 +280,8 @@ public class RegistrarSolicitante extends JDialog {
 		if(mySolicitante.isEstadoEmpleo()) {
 			chkEmpleado.setSelected(true);
 		}
+		
+		fotoPerfil.cargarImagen(mySolicitante.getUser().getFotoPerfil());
 
 	}
 
@@ -420,6 +422,7 @@ public class RegistrarSolicitante extends JDialog {
 		if(mySolicitante == null) {
 			String contrasena = new String(passwordField.getPassword());
 			Usuario newUser = new Usuario("U-" + BolsaEmpleo.generadorIdUser, txtUser.getText(), contrasena, txtCorreo.getText(), null, null, TipoUser.CANDIDATO, null);
+			newUser.setFotoPerfil(fotoPerfil.getRutaFotoPerfil());
 			this.user = newUser;
 
 			String id = "P-" + BolsaEmpleo.generadorIdPersona;
@@ -470,6 +473,9 @@ public class RegistrarSolicitante extends JDialog {
 			user.setCorreo(txtCorreo.getText());
 			user.setUsername(txtUser.getText());
 			user.setPassword(new String (passwordField.getPassword()));
+			if (fotoPerfil.getRutaFotoPerfil() != null) {         
+			    user.setFotoPerfil(fotoPerfil.getRutaFotoPerfil()); 
+			}   
 
 			if(tipo == TipoPersona.UNIVERSITARIO) {
 				Universitario uni = (Universitario) mySolicitante;
