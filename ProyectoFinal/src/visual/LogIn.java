@@ -22,6 +22,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.AbstractDocument;
 
 import logico.BolsaEmpleo;
+import logico.TipoUser;
 import logico.Usuario;
 
 public class LogIn extends JDialog {
@@ -106,7 +107,11 @@ public class LogIn extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 String usuario = txtUser.getText().trim();
                 String password = new String(passwordField.getPassword()).trim();
-
+                
+                if(BolsaEmpleo.getInstancia().getUsuarios().size() == 0) {
+                	BolsaEmpleo.getInstancia().crearAdminPorDefecto();
+                }
+                
                 if (!Validaciones.camposLlenos(usuario, password)) {
                     JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -132,6 +137,11 @@ public class LogIn extends JDialog {
                     homeCandidato.setVisible(true);
                     dispose();
                 }
+                if (loginUser.getTipoUser() == TipoUser.ADMINISTRADOR) {
+                    HomeAdministrador homeAdmin = new HomeAdministrador();
+                    homeAdmin.setVisible(true);
+                    dispose();
+                }
             }
         });
         btnLogin.setForeground(new Color(0, 0, 51));
@@ -142,7 +152,7 @@ public class LogIn extends JDialog {
         BotonConSombra btnRegistrarse = new BotonConSombra("Registrarse", 25);
         btnRegistrarse.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                TipoUser nuevoUsuario = new TipoUser();
+                SeleccionTipoUser nuevoUsuario = new SeleccionTipoUser();
                 nuevoUsuario.setVisible(true);
                 dispose();
             }

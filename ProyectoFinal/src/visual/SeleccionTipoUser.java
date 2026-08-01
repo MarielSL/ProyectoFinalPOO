@@ -20,14 +20,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
 
-public class TipoUser extends JDialog {
+public class SeleccionTipoUser extends JDialog {
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		try {
-			TipoUser dialog = new TipoUser();
+			SeleccionTipoUser dialog = new SeleccionTipoUser();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -38,8 +38,8 @@ public class TipoUser extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public TipoUser() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(TipoUser.class.getResource("/img/AppIconoFull.png")));
+	public SeleccionTipoUser() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(SeleccionTipoUser.class.getResource("/img/AppIconoFull.png")));
 		setTitle("Tipo de Usuario");
 		setBounds(100, 100, 671, 424);
 		setLocationRelativeTo(null);
@@ -74,13 +74,13 @@ public class TipoUser extends JDialog {
 				panel_2.add(lblNewLabel);
 				
 				JLabel iconEmpresa = new JLabel("New label");
-				iconEmpresa.setIcon(new ImageIcon(TipoUser.class.getResource("/img/empresa_icon.png")));
+				iconEmpresa.setIcon(new ImageIcon(SeleccionTipoUser.class.getResource("/img/empresa_icon.png")));
 				iconEmpresa.setBounds(73, 153, 30, 30);
 				panel_1.add(iconEmpresa);
 				colocarImagen(iconEmpresa,"/img/empresa_icon.png");
 				
 				JLabel iconSolicitante = new JLabel("");
-				iconSolicitante.setIcon(new ImageIcon(TipoUser.class.getResource("/img/candidato_icon.png")));
+				iconSolicitante.setIcon(new ImageIcon(SeleccionTipoUser.class.getResource("/img/candidato_icon.png")));
 				iconSolicitante.setBounds(306, 153, 35, 35);
 				panel_1.add(iconSolicitante);
 				colocarImagen(iconSolicitante, "/img/candidato_icon.png");

@@ -374,14 +374,14 @@ public class BolsaEmpleo implements Serializable {
 		usuarios.set(indexUser, user);
 		guardarDatos();
 	}
-	
+
 	public void modSolicitud(SolicitudEmpleo solicitud) {
 		int indexSolicitud = buscarIndexSolicitud(solicitud.getId());
 		solicitudes.set(indexSolicitud, solicitud);
 		loginUser.getPersona().setSolicitudes(solicitud);
 		guardarDatos();
 	}
-	
+
 	private int buscarIndexSolicitud(String idSolicitud) {
 		int index = -1;
 		boolean encontrado = false;
@@ -475,7 +475,7 @@ public class BolsaEmpleo implements Serializable {
 			if (aux != null) {
 				continue;
 			}
-			
+
 			float porcentaje = calcCoincidencia(oferta, solicitud);
 			resultados.add(new ResultMatch(solicitud,porcentaje));
 
@@ -535,4 +535,27 @@ public class BolsaEmpleo implements Serializable {
 
 	}
 
+	public void crearAdminPorDefecto() {
+		boolean existeAdmin = false;
+		for (Usuario u : usuarios) {
+			if (u.getTipoUser() == TipoUser.ADMINISTRADOR) {
+				existeAdmin = true;
+				break;
+			}
+		}
+
+		if (!existeAdmin) {
+			Usuario admin = new Usuario(
+					"U" + generadorIdUser,
+					"admin",
+					"admin",
+					"admin@hirelink.com",
+					null,
+					null,
+					TipoUser.ADMINISTRADOR,
+					null
+					);
+			regUser(admin);
+		}
+	}
 }

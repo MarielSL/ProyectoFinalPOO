@@ -79,7 +79,7 @@ public class HomeAdministrador extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		dim = getToolkit().getScreenSize();
-		setSize(dim.width, dim.height);
+		setSize(dim.width, dim.height-55);
 		setLocationRelativeTo(null);
 
 		JLayeredPane layeredPane = new JLayeredPane();
