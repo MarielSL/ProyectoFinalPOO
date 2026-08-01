@@ -135,7 +135,7 @@ public class VerOfertasEmpresa extends JFrame {
 		colocarIconoBoton(btnAtras,"/img/menu-dots-vertical(White).png",25,25);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BarraAdmin home = new BarraAdmin();
+				BarraEmpresa home = new BarraEmpresa();
 				home.setVisible(true);
 				dispose();
 			}

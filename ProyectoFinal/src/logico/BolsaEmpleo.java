@@ -342,6 +342,7 @@ public class BolsaEmpleo implements Serializable {
 			if(empresas.get(ind).getRnc().equals(rnc)) {
 				rep = true;
 			}
+			ind++;
 		}
 
 		return rep;

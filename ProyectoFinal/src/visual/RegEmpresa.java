@@ -351,6 +351,7 @@ public class RegEmpresa extends JDialog {
 						JOptionPane.showMessageDialog(null, "Usuario en uso.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 						return;
 					}
+
 					Empresa empresa = new Empresa("E-" + BolsaEmpleo.generadorIdEmpresa, txtRnc.getText(), txtNombEmpresa.getText(), txtTelefono.getText(),
 							txtDireccion.getText(), (TipoEmpresa) cbxTipo.getSelectedItem(), null);
 					Usuario nuevoUsuario = new Usuario("U-" + BolsaEmpleo.generadorIdUser, txtUser.getText(), contrasena, null, null, null, null, null);
@@ -365,6 +366,7 @@ public class RegEmpresa extends JDialog {
 
 					JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
 					clear();
+					
 					HomeEmpresa emp = new HomeEmpresa();
 					emp.setVisible(true);
 					dispose();
