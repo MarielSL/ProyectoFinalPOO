@@ -45,7 +45,6 @@ public class VerEmpresasAdmin extends JFrame {
 
 	private JPanel contentPane;
 	private Dimension dim;
-	private TextFieldRedond txtBuscar;
 	private ComboBoxRedond<String> cbxEstado;
 	private ComboBoxRedond<String> cbxTipo;
 	private JPanel pnlVacio;
@@ -154,7 +153,7 @@ public class VerEmpresasAdmin extends JFrame {
 		panelTotalEmpresas.setLayout(null);
 
 		JLabel lblIconoTotal = new JLabel();
-		lblIconoTotal.setBounds(16, 16, 40, 40);
+		lblIconoTotal.setBounds(-3, 3, 78,78);
 		panelTotalEmpresas.add(lblIconoTotal);
 
 		JLabel lblTotalEmpresas = new JLabel("Total de empresas");
@@ -168,6 +167,11 @@ public class VerEmpresasAdmin extends JFrame {
 		lblTotalEmpresasNum.setForeground(new Color(204, 102, 0));
 		lblTotalEmpresasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
 		panelTotalEmpresas.add(lblTotalEmpresasNum);
+		
+				JLabel lblNewLabel = new JLabel("");
+				lblNewLabel.setBounds(-3, 3, 78,78);
+				panelTotalEmpresas.add(lblNewLabel);
+				colocarImagen(lblNewLabel, "/img/empresa_edificio.png");
 
 		PanelConSombra panelEmpresasActivas = new PanelConSombra(18);
 		panelEmpresasActivas.setBackground(new Color(198, 239, 206));
@@ -176,7 +180,7 @@ public class VerEmpresasAdmin extends JFrame {
 		panelEmpresasActivas.setLayout(null);
 
 		JLabel lblIconoActivas = new JLabel();
-		lblIconoActivas.setBounds(16, 16, 40, 40);
+		lblIconoActivas.setBounds(12, 20, 42, 42);
 		panelEmpresasActivas.add(lblIconoActivas);
 
 		JLabel lblEmpresasActivas = new JLabel("Empresas activas");
@@ -190,6 +194,11 @@ public class VerEmpresasAdmin extends JFrame {
 		lblEmpresasActivasNum.setForeground(new Color(46, 125, 50));
 		lblEmpresasActivasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
 		panelEmpresasActivas.add(lblEmpresasActivasNum);
+		
+		JLabel lblNewLabel_2 = new JLabel("");
+		lblNewLabel_2.setBounds(12, 20, 42, 42);
+		panelEmpresasActivas.add(lblNewLabel_2);
+		colocarImagen(lblNewLabel_2, "/img/check.png");
 	}
 
 	private void construirBusqueda(JPanel panel, int margen, int anchoContenido) {
@@ -198,48 +207,6 @@ public class VerEmpresasAdmin extends JFrame {
 		panelBusqueda.setBounds(margen, 220, anchoContenido, 60);
 		panel.add(panelBusqueda);
 		panelBusqueda.setLayout(null);
-
-		JLabel lblIconoBuscar = new JLabel();
-		lblIconoBuscar.setBounds(22, 20, 22, 22);
-		panelBusqueda.add(lblIconoBuscar);
-
-		txtBuscar = new TextFieldRedond(18);
-		txtBuscar.setText("Buscar");
-		txtBuscar.setFont(new Font("Calibri", Font.PLAIN, 16));
-		txtBuscar.setForeground(Color.GRAY);
-		txtBuscar.setBackground(new Color(245, 245, 245));
-		txtBuscar.setBounds(50, 14, anchoContenido - 480, 32);
-		panelBusqueda.add(txtBuscar);
-
-		txtBuscar.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent e) {
-				if (txtBuscar.getText().equals("Buscar")) {
-					txtBuscar.setText("");
-					txtBuscar.setForeground(Color.BLACK);
-				}
-			}
-
-			public void focusLost(FocusEvent e) {
-				if (txtBuscar.getText().isEmpty()) {
-					txtBuscar.setText("Buscar");
-					txtBuscar.setForeground(Color.GRAY);
-				}
-			}
-		});
-
-		txtBuscar.getDocument().addDocumentListener(new DocumentListener() {
-			public void insertUpdate(DocumentEvent e) {
-				aplicarFiltros();
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				aplicarFiltros();
-			}
-
-			public void changedUpdate(DocumentEvent e) {
-				aplicarFiltros();
-			}
-		});
 
 		JLabel lblEstado = new JLabel("Estado");
 		lblEstado.setFont(new Font("Calibri", Font.PLAIN, 13));
@@ -287,11 +254,6 @@ public class VerEmpresasAdmin extends JFrame {
 				aplicarFiltros();
 			}
 		});
-
-		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setBounds(25, 20, 17, 17);
-		colocarImagen(lblNewLabel, "/img/lupa.png");
-		panelBusqueda.add(lblNewLabel);
 	}
 
 	private void construirContenido(JPanel panel, int margen, int anchoContenido) {
@@ -409,11 +371,6 @@ public class VerEmpresasAdmin extends JFrame {
 		String tipoSeleccionado = (String) cbxTipo.getSelectedItem();
 		if (tipoSeleccionado != null && !tipoSeleccionado.equals("Todos")) {
 			filtros.add(RowFilter.regexFilter("(?i)^" + tipoSeleccionado + "$", 2));
-		}
-
-		String texto = txtBuscar.getText();
-		if (texto != null && !texto.isEmpty() && !texto.equals("Buscar")) {
-			filtros.add(RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(texto)));
 		}
 
 		if (filtros.isEmpty()) {
@@ -559,6 +516,4 @@ public class VerEmpresasAdmin extends JFrame {
 	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
 	    boton.setIcon(new ImageIcon(imagenEscalada));
 	}
-
-
 }

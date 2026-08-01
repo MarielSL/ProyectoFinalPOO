@@ -160,15 +160,6 @@ public class BarraEmpresa extends JDialog {
 			btnSolicitudes.setBounds(120, 221, 221, 45);
 			panelBotones.add(btnSolicitudes);
 			
-			BotonConSombra btnMensajes = new BotonConSombra("Dashboard", 25);
-			btnMensajes.setText("Mensajes");
-			btnMensajes.setHorizontalAlignment(SwingConstants.LEFT);
-			btnMensajes.setFont(new Font("Calibri", Font.PLAIN, 20));
-			btnMensajes.setColorHover(new Color(135, 206, 250));
-			btnMensajes.setBackground(Color.WHITE);
-			btnMensajes.setBounds(120, 314, 221, 45);
-			panelBotones.add(btnMensajes);
-			
 			JLabel iconoOfertas = new JLabel("");
 			iconoOfertas.setBounds(61, 128, 30, 30);
 			colocarImagen(iconoOfertas,"/img/maletin.png");
@@ -178,30 +169,12 @@ public class BarraEmpresa extends JDialog {
 			iconoSolicitudes.setBounds(61, 221, 30, 30);
 			colocarImagen(iconoSolicitudes,"/img/portapapeles.png");
 			panelBotones.add(iconoSolicitudes);
-			
-			JLabel iconoMensajes = new JLabel("");
-			iconoMensajes.setBounds(61, 314, 30, 30);
-			colocarImagen(iconoMensajes,"/img/mensaje.png");
-			panelBotones.add(iconoMensajes);
-			
-			JLabel iconoNotificaciones = new JLabel("");
-			iconoNotificaciones.setBounds(61, 407, 30, 30);
-			colocarImagen(iconoNotificaciones,"/img/notificacion.png");
-			panelBotones.add(iconoNotificaciones);
-			
+
 			JLabel iconoDashboard = new JLabel("");
 			iconoDashboard.setBounds(61, 35, 30, 30);
 			colocarImagen(iconoDashboard, "/img/hogar.png");
 			panelBotones.add(iconoDashboard);
-			
-			BotonConSombra btnNotificaciones = new BotonConSombra("Dashboard", 25);
-			btnNotificaciones.setText("Notificaciones");
-			btnNotificaciones.setHorizontalAlignment(SwingConstants.LEFT);
-			btnNotificaciones.setFont(new Font("Calibri", Font.PLAIN, 20));
-			btnNotificaciones.setColorHover(new Color(135, 206, 250));
-			btnNotificaciones.setBackground(Color.WHITE);
-			btnNotificaciones.setBounds(120, 407, 221, 45);
-			panelBotones.add(btnNotificaciones);
+
 		}
 	}
 	private void colocarImagen(JLabel label, String ruta) {

@@ -98,7 +98,7 @@ public class VerUserEmpresa extends JFrame {
 		    colocarImagen(fotoPerfil,"/img/User Icon.png");
 		}
 		else {
-		    colocarImagenDesdeArchivo(fotoPerfil, BolsaEmpleo.getInstancia().getLoginUser().getFotoPerfil()); // <-- CAMBIAR ESTA LÍNEA
+		    colocarImagenDesdeArchivo(fotoPerfil, BolsaEmpleo.getInstancia().getLoginUser().getFotoPerfil()); 
 		}
 
 		JLabel lblNewLabel = new JLabel("Usuario");

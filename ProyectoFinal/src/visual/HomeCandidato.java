@@ -25,6 +25,8 @@ import logico.BolsaEmpleo;
 import logico.EstadoOferta;
 import logico.Oferta;
 import logico.Persona;
+import logico.Usuario;
+
 import java.awt.SystemColor;
 
 public class HomeCandidato extends JFrame {
@@ -108,7 +110,15 @@ public class HomeCandidato extends JFrame {
 			lblMiSolicitud.setBounds(938, 26, 170, 20);
 			lblMiSolicitud.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
-					abrirMiSolicitudLaboral();
+					Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
+					if(user ==null || user.getPersona() == null || user.getPersona().getSolicitud() == null) {
+						SolicitudVacia nueva = new SolicitudVacia();
+						nueva.setVisible(true);
+						dispose();
+					}
+					else {
+						abrirMiSolicitudLaboral();
+					}
 				}
 			});
 			panelMenu.add(lblMiSolicitud);
@@ -117,7 +127,7 @@ public class HomeCandidato extends JFrame {
 			lblVerPerfil.setFont(new Font("Calibri", Font.PLAIN, 18));
 			lblVerPerfil.setForeground(Color.WHITE);
 			lblVerPerfil.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			lblVerPerfil.setBounds(1130, 26, 90, 20);
+			lblVerPerfil.setBounds(1130, 26, 90, 20); 
 			lblVerPerfil.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					abrirVerPerfil();
@@ -206,7 +216,7 @@ public class HomeCandidato extends JFrame {
 			panelMayorCoincidencia.add(lblMayorCoincidenciaValor);
 		}
 
-		JLabel lblTituloGraficos = new JLabel("Oportunidades / ofertas destacadas");
+		JLabel lblTituloGraficos = new JLabel("Oportunidades Destacadas");
 		lblTituloGraficos.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTituloGraficos.setForeground(new Color(0, 0, 51));
 		lblTituloGraficos.setFont(new Font("Calibri", Font.BOLD, 26));

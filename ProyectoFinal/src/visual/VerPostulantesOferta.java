@@ -294,7 +294,7 @@ public class VerPostulantesOferta extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					if(oferta !=null) {
 						String IdSolicitud = BolsaEmpleo.getInstancia().idSolicitud(resultSolicitantes.get(1).getSolicitud().getCandidato());
-						SolicitudEmpleo solicitud = resultSolicitantes.get(1).getSolicitud().getCandidato().buscarSolicitud(IdSolicitud);
+						SolicitudEmpleo solicitud = resultSolicitantes.get(1).getSolicitud().getCandidato().getSolicitud();
 						VerPostulante verPostulante = new VerPostulante(resultSolicitantes.get(1).getSolicitud().getCandidato(),oferta,solicitud);
 						verPostulante.setVisible(true);
 					}
@@ -366,7 +366,7 @@ public class VerPostulantesOferta extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					if(oferta !=null) {
 						String IdSolicitud = BolsaEmpleo.getInstancia().idSolicitud(resultSolicitantes.get(2).getSolicitud().getCandidato());
-						SolicitudEmpleo solicitud = resultSolicitantes.get(2).getSolicitud().getCandidato().buscarSolicitud(IdSolicitud);
+						SolicitudEmpleo solicitud = resultSolicitantes.get(2).getSolicitud().getCandidato().getSolicitud();
 						VerPostulante verPostulante = new VerPostulante(resultSolicitantes.get(2).getSolicitud().getCandidato(),oferta,solicitud);
 						verPostulante.setVisible(true);
 					}
@@ -460,7 +460,7 @@ public class VerPostulantesOferta extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					if(oferta !=null) {
 						String IdSolicitud = BolsaEmpleo.getInstancia().idSolicitud(resultSolicitantes.get(0).getSolicitud().getCandidato());
-						SolicitudEmpleo solicitud = resultSolicitantes.get(0).getSolicitud().getCandidato().buscarSolicitud(IdSolicitud);
+						SolicitudEmpleo solicitud = resultSolicitantes.get(0).getSolicitud().getCandidato().getSolicitud();
 						VerPostulante verPostulante = new VerPostulante(resultSolicitantes.get(0).getSolicitud().getCandidato(),oferta,solicitud);
 						verPostulante.setVisible(true);
 					}
@@ -521,7 +521,7 @@ public class VerPostulantesOferta extends JDialog {
 						}
 						else {
 							String IdSolicitud = BolsaEmpleo.getInstancia().idSolicitud(candidatosMostrados.get(index).getSolicitud().getCandidato());
-							SolicitudEmpleo solicitud = candidatosMostrados.get(index).getSolicitud().getCandidato().buscarSolicitud(IdSolicitud);
+							SolicitudEmpleo solicitud = candidatosMostrados.get(index).getSolicitud().getCandidato().getSolicitud();
 							VerPostulante verPostulante = new VerPostulante(candidatosMostrados.get(index).getSolicitud().getCandidato(),oferta,solicitud);
 							setVisible(true);
 						}

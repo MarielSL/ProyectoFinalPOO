@@ -65,12 +65,13 @@ public class RegSolicitud extends JDialog {
 	private SpinnerRedond spnSueldo_1;
 	private ComboBoxRedond cbxJornada;
 	private ComboBoxRedond cbxModalidad;
+	private BotonRedond btnCancelar;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RegSolicitud dialog = new RegSolicitud();
+					RegSolicitud dialog = new RegSolicitud(null);
 					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 					dialog.setVisible(true);
 				} catch (Exception e) {
@@ -80,7 +81,7 @@ public class RegSolicitud extends JDialog {
 		});
 	}
 
-	public RegSolicitud() {
+	public RegSolicitud(SolicitudEmpleo solicitud) {
 		setResizable(false);
 		setModal(true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -281,10 +282,25 @@ public class RegSolicitud extends JDialog {
 					JOptionPane.showConfirmDialog(null, "Puesto no debe de contener números.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
-				String id = "S-"+BolsaEmpleo.generadorIdSolicitud;
-				LocalDate fechaHoy = LocalDate.now();
-				SolicitudEmpleo solicitud = new SolicitudEmpleo(id, EstadoSolicitud.ACTIVA, BolsaEmpleo.getInstancia().getLoginUser().getPersona(), fechaHoy, (AreaLaboral) cbxAreaLaboral.getSelectedItem(), (float) spnSueldo_1.getValue(), (Modalidad) cbxModalidad.getSelectedItem(), txtPuesto.getText(), (Jornada) cbxJornada.getSelectedItem());
-				BolsaEmpleo.getInstancia().regSolicitud(solicitud,BolsaEmpleo.getInstancia().getLoginUser().getPersona());
+				if(solicitud == null) {
+					String id = "S-"+BolsaEmpleo.generadorIdSolicitud;
+					LocalDate fechaHoy = LocalDate.now();
+					SolicitudEmpleo solicitud = new SolicitudEmpleo(id, EstadoSolicitud.ACTIVA, BolsaEmpleo.getInstancia().getLoginUser().getPersona(), fechaHoy, (AreaLaboral) cbxAreaLaboral.getSelectedItem(), (float) spnSueldo_1.getValue(), (Modalidad) cbxModalidad.getSelectedItem(), txtPuesto.getText(), (Jornada) cbxJornada.getSelectedItem());
+					BolsaEmpleo.getInstancia().regSolicitud(solicitud,BolsaEmpleo.getInstancia().getLoginUser().getPersona());
+				}
+				else {
+					solicitud.setPuesto(txtPuesto.getText());
+					solicitud.setAreaLaboral((AreaLaboral) cbxAreaLaboral.getSelectedItem());
+					solicitud.setJornada((Jornada) cbxJornada.getSelectedItem());
+					solicitud.setModalidad( (Modalidad) cbxModalidad.getSelectedItem());
+					solicitud.setSueldoEsperado((float) spnSueldo_1.getValue());
+					BolsaEmpleo.getInstancia().modSolicitud(solicitud);
+					
+					VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral();
+					ver.setVisible(true);
+					dispose();
+				}
+				
 			}
 		});
 		btnCrear.setBackground(new Color(255, 153, 0));
@@ -292,13 +308,60 @@ public class RegSolicitud extends JDialog {
 		btnCrear.setFont(new Font("Calibri", Font.BOLD, 22));
 		btnCrear.setBounds(677, 903, 170, 46);
 		panel.add(btnCrear);
+		
+		BotonRedond btnCancelar = new BotonRedond("Cancelar", 35);
+		btnCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(solicitud == null) {
+					HomeCandidato home = new HomeCandidato();
+					dispose();
+
+					home.setVisible(true);
+					home.toFront();
+		            home.requestFocus();
+					dispose();
+				}
+				else {
+					VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral();
+					dispose();
+					ver.setVisible(true);
+					ver.toFront();
+					ver.requestFocus();
+				}
+			}
+		});
+		btnCancelar.setForeground(new Color(0, 0, 51));
+		btnCancelar.setFont(new Font("Calibri", Font.BOLD, 22));
+		btnCancelar.setBackground(Color.decode("#ffc5c5"));
+		btnCancelar.setColorHover(Color.decode("#feaaaa"));
+		btnCancelar.setBounds(58, 903, 170, 46);
+		panel.add(btnCancelar);
+		
 
 		lblFondo = new JLabel("New label");
 		lblFondo.setIcon(new ImageIcon(RegSolicitud.class.getResource("/img/Fondo-Registrar-Solicitud.png")));
 		lblFondo.setBounds(0, 0, 1914, 1005);
 		contentPanel.add(lblFondo);
 		colocarImagen(lblFondo,"/img/Fondo-Registrar-Solicitud.png");
+		
+		loadSolicitud(solicitud);
+		
+		if(solicitud != null) {
+			lblTitulo.setText("Modifica tu Solicitud Empleo.");
+			btnCrear.setText("Modificar");
+		}
 
+	}
+
+	private void loadSolicitud(SolicitudEmpleo solicitud) {
+		if(solicitud == null) {
+			return;
+		}
+		txtPuesto.setText(solicitud.getPuesto());
+		cbxAreaLaboral.setSelectedItem(solicitud.getAreaLaboral());
+		cbxJornada.setSelectedItem(solicitud.getJornada());
+		cbxModalidad.setSelectedItem(solicitud.getModalidad());
+		spnSueldo_1.setValue((int) solicitud.getSueldoEsperado());
 	}
 
 	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
