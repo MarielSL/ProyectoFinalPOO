@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import logico.BolsaEmpleo;
+import logico.Persona;
+import logico.Usuario;
 
 import javax.swing.JLabel;
 import javax.swing.AbstractButton;
@@ -112,12 +114,15 @@ public class VerUserSolicitante extends JFrame {
 		contentPane.add(lblNewLabel_1);
 
 		txtEstado = new TextFieldRedond(25);
-		if(BolsaEmpleo.getInstancia().getLoginUser() == null) {
+		Usuario usuario = BolsaEmpleo.getInstancia().getLoginUser();
+
+		if(usuario == null || usuario.getPersona() == null) {
 			txtEstado.setBackground(SystemColor.controlHighlight);
 			txtEstado.setForeground(new Color(0, 0, 51));
 		}
 		else {
-			if(BolsaEmpleo.getInstancia().getLoginUser().getPersona().isEstadoEmpleo()) {
+			Persona candidato = usuario.getPersona();
+			if(candidato.isEstadoEmpleo()) {
 				txtEstado.setForeground(new Color(0, 102, 0));
 				txtEstado.setBackground(new Color(153, 204, 153));
 			}
@@ -290,12 +295,13 @@ public class VerUserSolicitante extends JFrame {
 	}
 
 	private void loadUsuario() {
-		if(BolsaEmpleo.getInstancia().getLoginUser() == null) {
+		Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
+		if(user == null || user.getPersona() == null) {
 			return;
 		}
-		
-		txtUsuario.setText(BolsaEmpleo.getInstancia().getLoginUser().getUsername());
-		if(BolsaEmpleo.getInstancia().getLoginUser().getPersona().isEstadoEmpleo()) {
+		Persona candidato = user.getPersona();
+		txtUsuario.setText(user.getUsername());
+		if(candidato.isEstadoEmpleo()) {
 			txtEstado.setText("Contratado");
 		}
 		
@@ -303,12 +309,12 @@ public class VerUserSolicitante extends JFrame {
 			txtEstado.setText("Desempleado");
 		}
 		
-		txtNombre.setText(BolsaEmpleo.getInstancia().getLoginUser().getPersona().getNombre() + " " + BolsaEmpleo.getInstancia().getLoginUser().getPersona().getApellido());
-		txtCorreo.setText(BolsaEmpleo.getInstancia().getLoginUser().getCorreo());
-		txtFechNacim.setText(BolsaEmpleo.getInstancia().getLoginUser().getPersona().getFechNacim().toString());
-		txtTelef.setText(BolsaEmpleo.getInstancia().getLoginUser().getPersona().getTelefono());
-		txtCiudad.setText(BolsaEmpleo.getInstancia().getLoginUser().getPersona().getCiudad());
-		txtSexo.setText(BolsaEmpleo.getInstancia().getLoginUser().getPersona().getSexo().toString());
+		txtNombre.setText(candidato.getNombre() + " " + BolsaEmpleo.getInstancia().getLoginUser().getPersona().getApellido());
+		txtCorreo.setText(user.getCorreo());
+		txtFechNacim.setText(candidato.getFechNacim().toString());
+		txtTelef.setText(candidato.getTelefono());
+		txtCiudad.setText(candidato.getCiudad());
+		txtSexo.setText(candidato.getSexo().toString().toLowerCase());
 	}
 
 	private void colocarImagen(JLabel label, String ruta) {

@@ -16,6 +16,7 @@ import logico.Jornada;
 import logico.Modalidad;
 import logico.Persona;
 import logico.SolicitudEmpleo;
+import logico.Usuario;
 
 import java.awt.Color;
 import javax.swing.JLabel;
@@ -60,9 +61,11 @@ public class VerMiSolicitudLaboral extends JFrame {
 	private JLabel lblSueldo;
 	private JLabel lblModalidad;
 	private JLabel lblJornada;
-	private Persona candidato = BolsaEmpleo.getInstancia().getLoginUser().getPersona();
+	//private Persona candidato = BolsaEmpleo.getInstancia().getLoginUser().getPersona();
 	private JLabel lblEstadoIcon;
 	private JLabel lblFechaSolicitud;
+	private Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
+
 
 	/**
 	 * Launch the application.
@@ -417,7 +420,8 @@ public class VerMiSolicitudLaboral extends JFrame {
 		BotonRedond btnModificar = new BotonRedond("Modificar",30);
 		btnModificar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(candidato != null) {
+				if(user != null && user.getPersona() != null) {
+					Persona candidato = user.getPersona();
 					RegSolicitud modificar = new RegSolicitud(candidato.getSolicitud());
 					modificar.setVisible(true);
 					dispose();
@@ -427,7 +431,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 					modificar.setVisible(true);
 					dispose();
 				}
-				
+
 			}
 		});
 		btnModificar.setFont(new Font("Calibri", Font.BOLD, 22));
@@ -436,7 +440,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 		btnModificar.setForeground(new Color(0, 0, 51));
 		btnModificar.setColorHover(Color.decode("#ffdcb7"));
 		panelFondo.add(btnModificar);
-		
+
 		BotonRedond btnCancelar = new BotonRedond("Cancelar", 35);
 		btnCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -458,29 +462,29 @@ public class VerMiSolicitudLaboral extends JFrame {
 		lblDefineLoQue.setBounds(106, 155, 611, 25);
 		panelFondo.add(lblDefineLoQue);
 
-		if(candidato!= null) {
+		if(user != null && user.getPersona() != null && user.getPersona().getSolicitud() != null) {
+			Persona candidato = user.getPersona();
 			SolicitudEmpleo solicitud = candidato.getSolicitud();
-			if(solicitud != null) {
 
-				LocalDate fecha = solicitud.getFechaSolicitud();
-				DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-				String FechaFormateada = Fecha.format(formato); 
+			LocalDate fecha = solicitud.getFechaSolicitud();
+			DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			String FechaFormateada = Fecha.format(formato); 
 
-				lblPuesto.setText(solicitud.getPuesto());
-				lblAreaLaboral.setText(solicitud.getAreaLaboral().toString().toLowerCase());
-				lblSueldo.setText("$ " + solicitud.getSueldoEsperado());
-				lblModalidad.setText(solicitud.getModalidad().toString().toLowerCase());
-				lblJornada.setText(solicitud.getJornada().toString().toLowerCase());
-				lblFechaSolicitud.setText(FechaFormateada);
-				if(solicitud.getEstado() == EstadoSolicitud.ACTIVA) {
-					lblEstado.setText("Activa"); 
-					colocarImagen(lblEstadoIcon, "/img/check(lightBlue).png");
-				}
-				else {
-					lblEstado.setText("Inactiva"); 
-					colocarImagen(lblEstadoIcon, "/img/cross.png");
-				}
+			lblPuesto.setText(solicitud.getPuesto());
+			lblAreaLaboral.setText(solicitud.getAreaLaboral().toString().toLowerCase());
+			lblSueldo.setText("$ " + solicitud.getSueldoEsperado());
+			lblModalidad.setText(solicitud.getModalidad().toString().toLowerCase());
+			lblJornada.setText(solicitud.getJornada().toString().toLowerCase());
+			lblFechaSolicitud.setText(FechaFormateada);
+			if(solicitud.getEstado() == EstadoSolicitud.ACTIVA) {
+				lblEstado.setText("Activa"); 
+				colocarImagen(lblEstadoIcon, "/img/check(lightBlue).png");
 			}
+			else {
+				lblEstado.setText("Inactiva"); 
+				colocarImagen(lblEstadoIcon, "/img/cross.png");
+			}
+
 
 		}
 		else {
