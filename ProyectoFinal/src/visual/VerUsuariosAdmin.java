@@ -169,7 +169,7 @@ public class VerUsuariosAdmin extends JFrame {
 		int anchoTarjeta = (anchoCards - 24) / 2;
 
 		PanelConSombra panelTotalUsuarios = new PanelConSombra(18);
-		panelTotalUsuarios.setBackground(new Color(195, 220, 255));
+		panelTotalUsuarios.setBackground(new Color(153, 204, 255));
 		panelTotalUsuarios.setBounds(113, 110, 485, 90);
 		panel.add(panelTotalUsuarios);
 		panelTotalUsuarios.setLayout(null);
