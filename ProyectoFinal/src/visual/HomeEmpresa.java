@@ -184,6 +184,7 @@ public class HomeEmpresa extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					BarraEmpresa menu = new BarraEmpresa();
 					menu.setVisible(true);
+					dispose();
 				}
 			});
 			btnMenu.setBackground(new Color(0, 0, 51));
@@ -196,6 +197,23 @@ public class HomeEmpresa extends JFrame {
 			btnMenu.setFocusPainted(false);
 			btnMenu.setOpaque(false);
 			panelMenu.add(btnMenu);
+			
+			String nombreEmpresa = "Mi Empresa";
+			if (empresa != null) {
+				nombreEmpresa = empresa.getNombre();
+			}
+			int anchoNombre = 14 * nombreEmpresa.length() + 20;
+
+			JLabel lblNombreEmpresa = new JLabel(nombreEmpresa);
+			lblNombreEmpresa.setFont(new Font("Calibri", Font.BOLD, 24));
+			lblNombreEmpresa.setForeground(Color.WHITE);
+			lblNombreEmpresa.setBounds(1668, 25, anchoNombre, 20);
+			panelMenu.add(lblNombreEmpresa);
+			
+			JLabel lblNewLabel = new JLabel("");
+			lblNewLabel.setBounds(1741, -9, 114, 88);
+			colocarImagen(lblNewLabel, "/img/iconoLogo_FondoOscuro.png");
+			panelMenu.add(lblNewLabel);
 		}
 
 		int anchoTarjeta = (anchoContenido - 48) / 3;
@@ -439,5 +457,37 @@ public class HomeEmpresa extends JFrame {
 		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
 		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
 		boton.setIcon(new ImageIcon(imagenEscalada));
+	}
+	
+	private void colocarImagen(JLabel label, String ruta) {
+
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+
+		int anchoLabel = label.getWidth();
+		int altoLabel = label.getHeight();
+
+		int anchoImagen = icono.getIconWidth();
+		int altoImagen = icono.getIconHeight();
+
+		double escalaAncho = (double) anchoLabel / anchoImagen;
+		double escalaAlto = (double) altoLabel / altoImagen;
+
+		double escala = Math.max(escalaAncho, escalaAlto);
+
+		int nuevoAncho = (int) (anchoImagen * escala);
+		int nuevoAlto = (int) (altoImagen * escala);
+
+		Image imagenEscalada = icono.getImage().getScaledInstance(
+				nuevoAncho,
+				nuevoAlto,
+				Image.SCALE_SMOOTH
+				);
+
+		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+
+		label.setIcon(iconoEscalado);
+		label.setText("");
+		label.setHorizontalAlignment(JLabel.CENTER);
+		label.setVerticalAlignment(JLabel.CENTER);
 	}
 }

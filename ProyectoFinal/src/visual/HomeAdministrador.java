@@ -122,10 +122,10 @@ public class HomeAdministrador extends JFrame {
 			BotonRedond btnMenu = new BotonRedond("",25);
 			btnMenu.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					dispose();
 					BarraAdmin menu = new BarraAdmin();
 					menu.setModal(true);
 					menu.setVisible(true);
+					dispose();
 				}
 			});
 			btnMenu.setBackground(new Color(0, 0, 51));
@@ -562,4 +562,6 @@ public class HomeAdministrador extends JFrame {
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
+	
+	
 }

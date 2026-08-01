@@ -39,6 +39,7 @@ public class VerUserEmpresa extends JFrame {
 	private JLabel lblFotoFondo;
 	private Dimension dim;
 	private BotonRedond btnVolver;
+	private JLabel lblNewLabel_8;
 
 	/**
 	 * Launch the application.
@@ -79,6 +80,7 @@ public class VerUserEmpresa extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				BarraEmpresa menu = new BarraEmpresa();
 				menu.setVisible(true);
+				dispose();
 			}
 		});
 		btnMenu.setBackground(new Color(255, 255, 255));
@@ -131,6 +133,11 @@ public class VerUserEmpresa extends JFrame {
 		contentPane.add(txtRnc);
 		txtRnc.setColumns(10);
 		txtRnc.setFocusable(false);
+		
+		lblNewLabel_8 = new JLabel("Foto de Perfil");
+		lblNewLabel_8.setFont(new Font("Calibri", Font.PLAIN, Escalador.t(20)));
+		Escalador.b(lblNewLabel_8, 171, 59, 112, 20);
+		contentPane.add(lblNewLabel_8);
 
 		JLabel lblNewLabel_2 = new JLabel("Nombre");
 		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, Escalador.t(20)));

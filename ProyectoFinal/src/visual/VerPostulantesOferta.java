@@ -118,6 +118,12 @@ public class VerPostulantesOferta extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
+	
+		
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setBounds(1800, -9, 114, 88);
+		colocarImagen(lblNewLabel, "/img/iconoLogo_FondoOscuro.png");
+		contentPanel.add(lblNewLabel);
 		
 		JLabel lblNewLabel_1 = new JLabel("Ranking de Candidatos");
 		lblNewLabel_1.setForeground(new Color(255, 153, 0));
@@ -559,6 +565,7 @@ public class VerPostulantesOferta extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				BarraEmpresa menu = new BarraEmpresa();
 				menu.setVisible(true);
+				dispose();
 			}
 		});
 		botonRedond.setOpaque(false);

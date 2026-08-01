@@ -8,8 +8,10 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -18,6 +20,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import logico.BolsaEmpleo;
 import logico.Empresa;
@@ -77,7 +80,7 @@ public class VerOfertasEmpresa extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		dim = getToolkit().getScreenSize();
-		setSize(dim.width, dim.height);
+		setSize(dim.width, dim.height - 55);
 		setLocationRelativeTo(null);
 
 		JLayeredPane layeredPane = new JLayeredPane();
@@ -96,6 +99,21 @@ public class VerOfertasEmpresa extends JFrame {
 		construirTarjetas(panel, margen, anchoContenido);
 		construirBusqueda(panel, margen, anchoContenido);
 		construirContenido(panel, margen, anchoContenido);
+		
+		BotonRedond botonRedond = new BotonRedond(" \u2190  Volver", 30);
+		botonRedond.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				HomeEmpresa volver = new HomeEmpresa();
+				volver.setVisible(true);
+				dispose();
+			}
+		});
+		botonRedond.setForeground(new Color(0, 0, 51));
+		botonRedond.setFont(new Font("Calibri", Font.PLAIN, 20));
+		botonRedond.setColorHover(new Color(255, 220, 183));
+		botonRedond.setBackground(new Color(255, 235, 215));
+		botonRedond.setBounds(40, 908, 220, 50);
+		panel.add(botonRedond);
 
 		cargarDatos();
 	}
@@ -103,20 +121,21 @@ public class VerOfertasEmpresa extends JFrame {
 	private void construirHeader(JPanel panel, int margen, int anchoContenido) {
 		JPanel panelHeader = new JPanel();
 		panelHeader.setBackground(new Color(0, 0, 51));
-		panelHeader.setBounds(0, 0, dim.width, 70);
+		panelHeader.setBounds(0, 0, 1920, 90);
 		panel.add(panelHeader);
 		panelHeader.setLayout(null);
 
 		BotonRedond btnAtras = new BotonRedond("", 18);
 		btnAtras.setBackground(new Color(0, 0, 51));
-		btnAtras.setBounds(20, 12, 46, 46);
+		btnAtras.setBounds(12, 26, 46, 46);
 		btnAtras.setBorderPainted(false);
 		btnAtras.setContentAreaFilled(false);
 		btnAtras.setFocusPainted(false);
 		btnAtras.setOpaque(false);
+		colocarIconoBoton(btnAtras,"/img/menu-dots-vertical(White).png",25,25);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				HomeEmpresa home = new HomeEmpresa();
+				BarraAdmin home = new BarraAdmin();
 				home.setVisible(true);
 				dispose();
 			}
@@ -124,9 +143,9 @@ public class VerOfertasEmpresa extends JFrame {
 		panelHeader.add(btnAtras);
 
 		JLabel lblTitulo = new JLabel("Mis Ofertas Publicadas");
-		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 35));
 		lblTitulo.setForeground(new Color(30, 144, 255));
-		lblTitulo.setBounds(74, 22, 400, 30);
+		lblTitulo.setBounds(74, 37, 400, 30);
 		panelHeader.add(lblTitulo);
 
 		String nombreEmpresa = "Mi Empresa";
@@ -140,10 +159,15 @@ public class VerOfertasEmpresa extends JFrame {
 		panelHeader.add(lblChevron);
 
 		JLabel lblNombreEmpresa = new JLabel(nombreEmpresa);
-		lblNombreEmpresa.setFont(new Font("Calibri", Font.PLAIN, 16));
+		lblNombreEmpresa.setFont(new Font("Calibri", Font.BOLD, 24));
 		lblNombreEmpresa.setForeground(Color.WHITE);
-		lblNombreEmpresa.setBounds(dim.width - 66 - anchoNombre, 26, anchoNombre, 20);
+		lblNombreEmpresa.setBounds(1738, 52, anchoNombre, 20);
 		panelHeader.add(lblNombreEmpresa);
+		
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setBounds(1784, 0, 114, 88);
+		colocarImagen(lblNewLabel, "/img/iconoLogo_FondoOscuro.png");
+		panelHeader.add(lblNewLabel);
 	}
 
 	private void construirTarjetas(JPanel panel, int margen, int anchoContenido) {
@@ -256,7 +280,7 @@ public class VerOfertasEmpresa extends JFrame {
 
 		PanelConSombra panelContenedor = new PanelConSombra(20);
 		panelContenedor.setBackground(Color.WHITE);
-		panelContenedor.setBounds(margen, yContenido, anchoContenido, altoContenido);
+		panelContenedor.setBounds(40, 296, 1840, 606);
 		panel.add(panelContenedor);
 		panelContenedor.setLayout(new CardLayout(0, 0));
 
@@ -278,14 +302,14 @@ public class VerOfertasEmpresa extends JFrame {
 		lblIlustracion.setBounds(0, 40, 1, 1);
 		panelVacio.add(lblIlustracion);
 
-		JLabel lblTitulo = new JLabel("Aun no has publicado ninguna oferta");
+		JLabel lblTitulo = new JLabel("A\u00FAn no has publicado ninguna oferta");
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
 		lblTitulo.setForeground(new Color(0, 0, 51));
 		lblTitulo.setBounds(919, 361, 1, 1);
 		panelVacio.add(lblTitulo);
 
-		JLabel lblSubtitulo = new JLabel("Cuando publiques una nueva oferta aparecera aqui para que puedas gestionarla facilmente.");
+		JLabel lblSubtitulo = new JLabel("Cuando publiques una nueva oferta aparecer\u00E1 aqu\u00ED para que puedas gestionarla facilmente.");
 		lblSubtitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSubtitulo.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblSubtitulo.setForeground(new Color(130, 130, 130));
@@ -306,36 +330,39 @@ public class VerOfertasEmpresa extends JFrame {
 	}
 
 	private JPanel crearTabla() {
-		JPanel panelTabla = new JPanel();
-		panelTabla.setOpaque(false);
-		panelTabla.setLayout(new BorderLayout(0, 0));
-		
-		JScrollPane scrollPane = new JScrollPane();
-		panelTabla.add(scrollPane, BorderLayout.EAST);
-		
-		table = new JTable();
-		panelTabla.add(table, BorderLayout.CENTER);
-		return panelTabla;
+	    JPanel panelTabla = new JPanel();
+	    panelTabla.setOpaque(false);
+	    panelTabla.setLayout(new BorderLayout(0, 0));
+
+	    table = new JTable();
+	    table.setFont(new Font("Calibri", Font.PLAIN, 15));
+	    table.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 16));
+
+	    JScrollPane scrollPane = new JScrollPane(table);
+	    scrollPane.setBorder(null);
+	    panelTabla.add(scrollPane, BorderLayout.CENTER);
+
+	    return panelTabla;
 	}
 
 	private void cargarDatos() {
-		ArrayList<Oferta> lasOfertas = new ArrayList<Oferta>();
-		if (empresa != null) {
-			lasOfertas = empresa.getLasOfertas();
-		}
+	    ArrayList<Oferta> lasOfertas = new ArrayList<Oferta>();
+	    if (empresa != null) {
+	        lasOfertas = empresa.getLasOfertas();
+	    }
 
-		if (lasOfertas.isEmpty()) {
-			btnPublicarOferta.setText("Publicar nueva oferta");
-			pnlVacio.setVisible(true);
-			pnlTabla.setVisible(false);
-			return;
-		}
+	    if (lasOfertas.isEmpty()) {
+	        btnPublicarOferta.setText("Publicar nueva oferta");
+	        pnlVacio.setVisible(true);
+	        pnlTabla.setVisible(false);
+	        return;
+	    }
 
-		btnPublicarOferta.setText("A\u00F1adir oferta");
-		pnlVacio.setVisible(false);
-		pnlTabla.setVisible(true);
+	    table.setModel(crearModeloOfertas());  
+	    btnPublicarOferta.setText("Añadir oferta");
+	    pnlVacio.setVisible(false);
+	    pnlTabla.setVisible(true);
 	}
-
 	private int contarTotalOfertas() {
 		if (empresa == null) {
 			return 0;
@@ -372,6 +399,26 @@ public class VerOfertasEmpresa extends JFrame {
 			registrarOferta.setVisible(true);
 		}
 	}
+	
+	private DefaultTableModel crearModeloOfertas() {
+	    DefaultTableModel modelo = new DefaultTableModel(new Object[][] {},new String[] { "Puesto", "Fecha Publicación", "Solicitudes", "Estado" }) {
+	        public boolean isCellEditable(int fila, int columna) {
+	            return false;
+	        }
+	    };
+	    DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
+	    if (empresa != null) {
+	        for (Oferta oferta : empresa.getLasOfertas()) {
+	            modelo.addRow(new Object[] {
+	                oferta.getPuesto(),
+	                oferta.getFechaPublicacion().format(formato),
+	                0,
+	                formatearEstado(oferta.getEstado())
+	            });
+	        }
+	    }
+	    return modelo;
+	}
 
 	private void colocarImagen(JLabel label, String ruta) {
 		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
@@ -399,5 +446,9 @@ public class VerOfertasEmpresa extends JFrame {
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
 	
-	
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	    boton.setIcon(new ImageIcon(imagenEscalada));
+	}
 }

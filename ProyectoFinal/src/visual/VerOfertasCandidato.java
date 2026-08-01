@@ -32,6 +32,7 @@ import javax.swing.table.TableRowSorter;
 import logico.BolsaEmpleo;
 import logico.Jornada;
 import logico.Oferta;
+import logico.Persona;
 import logico.TipoPersona;
 import logico.EstadoOferta;
 
@@ -49,6 +50,7 @@ public class VerOfertasCandidato extends JFrame {
     private TableRowSorter<DefaultTableModel> sorterOfertas;
     private ArrayList<Oferta> listaOfertas;
     private BotonRedond btnVolver;
+    private Persona candidato;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -64,6 +66,9 @@ public class VerOfertasCandidato extends JFrame {
     }
 
     public VerOfertasCandidato() {
+    	if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
+			candidato = BolsaEmpleo.getInstancia().getLoginUser().getPersona();
+		}
         setTitle("Ofertas de Empleo");
         Utilidades.aplicarIcono(this);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -119,34 +124,47 @@ public class VerOfertasCandidato extends JFrame {
         panelHeader.setBounds(0, 0, 1920, 90);
         panel.add(panelHeader);
         panelHeader.setLayout(null);
+        
+        String nombreCondidato = "Nombre";
+		if (candidato != null) {
+			nombreCondidato = candidato.getNombre();
+		}
+		int anchoNombre = 14 * nombreCondidato.length() + 20;
+
+		JLabel lblNombreEmpresa = new JLabel(nombreCondidato);
+		lblNombreEmpresa.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblNombreEmpresa.setForeground(Color.WHITE);
+		lblNombreEmpresa.setBounds(1708, 36, anchoNombre, 20);
+		panelHeader.add(lblNombreEmpresa);
+	
 
         BotonRedond btnAtras = new BotonRedond("", 18);
-        btnAtras.setBackground(new Color(0, 0, 51));
-        btnAtras.setBounds(12, 20, 46, 46);
-        btnAtras.setBorderPainted(false);
-        btnAtras.setContentAreaFilled(false);
-        btnAtras.setFocusPainted(false);
-        btnAtras.setOpaque(false);
-        colocarIconoBoton(btnAtras, "/img/menu-dots-vertical(White).png", 25, 25);
-        btnAtras.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                HomeCandidato home = new HomeCandidato();
-                home.setVisible(true);
-                dispose();
-            }
-        });
-        panelHeader.add(btnAtras);
+		btnAtras.setBackground(new Color(0, 0, 51));
+		btnAtras.setBounds(12, 26, 46, 46);
+		btnAtras.setBorderPainted(false);
+		btnAtras.setContentAreaFilled(false);
+		btnAtras.setFocusPainted(false);
+		btnAtras.setOpaque(false);
+		colocarIconoBoton(btnAtras,"/img/menu-dots-vertical(White).png",25,25);
+		btnAtras.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BarraAdmin home = new BarraAdmin();
+				home.setVisible(true);
+				dispose();
+			}
+		});
+		panelHeader.add(btnAtras);
 
         JLabel lblTitulo = new JLabel("Ofertas de Empleo");
-        lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
-        lblTitulo.setForeground(Color.WHITE);
+        lblTitulo.setFont(new Font("Calibri", Font.BOLD, 35));
+        lblTitulo.setForeground(new Color(255, 153, 0));
         lblTitulo.setBounds(77, 28, 600, 30);
         panelHeader.add(lblTitulo);
-
-        JLabel lblLogo = new JLabel("");
-        lblLogo.setBounds(1805, 0, 86, 90);
-        colocarImagen(lblLogo, "/img/iconoLogo_FondoOscuro.png");
-        panelHeader.add(lblLogo);
+        
+        JLabel iconoLogo = new JLabel("");
+        iconoLogo.setBounds(1784, 0, 114, 88);
+		colocarImagen(iconoLogo, "/img/iconoLogo_FondoOscuro.png");
+		panelHeader.add(iconoLogo);
     }
 
     private void construirFiltros(JPanel panel, int margen, int anchoContenido) {
@@ -437,23 +455,30 @@ public class VerOfertasCandidato extends JFrame {
     }
 
     private void colocarImagen(JLabel label, String ruta) {
-        ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-        int anchoLabel = label.getWidth();
-        int altoLabel = label.getHeight();
-        int anchoImagen = icono.getIconWidth();
-        int altoImagen = icono.getIconHeight();
-        double escalaAncho = (double) anchoLabel / anchoImagen;
-        double escalaAlto = (double) altoLabel / altoImagen;
-        double escala = Math.max(escalaAncho, escalaAlto);
-        int nuevoAncho = (int) (anchoImagen * escala);
-        int nuevoAlto = (int) (altoImagen * escala);
-        Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
-        ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-        label.setIcon(iconoEscalado);
-        label.setText("");
-        label.setHorizontalAlignment(JLabel.CENTER);
-        label.setVerticalAlignment(JLabel.CENTER);
-    }
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+
+		int anchoLabel = label.getWidth();
+		int altoLabel = label.getHeight();
+
+		int anchoImagen = icono.getIconWidth();
+		int altoImagen = icono.getIconHeight();
+
+		double escalaAncho = (double) anchoLabel / anchoImagen;
+		double escalaAlto = (double) altoLabel / altoImagen;
+
+		double escala = Math.max(escalaAncho, escalaAlto);
+
+		int nuevoAncho = (int) (anchoImagen * escala);
+		int nuevoAlto = (int) (altoImagen * escala);
+
+		Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+
+		label.setIcon(iconoEscalado);
+		label.setText("");
+		label.setHorizontalAlignment(JLabel.CENTER);
+		label.setVerticalAlignment(JLabel.CENTER);
+	}
 
     private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
         ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
