@@ -21,7 +21,7 @@ public abstract class Persona implements Serializable {
 	private boolean licenciaConducir;
 	private boolean estadoEmpleo;
 	private Usuario user;
-	private ArrayList<SolicitudEmpleo> solicitudes;
+	private SolicitudEmpleo solicitud;
 	private int yearsExp;
 
 	
@@ -42,7 +42,6 @@ public abstract class Persona implements Serializable {
 		this.licenciaConducir = licenciaConducir;
 		this.estadoEmpleo = estadoEmpleo;
 		this.user = user;
-		solicitudes = new ArrayList<>();
 		this.yearsExp = yearsExp;
 
 	}
@@ -121,11 +120,11 @@ public abstract class Persona implements Serializable {
 	public String getId() {
 		return id;
 	}
-	public ArrayList<SolicitudEmpleo> getSolicitudes() {
-		return solicitudes;
+	public SolicitudEmpleo getSolicitud() {
+		return solicitud;
 	}
-	public void setSolicitudes(ArrayList<SolicitudEmpleo> solicitudes) {
-		this.solicitudes = solicitudes;
+	public void setSolicitudes(SolicitudEmpleo solicitud) {
+		this.solicitud = solicitud;
 	}
 	public int getYearsExp() {
 		return yearsExp;
@@ -134,21 +133,6 @@ public abstract class Persona implements Serializable {
 		this.yearsExp = yearsExp;
 	}
 
-	
-	public SolicitudEmpleo buscarSolicitud(String id) {
-		int ind = 0;
-		boolean encontrado = false;
-		SolicitudEmpleo aux = null;
-		
-		while(!encontrado && ind < solicitudes.size()) {
-			if(solicitudes.get(ind).getId().equals(id)) {
-				aux = solicitudes.get(ind);
-				encontrado = true;
-			}
-			ind++;
-		}
-		return aux;
-	}
 	
 	
 }

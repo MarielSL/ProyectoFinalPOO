@@ -110,7 +110,7 @@ public class BolsaEmpleo implements Serializable {
 
 	public void regSolicitud(SolicitudEmpleo solicitud, Persona persona) {
 
-		persona.getSolicitudes().add(solicitud);
+		persona.setSolicitudes(solicitud);
 		solicitudes.add(solicitud);
 		generadorIdSolicitud++;
 		guardarDatos();
@@ -374,7 +374,29 @@ public class BolsaEmpleo implements Serializable {
 		usuarios.set(indexUser, user);
 		guardarDatos();
 	}
+	
+	public void modSolicitud(SolicitudEmpleo solicitud) {
+		int indexSolicitud = buscarIndexSolicitud(solicitud.getId());
+		solicitudes.set(indexSolicitud, solicitud);
+		loginUser.getPersona().setSolicitudes(solicitud);
+		guardarDatos();
+	}
+	
+	private int buscarIndexSolicitud(String idSolicitud) {
+		int index = -1;
+		boolean encontrado = false;
+		int ind = 0;
 
+		while(!encontrado && ind < solicitudes.size()) {
+			if(solicitudes.get(ind).getId().equals(idSolicitud)){
+				index = ind;
+				encontrado = true;
+			}
+			ind++;
+		}
+
+		return index;
+	}
 	private int buscarUsuarioindex(String idUsuario) {
 		int index = -1;
 		boolean encontrado = false;

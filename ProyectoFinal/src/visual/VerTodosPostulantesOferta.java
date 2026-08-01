@@ -207,7 +207,7 @@ public class VerTodosPostulantesOferta extends JFrame {
 					}
 					else {
 						String IdSolicitud = BolsaEmpleo.getInstancia().idSolicitud(postulantesMostrados.get(index));
-						SolicitudEmpleo solicitud = postulantesMostrados.get(index).buscarSolicitud(IdSolicitud);
+						SolicitudEmpleo solicitud = postulantesMostrados.get(index).getSolicitud();
 						VerPostulante verPostulante = new VerPostulante(postulantesMostrados.get(index),oferta,solicitud);
 						setVisible(true);
 					}

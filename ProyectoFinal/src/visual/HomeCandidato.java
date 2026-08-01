@@ -206,7 +206,7 @@ public class HomeCandidato extends JFrame {
 			panelMayorCoincidencia.add(lblMayorCoincidenciaValor);
 		}
 
-		JLabel lblTituloGraficos = new JLabel("Oportunidades / ofertas destacadas");
+		JLabel lblTituloGraficos = new JLabel("Oportunidades Destacadas");
 		lblTituloGraficos.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTituloGraficos.setForeground(new Color(0, 0, 51));
 		lblTituloGraficos.setFont(new Font("Calibri", Font.BOLD, 26));
