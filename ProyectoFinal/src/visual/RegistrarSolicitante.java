@@ -110,6 +110,7 @@ public class RegistrarSolicitante extends JDialog {
 
 		setBounds(0, 0, dim.width, dim.height-55);
 		setLocationRelativeTo(null);
+		
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);

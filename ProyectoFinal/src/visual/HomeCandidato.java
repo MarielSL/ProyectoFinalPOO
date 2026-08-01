@@ -68,6 +68,7 @@ public class HomeCandidato extends JFrame {
 		dim = getToolkit().getScreenSize();
 		setSize(dim.width, dim.height);
 		setLocationRelativeTo(null);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
 		JLayeredPane layeredPane = new JLayeredPane();
 		contentPane.add(layeredPane);
