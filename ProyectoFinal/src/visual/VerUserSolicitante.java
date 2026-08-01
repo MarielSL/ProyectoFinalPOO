@@ -284,6 +284,7 @@ public class VerUserSolicitante extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				BarraSolicitante menu = new BarraSolicitante();
 				menu.setVisible(true);
+				dispose();
 			}
 		});
 		btnMenu.setBackground(new Color(255, 255, 255));

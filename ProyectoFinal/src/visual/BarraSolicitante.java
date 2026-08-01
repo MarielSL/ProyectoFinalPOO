@@ -9,6 +9,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import logico.BolsaEmpleo;
 import logico.Usuario;
 
 import javax.swing.JLabel;
@@ -27,6 +28,7 @@ public class BarraSolicitante extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	Dimension dim = getToolkit().getScreenSize();
 	private Usuario user;
+
 
 	/**
 	 * Launch the application.
@@ -55,16 +57,19 @@ public class BarraSolicitante extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		
+		user = BolsaEmpleo.getInstancia().getLoginUser();
+
 		String nombreUser = "Nombre";
-		if (user != null) {
-			nombreUser = user.getPersona().getNombre() + user.getPersona().getApellido();
+		if (user != null && user.getEmpresa() != null) {
+		    nombreUser = user.getEmpresa().getNombre();
 		}
-		
+
 		String correoUser = "correoelectronico@hotmail.com";
 		if (user != null) {
-			correoUser = user.getCorreo();
+		    correoUser = user.getCorreo();
 		}
-		
+	
+			
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 255, 255));
 		panel.setForeground(new Color(255, 255, 255));
@@ -72,6 +77,21 @@ public class BarraSolicitante extends JDialog {
 		panel.setLayout(null);
 		
 		BotonRedond btnPerfil = new BotonRedond(nombreUser,25);
+		btnPerfil.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+				VerUserSolicitante ver = new VerUserSolicitante();
+				setModal(true);
+				ver.setVisible(true);
+				
+			}
+		});
+		
+		JLabel lblNewLabel_2 = new JLabel(correoUser);
+		lblNewLabel_2.setForeground(new Color(105, 105, 105));
+		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 13));
+		lblNewLabel_2.setBounds(160, 907, 194, 30);
+		panel.add(lblNewLabel_2);
 		btnPerfil.setBackground(new Color(255, 255, 255));
 		btnPerfil.setFont(new Font("Calibri", Font.PLAIN, 20));
 		btnPerfil.setHorizontalAlignment(SwingConstants.LEFT);
@@ -79,17 +99,11 @@ public class BarraSolicitante extends JDialog {
 		btnPerfil.setColorHover(new Color(255, 153, 0));
 		panel.add(btnPerfil);
 		
-		JLabel lblNewLabel_1 = new JLabel("Solicitante");
+		JLabel lblNewLabel_1 = new JLabel("Candidato");
 		lblNewLabel_1.setForeground(new Color(255, 153, 0));
 		lblNewLabel_1.setFont(new Font("Calibri", Font.PLAIN, 20));
 		lblNewLabel_1.setBounds(12, 128, 108, 16);
 		panel.add(lblNewLabel_1);
-		
-		JLabel lblNewLabel_2 = new JLabel("correoelectronico@hotmail.com");
-		lblNewLabel_2.setForeground(new Color(105, 105, 105));
-		lblNewLabel_2.setFont(new Font("Calibri", Font.PLAIN, 13));
-		lblNewLabel_2.setBounds(160, 907, 194, 30);
-		panel.add(lblNewLabel_2);
 		
 		JLabel iconoLogo = new JLabel("");
 		iconoLogo.setBounds(33, 27, 321, 95);
@@ -114,6 +128,10 @@ public class BarraSolicitante extends JDialog {
 		BotonConSombra btnDashboard = new BotonConSombra("Dashboard", 25);
 		btnDashboard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				dispose();
+				HomeCandidato ver = new HomeCandidato();
+				setModal(true);
+				ver.setVisible(true);
 			}
 		});
 		btnDashboard.setBackground(new Color(255, 255, 255));

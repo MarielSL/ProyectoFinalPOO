@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -463,6 +464,23 @@ public class VerMiSolicitudLaboral extends JFrame {
 		btnVolver.setBackground(new Color(255, 235, 215));
 		btnVolver.setBounds(26, 860, 220, 50);
 		panelFondo.add(btnVolver);
+		
+		BotonRedond btnNewButton = new BotonRedond("", 18);
+		btnNewButton.setBackground(new Color(255, 255, 255));
+		btnNewButton.setBounds(0, 0, 46, 46);
+		btnNewButton.setBorderPainted(false);
+		btnNewButton.setContentAreaFilled(false);
+		btnNewButton.setFocusPainted(false);
+		btnNewButton.setOpaque(false);
+		colocarIconoBoton(btnNewButton,"/img/menu-dots-vertical (Blue).png",25,25);
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BarraSolicitante home = new BarraSolicitante();
+				home.setVisible(true);
+				dispose();
+			}
+		});
+		panelFondo.add(btnNewButton);
 
 		if(user != null && user.getPersona() != null && user.getPersona().getSolicitud() != null) {
 			Persona candidato = user.getPersona();
@@ -526,5 +544,11 @@ public class VerMiSolicitudLaboral extends JFrame {
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 		label.setIcon(iconoEscalado);
 		label.repaint();
+	}
+	
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	    boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }
