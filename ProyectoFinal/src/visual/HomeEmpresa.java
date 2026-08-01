@@ -184,6 +184,7 @@ public class HomeEmpresa extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					BarraEmpresa menu = new BarraEmpresa();
 					menu.setVisible(true);
+					dispose();
 				}
 			});
 			btnMenu.setBackground(new Color(0, 0, 51));

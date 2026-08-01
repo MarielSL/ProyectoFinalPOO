@@ -559,6 +559,7 @@ public class VerPostulantesOferta extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				BarraEmpresa menu = new BarraEmpresa();
 				menu.setVisible(true);
+				dispose();
 			}
 		});
 		botonRedond.setOpaque(false);

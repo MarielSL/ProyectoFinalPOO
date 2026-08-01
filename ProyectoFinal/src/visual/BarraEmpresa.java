@@ -9,6 +9,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import logico.BolsaEmpleo;
 import logico.Usuario;
 
 import javax.swing.JSeparator;
@@ -58,14 +59,16 @@ public class BarraEmpresa extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
+			user = BolsaEmpleo.getInstancia().getLoginUser();
+
 			String nombreUser = "Nombre";
-			if (user != null) {
-				nombreUser = user.getPersona().getNombre() + user.getPersona().getApellido();
+			if (user != null && user.getEmpresa() != null) {
+			    nombreUser = user.getEmpresa().getNombre();
 			}
-			
+
 			String correoUser = "correoelectronico@hotmail.com";
 			if (user != null) {
-				correoUser = user.getCorreo();
+			    correoUser = user.getCorreo();
 			}
 			
 			JPanel panel = new JPanel();
@@ -82,9 +85,11 @@ public class BarraEmpresa extends JDialog {
 			BotonRedond btnVerPerfil = new BotonRedond(nombreUser,25);
 			btnVerPerfil.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					VerUserEmpresa perfil = new VerUserEmpresa();
-					perfil.setVisible(true);
 					dispose();
+					VerUserEmpresa perfil = new VerUserEmpresa();
+					setModal(true);
+					perfil.setVisible(true);
+					
 				}
 			});
 			btnVerPerfil.setBackground(new Color(255, 255, 255));
@@ -124,8 +129,9 @@ public class BarraEmpresa extends JDialog {
 			btnDashboard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				HomeCandidato soli = new HomeCandidato();
-				soli.setVisible(true);
+				HomeEmpresa ver = new HomeEmpresa();
+				setModal(true);
+				ver.setVisible(true);
 				
 		}
 	});
@@ -138,6 +144,14 @@ public class BarraEmpresa extends JDialog {
 			panelBotones.add(btnDashboard);
 			
 			BotonConSombra btnMisOfertas = new BotonConSombra("Mis Solicitudes", 25);
+			btnMisOfertas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+					VerOfertasEmpresa ver = new VerOfertasEmpresa();
+					setModal(true);
+					ver.setVisible(true);
+				}
+			});
 			btnMisOfertas.setText("Mis Ofertas");
 			btnMisOfertas.setHorizontalAlignment(SwingConstants.LEFT);
 			btnMisOfertas.setFont(new Font("Calibri", Font.PLAIN, 20));
@@ -149,10 +163,13 @@ public class BarraEmpresa extends JDialog {
 			BotonConSombra btnSolicitudes = new BotonConSombra("Dashboard", 25);
 			btnSolicitudes.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
+					dispose();
+					VerPostulantesOferta ver = new VerPostulantesOferta(null);
+					setModal(true);
+					ver.setVisible(true);
 				}
 			});
-			btnSolicitudes.setText("Solicitudes Recibidas");
+			btnSolicitudes.setText("Candidatos");
 			btnSolicitudes.setHorizontalAlignment(SwingConstants.LEFT);
 			btnSolicitudes.setFont(new Font("Calibri", Font.PLAIN, 20));
 			btnSolicitudes.setColorHover(new Color(135, 206, 250));
@@ -174,6 +191,30 @@ public class BarraEmpresa extends JDialog {
 			iconoDashboard.setBounds(61, 35, 30, 30);
 			colocarImagen(iconoDashboard, "/img/hogar.png");
 			panelBotones.add(iconoDashboard);
+			
+			
+			JLabel lblNewLabel = new JLabel("");
+			lblNewLabel.setBounds(61, 325, 30, 30);
+			colocarImagen(lblNewLabel, "/img/log_out.png");
+			panelBotones.add(lblNewLabel);
+			
+			BotonConSombra btncnsmbrCerrarSessin = new BotonConSombra("Dashboard", 25);
+			btncnsmbrCerrarSessin.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+					LogIn ver = new LogIn();
+					setModal(true);
+					ver.setVisible(true);
+				}
+			});
+			btncnsmbrCerrarSessin.setText("Cerrar Sessi\u00F3n");
+			btncnsmbrCerrarSessin.setHorizontalAlignment(SwingConstants.LEFT);
+			btncnsmbrCerrarSessin.setFont(new Font("Calibri", Font.PLAIN, 20));
+			btncnsmbrCerrarSessin.setColorHover(new Color(135, 206, 250));
+			btncnsmbrCerrarSessin.setBackground(Color.WHITE);
+			btncnsmbrCerrarSessin.setBounds(120, 310, 221, 45);
+			panelBotones.add(btncnsmbrCerrarSessin);
+			
 
 		}
 	}
