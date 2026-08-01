@@ -32,6 +32,7 @@ import javax.swing.table.TableRowSorter;
 import logico.BolsaEmpleo;
 import logico.Jornada;
 import logico.Oferta;
+import logico.Persona;
 import logico.TipoPersona;
 import logico.EstadoOferta;
 
@@ -49,6 +50,7 @@ public class VerOfertasCandidato extends JFrame {
     private TableRowSorter<DefaultTableModel> sorterOfertas;
     private ArrayList<Oferta> listaOfertas;
     private BotonRedond btnVolver;
+    private Persona candidato;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -64,6 +66,9 @@ public class VerOfertasCandidato extends JFrame {
     }
 
     public VerOfertasCandidato() {
+    	if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
+			candidato = BolsaEmpleo.getInstancia().getLoginUser().getPersona();
+		}
         setTitle("Ofertas de Empleo");
         Utilidades.aplicarIcono(this);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -119,6 +124,19 @@ public class VerOfertasCandidato extends JFrame {
         panelHeader.setBounds(0, 0, 1920, 90);
         panel.add(panelHeader);
         panelHeader.setLayout(null);
+        
+        String nombreCondidato = "Nombre";
+		if (candidato != null) {
+			nombreCondidato = candidato.getNombre();
+		}
+		int anchoNombre = 14 * nombreCondidato.length() + 20;
+
+		JLabel lblNombreEmpresa = new JLabel(nombreCondidato);
+		lblNombreEmpresa.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblNombreEmpresa.setForeground(Color.WHITE);
+		lblNombreEmpresa.setBounds(1708, 36, anchoNombre, 20);
+		panelHeader.add(lblNombreEmpresa);
+	
 
         BotonRedond btnAtras = new BotonRedond("", 18);
 		btnAtras.setBackground(new Color(0, 0, 51));
@@ -143,10 +161,10 @@ public class VerOfertasCandidato extends JFrame {
         lblTitulo.setBounds(77, 28, 600, 30);
         panelHeader.add(lblTitulo);
         
-        JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setBounds(1784, 0, 114, 88);
-		colocarImagen(lblNewLabel, "/img/iconoLogo_FondoOscuro.png");
-		panelHeader.add(lblNewLabel);
+        JLabel iconoLogo = new JLabel("");
+        iconoLogo.setBounds(1784, 0, 114, 88);
+		colocarImagen(iconoLogo, "/img/iconoLogo_FondoOscuro.png");
+		panelHeader.add(iconoLogo);
     }
 
     private void construirFiltros(JPanel panel, int margen, int anchoContenido) {

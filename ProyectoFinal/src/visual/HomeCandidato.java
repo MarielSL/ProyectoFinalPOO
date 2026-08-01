@@ -88,6 +88,23 @@ public class HomeCandidato extends JFrame {
 			panelMenu.setBounds(26, 20, anchoContenido, 70);
 			panel.add(panelMenu);
 			panelMenu.setLayout(null);
+			
+			String nombreCondidato = "Nombre";
+			if (candidato != null) {
+				nombreCondidato = candidato.getNombre();
+			}
+			int anchoNombre = 14 * nombreCondidato.length() + 20;
+
+			JLabel lblNombreEmpresa = new JLabel(nombreCondidato);
+			lblNombreEmpresa.setFont(new Font("Calibri", Font.BOLD, 24));
+			lblNombreEmpresa.setForeground(Color.WHITE);
+			lblNombreEmpresa.setBounds(1668, 25, anchoNombre, 20);
+			panelMenu.add(lblNombreEmpresa);
+			
+			JLabel lblNewLabel = new JLabel("");
+			lblNewLabel.setBounds(1741, -9, 114, 88);
+			colocarImagen(lblNewLabel, "/img/iconoLogo_FondoOscuro.png");
+			panelMenu.add(lblNewLabel);
 
 			JLabel lblInicio = new JLabel("Inicio");
 			lblInicio.setHorizontalAlignment(SwingConstants.CENTER);
@@ -324,5 +341,37 @@ public class HomeCandidato extends JFrame {
 		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
 		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
 		boton.setIcon(new ImageIcon(imagenEscalada));
+	}
+	
+	private void colocarImagen(JLabel label, String ruta) {
+
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+
+		int anchoLabel = label.getWidth();
+		int altoLabel = label.getHeight();
+
+		int anchoImagen = icono.getIconWidth();
+		int altoImagen = icono.getIconHeight();
+
+		double escalaAncho = (double) anchoLabel / anchoImagen;
+		double escalaAlto = (double) altoLabel / altoImagen;
+
+		double escala = Math.max(escalaAncho, escalaAlto);
+
+		int nuevoAncho = (int) (anchoImagen * escala);
+		int nuevoAlto = (int) (altoImagen * escala);
+
+		Image imagenEscalada = icono.getImage().getScaledInstance(
+				nuevoAncho,
+				nuevoAlto,
+				Image.SCALE_SMOOTH
+				);
+
+		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+
+		label.setIcon(iconoEscalado);
+		label.setText("");
+		label.setHorizontalAlignment(JLabel.CENTER);
+		label.setVerticalAlignment(JLabel.CENTER);
 	}
 }

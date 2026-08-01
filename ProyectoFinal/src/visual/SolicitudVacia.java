@@ -75,14 +75,14 @@ public class SolicitudVacia extends JFrame {
 		
 		JLabel label = new JLabel("Mi Solicitud Laboral");
 		label.setForeground(new Color(0, 0, 51));
-		label.setFont(new Font("Calibri", Font.BOLD, 50));
-		label.setBounds(106, 96, 440, 45);
+		label.setFont(new Font("Calibri", Font.BOLD, 45));
+		label.setBounds(106, 131, 440, 45);
 		contentPane.add(label);
 		
 		JLabel label_1 = new JLabel("Define lo que buscas y conecta con oportunidades ideales.");
 		label_1.setForeground(SystemColor.textInactiveText);
-		label_1.setFont(new Font("Calibri", Font.PLAIN, 25));
-		label_1.setBounds(106, 155, 611, 25);
+		label_1.setFont(new Font("Calibri", Font.PLAIN, 20));
+		label_1.setBounds(106, 173, 611, 25);
 		contentPane.add(label_1);
 		
 		PanelRedond panelRedond = new PanelRedond(30);
@@ -234,6 +234,11 @@ public class SolicitudVacia extends JFrame {
 		btnReg.setFont(new Font("Calibri", Font.BOLD, 26));
 		btnReg.setBounds(318, 878, 321, 50);
 		contentPane.add(btnReg);
+		
+		JLabel lblNewLabel_1 = new JLabel("Logo");
+		lblNewLabel_1.setBounds(108, 13, 277, 84);
+		colocarImagen(lblNewLabel_1,"/img/HireLink_logo_full.png");
+		contentPane.add(lblNewLabel_1);
 	}
 	
 	private void colocarImagen(JLabel label, String ruta) {

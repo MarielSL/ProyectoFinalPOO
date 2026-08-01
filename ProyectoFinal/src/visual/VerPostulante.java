@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import logico.BolsaEmpleo;
+import logico.Empresa;
 import logico.EstadoDecision;
 import logico.EstadoOferta;
 import logico.EstadoSolicitud;
@@ -72,6 +73,8 @@ public class VerPostulante extends JFrame {
 	private JPanel panel_Tecnico;
 	private JPanel panel_Obrero;
 	private JPanel panel_universitario;
+	private Empresa empresa;
+	private JLabel lblNewLabel_3;
 
 	/**
 	 * Launch the application.
@@ -93,6 +96,10 @@ public class VerPostulante extends JFrame {
 	 * Create the frame.
 	 */
 	public VerPostulante(Persona solicitante, Oferta oferta,SolicitudEmpleo solicitud) {
+		if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
+			empresa = BolsaEmpleo.getInstancia().getLoginUser().getEmpresa();
+		}
+		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(VerPostulante.class.getResource("/img/AppIconoFull.png")));
 		Utilidades.aplicarIcono(this);
 		setTitle("Ver Postulante");
@@ -106,15 +113,32 @@ public class VerPostulante extends JFrame {
 
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(0, 0, 51));
-		panel.setBounds(0, 0, 888, 65);
+		panel.setBounds(0, 0, 888, 85);
 		contentPane.add(panel);
 		panel.setLayout(null);
 
 		JLabel lblNewLabel = new JLabel("Ver Candidato");
 		lblNewLabel.setForeground(new Color(255, 153, 0));
 		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 30));
-		lblNewLabel.setBounds(350, 18, 187, 32);
+		lblNewLabel.setBounds(333, 31, 187, 32);
 		panel.add(lblNewLabel);
+		
+		String nombreEmpresa = "Mi Empresa";
+		if (empresa != null) {
+			nombreEmpresa = empresa.getNombre();
+		}
+		int anchoNombre = 14 * nombreEmpresa.length() + 20;
+
+		JLabel lblNombreEmpresa = new JLabel(nombreEmpresa);
+		lblNombreEmpresa.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblNombreEmpresa.setForeground(Color.WHITE);
+		lblNombreEmpresa.setBounds(728, 52, anchoNombre, 20);
+		panel.add(lblNombreEmpresa);
+		
+		JLabel iconoLogo = new JLabel("");
+		iconoLogo.setBounds(762, 0, 114, 88);
+		colocarImagen(iconoLogo, "/img/iconoLogo_FondoOscuro.png");
+		panel.add(iconoLogo);
 		
 		BotonRedond btnMenu = new BotonRedond("",25);
 		btnMenu.addActionListener(new ActionListener() {
@@ -125,7 +149,7 @@ public class VerPostulante extends JFrame {
 		});
 		btnMenu.setBackground(new Color(0, 0, 51));
 		btnMenu.setColorHover(new Color(0, 51, 102));
-		btnMenu.setBounds(10, 3, 60, 60);
+		btnMenu.setBounds(12, 12, 60, 60);
 		colocarIconoBoton(btnMenu,"/img/menu-dots-vertical(White).png",25,25);
 		btnMenu.setMargin(new Insets(0, 0, 0, 0));
 		btnMenu.setBorderPainted(false);
@@ -133,6 +157,8 @@ public class VerPostulante extends JFrame {
 		btnMenu.setFocusPainted(false);
 		btnMenu.setOpaque(false);
 		panel.add(btnMenu);
+		
+
 
 		lblFotoPerfil = new JLabel("New label");
 		lblFotoPerfil.setIcon(new ImageIcon(VerPostulante.class.getResource("/img/User Icon.png")));
