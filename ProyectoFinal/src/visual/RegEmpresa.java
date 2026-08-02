@@ -12,6 +12,10 @@ import logico.Empresa;
 import logico.TipoEmpresa;
 import logico.TipoUser;
 import logico.Usuario;
+import red.ConexionCliente;
+import red.DatosRegistroEmpresa;
+import red.Peticion;
+import red.Respuesta;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -455,71 +459,66 @@ public class RegEmpresa extends JDialog {
 
 	private void registrarEmpresaConHilo() {
 
-		String password = new String (passwordField.getPassword());
-		String name = txtNombEmpresa.getText().trim();
-		String rnc = txtRnc.getText().trim();
-		String telefono = txtTelefono.getText().trim();
-		String direccion = txtDireccion.getText().trim();
-		String correo = txtCorreo.getText().trim();
-		String username = txtUser.getText().trim();
-		TipoEmpresa tipoEmpresa = (TipoEmpresa) cbxTipo.getSelectedItem();
-		String foto = fotoPerfil.getRutaFotoPerfil();
+	    String password = new String(passwordField.getPassword());
+	    String name = txtNombEmpresa.getText().trim();
+	    String rnc = txtRnc.getText().trim();
+	    String telefono = txtTelefono.getText().trim();
+	    String direccion = txtDireccion.getText().trim();
+	    String correo = txtCorreo.getText().trim();
+	    String username = txtUser.getText().trim();
+	    TipoEmpresa tipoEmpresa = (TipoEmpresa) cbxTipo.getSelectedItem();
+	    String foto = fotoPerfil.getRutaFotoPerfil();
 
-		btnGuardar.setEnabled(false);
-		btnGuardar.setText("Registrando...");
+	    btnGuardar.setEnabled(false);
+	    btnGuardar.setText("Registrando...");
 
-		SwingWorker<Usuario, Void> hilo = new SwingWorker<Usuario, Void>(){
+	    SwingWorker<Usuario, Void> hilo = new SwingWorker<Usuario, Void>() {
 
-			@Override
-			protected Usuario doInBackground() throws Exception {
+	        @Override
+	        protected Usuario doInBackground() throws Exception {
 
-				if(BolsaEmpleo.getInstancia().isEmpressRep(rnc)) {
-					throw new IllegalArgumentException("Empresa ya registrada.");
-				}
+	            DatosRegistroEmpresa datos = new DatosRegistroEmpresa(
+	                    rnc, name, telefono, direccion, tipoEmpresa,
+	                    correo, username, password, foto);
 
-				if(!BolsaEmpleo.getInstancia().dispUsername(username)) {
-					throw new IllegalArgumentException("El usuario ya fue registrado.");
-				}
+	            Peticion peticion = new Peticion(Peticion.Tipo.REGISTRAR_EMPRESA, datos);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-				Empresa nuevaEmpresa = new Empresa("E-"+BolsaEmpleo.generadorIdEmpresa,rnc,name,telefono,direccion,tipoEmpresa,null);
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-				Usuario nuevoUser = new Usuario("U-"+BolsaEmpleo.generadorIdUser, username, password, correo, nuevaEmpresa, null, TipoUser.EMPRESA, foto);
+	            return (Usuario) respuesta.getDatos();
+	        }
 
-				nuevaEmpresa.setUser(nuevoUser);
+	        protected void done() {
 
-				BolsaEmpleo.getInstancia().regUser(nuevoUser);
-				BolsaEmpleo.getInstancia().regEmpresa(nuevaEmpresa);
-				BolsaEmpleo.getInstancia().setLoginUser(nuevoUser);
+	            try {
+	                Usuario nuevoUsuario = get();
 
+	                
+	                BolsaEmpleo.getInstancia().setLoginUser(nuevoUsuario);
 
-				return nuevoUser;
-			}
+	                JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Información", JOptionPane.INFORMATION_MESSAGE);
+	                dispose();
+	                HomeEmpresa home = new HomeEmpresa();
+	                home.setVisible(true);
+	                home.toFront();
 
-			protected void done() {
+	            } catch (Exception e) {
+	                Throwable causa = e.getCause();
+	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+	                e.printStackTrace();
+	                JOptionPane.showMessageDialog(RegEmpresa.this, mensaje != null ? mensaje : "No se pudo registrar la empresa.", "Error", JOptionPane.ERROR_MESSAGE);
 
-				try {
-					get();
+	            } finally {
+	                btnGuardar.setEnabled(true);
+	                btnGuardar.setText("Registrar ->");
+	            }
+	        }
 
-					JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Información", JOptionPane.INFORMATION_MESSAGE);
-					dispose();
-					HomeEmpresa home = new HomeEmpresa();
-					home.setVisible(true);
-					home.toFront();
-
-				}catch (Exception e) {
-					Throwable causa = e.getCause();
-					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(RegEmpresa.this, mensaje != null ? mensaje: "No se pudo registrar la empresa.","Error",JOptionPane.ERROR_MESSAGE);
-
-				}finally {
-					btnGuardar.setEnabled(true);
-					btnGuardar.setText("Registrar ->");
-				}
-			}
-
-		};
-		hilo.execute();
+	    };
+	    hilo.execute();
 	}
 
 	private void modificarEmpresaConHilo() {

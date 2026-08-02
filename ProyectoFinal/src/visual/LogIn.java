@@ -131,11 +131,7 @@ public class LogIn extends JDialog {
 
                     Usuario loginUser = (Usuario) respuesta.getDatos();
 
-                    // Puente temporal: guardamos el usuario logueado también en la
-                    // copia LOCAL de BolsaEmpleo del cliente, porque el resto de las
-                    // pantallas (HomeEmpresa, HomeCandidato, etc.) todavía leen
-                    // BolsaEmpleo.getInstancia().getLoginUser() directamente.
-                    // Esto se irá eliminando en las próximas tandas.
+
                     BolsaEmpleo.getInstancia().setLoginUser(loginUser);
 
                     if (loginUser.getTipoUser() == TipoUser.ADMINISTRADOR) {
