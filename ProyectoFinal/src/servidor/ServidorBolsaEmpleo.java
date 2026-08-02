@@ -611,6 +611,17 @@ public class ServidorBolsaEmpleo {
         } else if (candidato instanceof Obrero) {
             ((Obrero) candidato).setHabilidades(datos.getCampoExtra());
         }
+        
+        if(candidato.getSolicitud() != null) {
+        	if(candidato.isEstadoEmpleo()) {
+        		candidato.getSolicitud().setEstado(EstadoSolicitud.CERRADA);
+        	}
+        	else {
+        		candidato.getSolicitud().setEstado(EstadoSolicitud.ACTIVA);
+
+        	}
+        } 
+        
 
         bolsa.modSolicitante(candidato);
         bolsa.modUsuario(user);

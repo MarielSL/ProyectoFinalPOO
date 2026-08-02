@@ -1065,15 +1065,16 @@ public class RegistrarSolicitante extends JDialog {
 	                    name, apellido, cedula, fecha, telefono, direccion, sexo, ciudad,
 	                    mudarse, licencia, empleo, yearsExp, tipo, campoExtra,
 	                    correo, username, password, foto);
-
+	            
 	            Peticion peticion = new Peticion(Peticion.Tipo.MODIFICAR_SOLICITANTE, datos);
 	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
 	            if (!respuesta.isExito()) {
 	                throw new IllegalArgumentException(respuesta.getDatos().toString());
 	            }
-
+	            
 	            return (Persona) respuesta.getDatos();
+	            
 	        }
 
 	        protected void done() {
