@@ -1,5 +1,6 @@
 package visual;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -32,6 +33,20 @@ import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.ui.RectangleInsets;
+
 import logico.BolsaEmpleo;
 import logico.Empresa;
 import logico.EstadoOferta;
@@ -54,6 +69,9 @@ public class HomeEmpresa extends JFrame {
 	private JLabel lblOfertasActivasNum;
 	private JLabel lblCandidatosComp;
 	private JLabel lblContratadosNum;
+	private JPanel panel_Grafica1;
+	private JPanel panel_Grafica2;
+	private boolean cargandoGraficas = false;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -73,6 +91,7 @@ public class HomeEmpresa extends JFrame {
 		if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
 			empresa = BolsaEmpleo.getInstancia().getLoginUser().getEmpresa();
 		}
+
 
 		setTitle("Home Empresa");
 		Utilidades.aplicarIcono(this);
@@ -319,6 +338,14 @@ public class HomeEmpresa extends JFrame {
 			separator.setBackground(SystemColor.controlShadow);
 			separator.setBounds(919, 67, 1, 600);
 			panelSolicitudesRecientes.add(separator);
+
+			panel_Grafica1 = new JPanel();
+			panel_Grafica1.setBounds(149, 105, 550, 550);
+			panelSolicitudesRecientes.add(panel_Grafica1);
+
+			panel_Grafica2 = new JPanel();
+			panel_Grafica2.setBounds(1050, 105, 550, 550);
+			panelSolicitudesRecientes.add(panel_Grafica2);
 		}
 
 		JLabel lblTitulo = new JLabel("Análisis de Coincidencias");
@@ -329,51 +356,53 @@ public class HomeEmpresa extends JFrame {
 		panel.add(lblTitulo);
 
 		cargarDatosHomeConHilo();
+		crearGraficaCandidatosCompatibles(panel_Grafica1);
+		crearGraficaEstadoOfertas(panel_Grafica2);
 	}
 
 	private void cargarDatosHomeConHilo() {
-	    lblOfertasActivasNum.setText("...");
-	    lblCandidatosComp.setText("...");
-	    lblContratadosNum.setText("...");
+		lblOfertasActivasNum.setText("...");
+		lblCandidatosComp.setText("...");
+		lblContratadosNum.setText("...");
 
-	    SwingWorker<DatosEstadisticasEmpresa, Void> hilo = new SwingWorker<DatosEstadisticasEmpresa, Void>() {
+		SwingWorker<DatosEstadisticasEmpresa, Void> hilo = new SwingWorker<DatosEstadisticasEmpresa, Void>() {
 
-	        @Override
-	        protected DatosEstadisticasEmpresa doInBackground() throws Exception {
-	            Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_ESTADISTICAS_EMPRESA, null);
-	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
+			@Override
+			protected DatosEstadisticasEmpresa doInBackground() throws Exception {
+				Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_ESTADISTICAS_EMPRESA, null);
+				Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-	            if (!respuesta.isExito()) {
-	                throw new IllegalArgumentException(respuesta.getDatos().toString());
-	            }
+				if (!respuesta.isExito()) {
+					throw new IllegalArgumentException(respuesta.getDatos().toString());
+				}
 
-	            return (DatosEstadisticasEmpresa) respuesta.getDatos();
-	        }
+				return (DatosEstadisticasEmpresa) respuesta.getDatos();
+			}
 
-	        @Override
-	        protected void done() {
-	            try {
-	                DatosEstadisticasEmpresa datos = get();
+			@Override
+			protected void done() {
+				try {
+					DatosEstadisticasEmpresa datos = get();
 
-	                lblOfertasActivasNum.setText(String.valueOf(datos.getOfertasActivas()));
-	                lblCandidatosComp.setText(String.valueOf(datos.getCandidatosCompatibles()));
-	                lblContratadosNum.setText(String.valueOf(datos.getContratadosEsteMes()));
+					lblOfertasActivasNum.setText(String.valueOf(datos.getOfertasActivas()));
+					lblCandidatosComp.setText(String.valueOf(datos.getCandidatosCompatibles()));
+					lblContratadosNum.setText(String.valueOf(datos.getContratadosEsteMes()));
 
-	            } catch (Exception e) {
-	                Throwable causa = e.getCause();
-	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
-	                e.printStackTrace();
+				} catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+					e.printStackTrace();
 
-	                lblOfertasActivasNum.setText("0");
-	                lblCandidatosComp.setText("0");
-	                lblContratadosNum.setText("0");
+					lblOfertasActivasNum.setText("0");
+					lblCandidatosComp.setText("0");
+					lblContratadosNum.setText("0");
 
-	                JOptionPane.showMessageDialog(HomeEmpresa.this, mensaje != null ? mensaje : "No se pudieron cargar los datos de la empresa.", "Error", JOptionPane.ERROR_MESSAGE);
-	            }
-	        }
-	    };
+					JOptionPane.showMessageDialog(HomeEmpresa.this, mensaje != null ? mensaje : "No se pudieron cargar los datos de la empresa.", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		};
 
-	    hilo.execute();
+		hilo.execute();
 	}
 
 	private int contarOfertasActivas() {
@@ -668,4 +697,133 @@ public class HomeEmpresa extends JFrame {
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
 
+	private void crearGraficaCandidatosCompatibles(JPanel panel) {
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+		for(Oferta oferta : empresa.getLasOfertas()) {
+			int cantCompatibles =  BolsaEmpleo.getInstancia().cantCandidatosCompatibles(oferta);
+
+			dataset.addValue(cantCompatibles, "Candidatos", oferta.getPuesto());
+
+		}
+
+		JFreeChart grafica = ChartFactory.createBarChart("Candidatos Compatibles por Oferta", "Oferta", "Cantidad", dataset, PlotOrientation.VERTICAL, false, true, false);
+
+		ChartPanel graficaPanel = new ChartPanel(grafica);
+
+		graficaPanel.setBounds(0, 0, panel.getWidth(), panel.getHeight());
+
+		personalizarGraficaBarras(grafica);
+
+		panel.removeAll();
+		panel.setLayout(new BorderLayout());
+		panel.add(graficaPanel, BorderLayout.CENTER);
+		panel.revalidate();
+		panel.repaint();
+
+	}
+
+	private void crearGraficaEstadoOfertas(JPanel panel) {
+
+		DefaultPieDataset dataset = new DefaultPieDataset();
+
+		dataset.setValue("Activas", empresa.cantOfertasActivas());
+		dataset.setValue("Completadas", empresa.cantOfertasCompletadas());
+
+		JFreeChart grafica = ChartFactory.createPieChart("Estado de las Ofertas", dataset, true, true, false);
+
+		ChartPanel panelGrafica = new ChartPanel(grafica);
+
+		personalizarGraficaCircular(grafica);
+
+		panel.removeAll();
+		panel.setLayout(new BorderLayout());
+		panel.add(panelGrafica, BorderLayout.CENTER);
+		panel.revalidate();
+		panel.repaint();
+
+
+
+	}
+	private void personalizarGraficaBarras(JFreeChart grafica) {
+		Color fondoGeneral = Color.WHITE;
+		Color fondoGrafica = Color.WHITE;
+		Color colorBarras = Color.decode("#4769ba");
+		Color colorTexto = Color.decode("#06002c");
+		Color colorLineas = new Color(225, 225, 225);
+
+		grafica.setBackgroundPaint(fondoGeneral);
+		grafica.setPadding(new RectangleInsets(10, 10, 10, 10));
+
+		grafica.getTitle().setFont(new Font("Calibri", Font.BOLD, 22));
+		grafica.getTitle().setPaint(colorTexto);
+
+		CategoryPlot plot = grafica.getCategoryPlot();
+
+		plot.setBackgroundPaint(fondoGrafica);
+		plot.setOutlineVisible(false);
+		plot.setRangeGridlinePaint(colorLineas);
+		plot.setRangeGridlineStroke(new BasicStroke(1f));
+
+		plot.getDomainAxis().setLabelFont(new Font("Calibri", Font.BOLD, 15));
+		plot.getDomainAxis().setLabelPaint(colorTexto);
+		plot.getDomainAxis().setTickLabelFont(new Font("Calibri", Font.PLAIN, 13));
+		plot.getDomainAxis().setTickLabelPaint(colorTexto);
+
+		plot.getRangeAxis().setLabelFont(new Font("Calibri", Font.BOLD, 15));
+		plot.getRangeAxis().setLabelPaint(colorTexto);
+		plot.getRangeAxis().setTickLabelFont(new Font("Calibri", Font.PLAIN, 13));
+		plot.getRangeAxis().setTickLabelPaint(colorTexto);
+
+		BarRenderer renderer = (BarRenderer) plot.getRenderer();
+
+		renderer.setSeriesPaint(0, colorBarras);
+		renderer.setDrawBarOutline(false);
+		renderer.setMaximumBarWidth(0.10);
+		renderer.setItemMargin(0.15);
+
+		renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+		renderer.setBaseItemLabelsVisible(true);
+		renderer.setBaseItemLabelFont(new Font("Calibri", Font.BOLD, 13));
+		renderer.setBaseItemLabelPaint(colorTexto);
+
+		if (plot.getRangeAxis() instanceof NumberAxis) {
+			NumberAxis ejeCantidad = (NumberAxis) plot.getRangeAxis();
+			ejeCantidad.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+			ejeCantidad.setLowerBound(0);
+		}
+	}
+
+	private void personalizarGraficaCircular(JFreeChart grafica) {
+		Color colorTexto = Color.decode("#06002c");
+
+		grafica.setBackgroundPaint(Color.WHITE);
+		grafica.setPadding(new RectangleInsets(10, 10, 10, 10));
+
+		grafica.getTitle().setFont(new Font("Calibri", Font.BOLD, 22));
+		grafica.getTitle().setPaint(colorTexto);
+
+		PiePlot plot = (PiePlot) grafica.getPlot();
+
+		plot.setBackgroundPaint(Color.WHITE);
+		plot.setOutlineVisible(false);
+		plot.setShadowPaint(null);
+
+		plot.setSectionPaint("Activas", Color.decode("#4769ba"));
+		plot.setSectionPaint("Completadas", Color.decode("#fe9703"));
+
+		plot.setLabelFont(new Font("Calibri", Font.BOLD, 14));
+		plot.setLabelPaint(colorTexto);
+		plot.setLabelBackgroundPaint(new Color(255, 255, 255, 220));
+		plot.setLabelOutlinePaint(null);
+		plot.setLabelShadowPaint(null);
+
+		plot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0}: {1} ({2})"));
+
+		if (grafica.getLegend() != null) {
+			grafica.getLegend().setItemFont(new Font("Calibri", Font.PLAIN, 14));
+			grafica.getLegend().setItemPaint(colorTexto);
+			grafica.getLegend().setBackgroundPaint(Color.WHITE);
+		}
+	}
 }

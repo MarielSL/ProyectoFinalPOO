@@ -242,7 +242,7 @@ public class Oferta implements Serializable{
 		return cant;
 	}
 
-
+	
 
 
 }

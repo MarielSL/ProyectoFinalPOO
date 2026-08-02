@@ -85,4 +85,18 @@ public class Empresa implements Serializable{
 		this.lasOfertas = lasOfertas;
 	}
 
+	public int cantOfertasActivas() {
+		int cant = 0;
+		
+		for (Oferta oferta : lasOfertas) {
+			if(oferta.getEstado() == EstadoOferta.PENDIENTE) {
+				cant++;
+			}
+		}
+		return cant;
+	}
+	
+	public int cantOfertasCompletadas(){
+		return lasOfertas.size() - cantOfertasActivas();
+	}
 }
