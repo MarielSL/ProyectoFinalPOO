@@ -61,6 +61,7 @@ public class HomeCandidato extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
+	//atributos
 	private JPanel contentPane;
 	private Dimension dim;
 	private Persona candidato;
