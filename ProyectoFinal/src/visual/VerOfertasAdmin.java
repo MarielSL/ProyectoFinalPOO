@@ -292,7 +292,7 @@ public class VerOfertasAdmin extends JFrame {
 	}
 	
 
-	//implementacion hilos
+	//implementacion de hilos
 	private void cargarDatosConHilo() {
 		SwingWorker<DefaultTableModel, Void> worker = new SwingWorker<DefaultTableModel, Void>() {
 			@Override

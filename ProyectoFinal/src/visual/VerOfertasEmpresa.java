@@ -347,7 +347,7 @@ public class VerOfertasEmpresa extends JFrame {
 		return panelTabla;
 	}
 	
-	//implementacion hilos
+	//implementacion de hilos
 	private void cargarDatosConHilo() {
 		SwingWorker<ArrayList<Oferta>, Void> worker = new SwingWorker<ArrayList<Oferta>, Void>() {
 			@Override
