@@ -428,7 +428,6 @@ public class VerGraficas extends JFrame {
 	    boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 	
-	//metodo colocar png
 	private void colocarImagen(JLabel label, String ruta) {
 		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
 		int anchoLabel = label.getWidth();
