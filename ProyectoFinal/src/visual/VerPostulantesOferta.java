@@ -6,7 +6,9 @@ import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -99,13 +101,6 @@ public class VerPostulantesOferta extends JDialog {
 	 */
 	public VerPostulantesOferta(Oferta oferta) {
 		setResizable(false);
-		if(oferta!= null) {
-			resultSolicitantes = BolsaEmpleo.getInstancia().calcularMatch(oferta);
-			
-			Persona topUno = resultSolicitantes.get(0).getSolicitud().getCandidato();
-			Persona topDos = resultSolicitantes.get(1).getSolicitud().getCandidato();
-			Persona topTres = resultSolicitantes.get(2).getSolicitud().getCandidato();
-		}
 		
 		setTitle("Postulantes de la Oferta");
 		Utilidades.aplicarIcono(this);
@@ -579,101 +574,7 @@ public class VerPostulantesOferta extends JDialog {
 		contentPanel.add(botonRedond);
 		
 		if(oferta!=null) {
-			int cantSolicitantes = BolsaEmpleo.getInstancia().getSolicitudes().size();
-			
-			lblEmpresa.setText(oferta.getEmpresa().getNombre());
-			lblOferta.setText(oferta.getPuesto());
-			lblPostulantes.setText(resultSolicitantes.size()+"");
-			
-			Persona topUno = resultSolicitantes.get(0).getSolicitud().getCandidato();
-			Persona topDos = resultSolicitantes.get(1).getSolicitud().getCandidato();
-			Persona topTres = resultSolicitantes.get(2).getSolicitud().getCandidato();
-			
-			lblTopOneName.setText(topUno.getNombre() + " " + topUno.getApellido());
-			if(topUno instanceof Universitario) {
-				if(topUno.getSexo() == Sexo.FEMENINO) {
-					txtTopOneTipo.setText("Universitaria");
-				}
-				else {
-					txtTopOneTipo.setText("Universitario");
-				}
-			}
-			if(topUno instanceof Tecnico) {
-				if(topUno.getSexo() == Sexo.FEMENINO) {
-					txtTopOneTipo.setText("Técnica");
-				}
-				else {
-					txtTopOneTipo.setText("Técnico");
-				}
-			}
-			if(topUno instanceof Obrero) {
-				if(topUno.getSexo() == Sexo.FEMENINO) {
-					txtTopOneTipo.setText("Obrera");
-				}
-				else {
-					txtTopOneTipo.setText("Obrero");
-				}
-			}
-			//colocarImagen(lblFotoTopOne,topUno.getUser().getFotoPerfil());
-			colocarImagen(lblFotoTopOne,"/img/User Icon.png");
-			
-			lblTopTwoName.setText(topDos.getNombre() + " " + topDos.getApellido());
-			if(topDos instanceof Universitario) {
-				if(topDos.getSexo() == Sexo.FEMENINO) {
-					txtTopOneTipo.setText("Universitaria");
-				}
-				else {
-					txtTopOneTipo.setText("Universitario");
-				}
-			}
-			if(topDos instanceof Tecnico) {
-				if(topDos.getSexo() == Sexo.FEMENINO) {
-					txtTopOneTipo.setText("Técnica");
-				}
-				else {
-					txtTopOneTipo.setText("Técnico");
-				}
-			}
-			if(topDos instanceof Obrero) {
-				if(topDos.getSexo() == Sexo.FEMENINO) {
-					txtTopOneTipo.setText("Obrera");
-				}
-				else {
-					txtTopOneTipo.setText("Obrero");
-				}
-			}
-			//colocarImagen(lblTop2Foto,topDos.getUser().getFotoPerfil());
-			colocarImagen(lblTop2Foto,"/img/User Icon.png");
-			
-			lblTop3Name.setText(topTres.getNombre() + " " + topTres.getApellido());
-			if(topTres instanceof Universitario) {
-				if(topTres.getSexo() == Sexo.FEMENINO) {
-					txtTopOneTipo.setText("Universitaria");
-				}
-				else {
-					txtTopOneTipo.setText("Universitario");
-				}
-			}
-			if(topTres instanceof Tecnico) {
-				if(topTres.getSexo() == Sexo.FEMENINO) {
-					txtTopOneTipo.setText("Técnica");
-				}
-				else {
-					txtTopOneTipo.setText("Técnico");
-				}
-			}
-			if(topTres instanceof Obrero) {
-				if(topTres.getSexo() == Sexo.FEMENINO) {
-					txtTopOneTipo.setText("Obrera");
-				}
-				else {
-					txtTopOneTipo.setText("Obrero");
-				}
-			}
-			//colocarImagen(lblTop3Foto,topTres.getUser().getFotoPerfil());
-			colocarImagen(lblTop3Foto,"/img/User Icon.png");
-
-			
+			cargarPostulantesConHilo(oferta);
 		}
 		else {
 			lblEmpresa.setText("Apple");
@@ -693,11 +594,131 @@ public class VerPostulantesOferta extends JDialog {
 			txtTop3Tipo.setText("Técnica");
 			lblTop3Name.setText("Avril Acosta");
 			
-			
-			
+			loadRestoPostulantes(oferta);
 		}
-		loadRestoPostulantes(oferta);
 	}
+
+	private void cargarPostulantesConHilo(Oferta oferta) {
+
+		SwingWorker<ArrayList<ResultMatch>, Void> hilo = new SwingWorker<ArrayList<ResultMatch>, Void>() {
+
+			@Override
+			protected ArrayList<ResultMatch> doInBackground() throws Exception {
+				return BolsaEmpleo.getInstancia().calcularMatch(oferta);
+			}
+
+			protected void done() {
+
+				try {
+					resultSolicitantes = get();
+
+					int cantSolicitantes = BolsaEmpleo.getInstancia().getSolicitudes().size();
+
+					lblEmpresa.setText(oferta.getEmpresa().getNombre());
+					lblOferta.setText(oferta.getPuesto());
+					lblPostulantes.setText(resultSolicitantes.size()+"");
+
+					Persona topUno = resultSolicitantes.get(0).getSolicitud().getCandidato();
+					Persona topDos = resultSolicitantes.get(1).getSolicitud().getCandidato();
+					Persona topTres = resultSolicitantes.get(2).getSolicitud().getCandidato();
+
+					lblTopOneName.setText(topUno.getNombre() + " " + topUno.getApellido());
+					if(topUno instanceof Universitario) {
+						if(topUno.getSexo() == Sexo.FEMENINO) {
+							txtTopOneTipo.setText("Universitaria");
+						}
+						else {
+							txtTopOneTipo.setText("Universitario");
+						}
+					}
+					if(topUno instanceof Tecnico) {
+						if(topUno.getSexo() == Sexo.FEMENINO) {
+							txtTopOneTipo.setText("Técnica");
+						}
+						else {
+							txtTopOneTipo.setText("Técnico");
+						}
+					}
+					if(topUno instanceof Obrero) {
+						if(topUno.getSexo() == Sexo.FEMENINO) {
+							txtTopOneTipo.setText("Obrera");
+						}
+						else {
+							txtTopOneTipo.setText("Obrero");
+						}
+					}
+					//colocarImagen(lblFotoTopOne,topUno.getUser().getFotoPerfil());
+					colocarImagen(lblFotoTopOne,"/img/User Icon.png");
+
+					lblTopTwoName.setText(topDos.getNombre() + " " + topDos.getApellido());
+					if(topDos instanceof Universitario) {
+						if(topDos.getSexo() == Sexo.FEMENINO) {
+							txtTopOneTipo.setText("Universitaria");
+						}
+						else {
+							txtTopOneTipo.setText("Universitario");
+						}
+					}
+					if(topDos instanceof Tecnico) {
+						if(topDos.getSexo() == Sexo.FEMENINO) {
+							txtTopOneTipo.setText("Técnica");
+						}
+						else {
+							txtTopOneTipo.setText("Técnico");
+						}
+					}
+					if(topDos instanceof Obrero) {
+						if(topDos.getSexo() == Sexo.FEMENINO) {
+							txtTopOneTipo.setText("Obrera");
+						}
+						else {
+							txtTopOneTipo.setText("Obrero");
+						}
+					}
+					//colocarImagen(lblTop2Foto,topDos.getUser().getFotoPerfil());
+					colocarImagen(lblTop2Foto,"/img/User Icon.png");
+
+					lblTop3Name.setText(topTres.getNombre() + " " + topTres.getApellido());
+					if(topTres instanceof Universitario) {
+						if(topTres.getSexo() == Sexo.FEMENINO) {
+							txtTopOneTipo.setText("Universitaria");
+						}
+						else {
+							txtTopOneTipo.setText("Universitario");
+						}
+					}
+					if(topTres instanceof Tecnico) {
+						if(topTres.getSexo() == Sexo.FEMENINO) {
+							txtTopOneTipo.setText("Técnica");
+						}
+						else {
+							txtTopOneTipo.setText("Técnico");
+						}
+					}
+					if(topTres instanceof Obrero) {
+						if(topTres.getSexo() == Sexo.FEMENINO) {
+							txtTopOneTipo.setText("Obrera");
+						}
+						else {
+							txtTopOneTipo.setText("Obrero");
+						}
+					}
+					//colocarImagen(lblTop3Foto,topTres.getUser().getFotoPerfil());
+					colocarImagen(lblTop3Foto,"/img/User Icon.png");
+
+					loadRestoPostulantes(oferta);
+
+				} catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(VerPostulantesOferta.this, mensaje != null ? mensaje : "No se pudieron cargar los postulantes.", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		};
+		hilo.execute();
+	}
+
 	private void loadRestoPostulantes(Oferta oferta) {
 		if(oferta == null) {
 			return;

@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 
 import logico.AreaLaboral;
@@ -231,7 +232,7 @@ public class RegistrarOferta extends JDialog {
 		panel.add(spnSalario);
 		spnSalario.aplicarColorSpinner(spnSalario, SystemColor.controlHighlight);
 
-		JLabel lblAniosExp = new JLabel("Años de experiencia");
+		JLabel lblAniosExp = new JLabel("A\u00F1os de experiencia");
 		lblAniosExp.setForeground(new Color(0, 0, 51));
 		lblAniosExp.setFont(new Font("Calibri", Font.BOLD, 20));
 		lblAniosExp.setBounds(357, 555, 275, 24);
@@ -260,7 +261,7 @@ public class RegistrarOferta extends JDialog {
 		chkMudarse.setBounds(58, 640, 420, 30);
 		panel.add(chkMudarse);
 
-		JLabel lblDescripcion = new JLabel("Descripción del puesto");
+		JLabel lblDescripcion = new JLabel("Descripci\u00F3n del puesto");
 		lblDescripcion.setForeground(new Color(0, 0, 51));
 		lblDescripcion.setFont(new Font("Calibri", Font.BOLD, 20));
 		lblDescripcion.setBounds(58, 695, 300, 24);
@@ -282,7 +283,7 @@ public class RegistrarOferta extends JDialog {
 				if (!validarDatos()) {
 					return;
 				}
-				registrarOferta();
+				registrarOfertaConHilo();
 			}
 		});
 		btnPublicar.setBackground(new Color(255, 153, 0));
@@ -329,28 +330,66 @@ public class RegistrarOferta extends JDialog {
 		return true;
 	}
 
-	private void registrarOferta() {
-		String id = "O-" + BolsaEmpleo.generadorIdOferta;
+	private void registrarOfertaConHilo() {
+
+		String puesto = txtPuesto.getText().trim();
+		String ciudad = txtCiudad.getText().trim();
+		String descripcion = txtDescripcion.getText().trim();
 		Sexo sexo = (Sexo) cbxSexo.getSelectedItem();
 		TipoPersona tipoCandidato = (TipoPersona) cbxTipoCandidato.getSelectedItem();
 		Jornada jornada = (Jornada) cbxJornada.getSelectedItem();
 		Modalidad modalidad = (Modalidad) cbxModalidad.getSelectedItem();
+		int cantPuestos = (Integer) spnCantPuestos.getValue();
 		int aniosExp = (Integer) spnAniosExp.getValue();
 		float salario = ((Number) spnSalario.getValue()).floatValue();
+		boolean licencia = chkLicencia.isSelected();
+		boolean mudarse = chkMudarse.isSelected();
 
-		Oferta oferta = new Oferta(id, sexo, tipoCandidato, txtPuesto.getText(), (Integer) spnCantPuestos.getValue(),
-				chkLicencia.isSelected(), chkMudarse.isSelected(), EstadoOferta.PENDIENTE, jornada,
-				txtCiudad.getText(), salario, txtDescripcion.getText(), aniosExp, empresa, modalidad,
-				LocalDate.now(), AreaLaboral.INGENIERIA);
+		btnPublicar.setEnabled(false);
+		btnPublicar.setText("Publicando...");
 
-		BolsaEmpleo.getInstancia().refOferta(oferta);
+		SwingWorker<Oferta, Void> hilo = new SwingWorker<Oferta, Void>() {
 
-		if (empresa != null) {
-			empresa.agregarOferta(oferta);
-		}
+			@Override
+			protected Oferta doInBackground() throws Exception {
 
-		JOptionPane.showMessageDialog(null, "Se ha publicado la oferta.", "Información", JOptionPane.INFORMATION_MESSAGE);
-		clear();
+				String id = "O-" + BolsaEmpleo.generadorIdOferta;
+
+				Oferta oferta = new Oferta(id, sexo, tipoCandidato, puesto, cantPuestos, licencia, mudarse,
+						EstadoOferta.PENDIENTE, jornada, ciudad, salario, descripcion, aniosExp, empresa, modalidad,
+						LocalDate.now(), AreaLaboral.INGENIERIA);
+
+				BolsaEmpleo.getInstancia().refOferta(oferta);
+
+				if (empresa != null) {
+					empresa.agregarOferta(oferta);
+				}
+
+				return oferta;
+			}
+
+			protected void done() {
+
+				try {
+					get();
+
+					JOptionPane.showMessageDialog(RegistrarOferta.this, "Se ha publicado la oferta.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
+					clear();
+
+				} catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(RegistrarOferta.this, mensaje != null ? mensaje : "No se pudo publicar la oferta.", "Error", JOptionPane.ERROR_MESSAGE);
+
+				} finally {
+					btnPublicar.setEnabled(true);
+					btnPublicar.setText("Publicar");
+				}
+			}
+
+		};
+		hilo.execute();
 	}
 
 	private void clear() {

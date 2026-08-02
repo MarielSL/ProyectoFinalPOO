@@ -7,6 +7,7 @@ import java.awt.Insets;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
@@ -256,63 +258,83 @@ public class VerTodosPostulantesOferta extends JFrame {
 		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
 		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
-	private void loadPostulantes(String estado,String perfil,String fecha,String ordenCoincidencia) {
+
+	private void loadPostulantes(String estado, String perfil, String fecha, String ordenCoincidencia) {
 		model.setRowCount(0);
 		if (oferta == null) {
 			return;
 		}
 
-		ArrayList<ResultMatch> matcheo = BolsaEmpleo.getInstancia().calcularMatch(oferta);
-		ArrayList<ResultMatch> solicitudesFiltradas = new ArrayList<ResultMatch>();
-		ArrayList<Persona> mostrados =  new ArrayList<>();
-		LocalDate hoy = LocalDate.now();
+		SwingWorker<ArrayList<ResultMatch>, Void> hilo = new SwingWorker<ArrayList<ResultMatch>, Void>() {
 
-		for (ResultMatch resultado : matcheo) {
-
-			Persona candidato = resultado.getSolicitud().getCandidato();
-
-			boolean cumpleEstado = estado.equalsIgnoreCase("Todos") || coincideEstado(resultado.getSolicitud(),estado );
-			boolean cumplePerfil = perfil.equalsIgnoreCase("Todos") || obtenerPerfilLaboral(candidato).equalsIgnoreCase(perfil);
-			boolean cumpleFecha = cumpleFiltroFecha(resultado.getSolicitud().getFechaSolicitud(),fecha,hoy);
-
-			if (cumpleEstado && cumplePerfil && cumpleFecha) {
-				solicitudesFiltradas.add(resultado);
+			@Override
+			protected ArrayList<ResultMatch> doInBackground() throws Exception {
+				return BolsaEmpleo.getInstancia().calcularMatch(oferta);
 			}
-		}
 
-		Collections.sort(solicitudesFiltradas,new Comparator<ResultMatch>() {
+			protected void done() {
 
-			public int compare(ResultMatch soli1,ResultMatch soli2) {
-				if (ordenCoincidencia.equalsIgnoreCase("Menor Coincidencia")) {
-					return Float.compare(soli1.getPorcentaje(),soli2.getPorcentaje());
+				try {
+					ArrayList<ResultMatch> matcheo = get();
+					ArrayList<ResultMatch> solicitudesFiltradas = new ArrayList<ResultMatch>();
+					ArrayList<Persona> mostrados =  new ArrayList<>();
+					LocalDate hoy = LocalDate.now();
+
+					for (ResultMatch resultado : matcheo) {
+
+						Persona candidato = resultado.getSolicitud().getCandidato();
+
+						boolean cumpleEstado = estado.equalsIgnoreCase("Todos") || coincideEstado(resultado.getSolicitud(),estado );
+						boolean cumplePerfil = perfil.equalsIgnoreCase("Todos") || obtenerPerfilLaboral(candidato).equalsIgnoreCase(perfil);
+						boolean cumpleFecha = cumpleFiltroFecha(resultado.getSolicitud().getFechaSolicitud(),fecha,hoy);
+
+						if (cumpleEstado && cumplePerfil && cumpleFecha) {
+							solicitudesFiltradas.add(resultado);
+						}
+					}
+
+					Collections.sort(solicitudesFiltradas,new Comparator<ResultMatch>() {
+
+						public int compare(ResultMatch soli1,ResultMatch soli2) {
+							if (ordenCoincidencia.equalsIgnoreCase("Menor Coincidencia")) {
+								return Float.compare(soli1.getPorcentaje(),soli2.getPorcentaje());
+							}
+							return Float.compare(soli2.getPorcentaje(),soli1.getPorcentaje());
+						}
+					}
+							);
+
+					int numero = 1;
+
+					for (ResultMatch match : solicitudesFiltradas) {
+
+						Persona candidato = match.getSolicitud().getCandidato();
+
+						Object[] fila =new Object[model.getColumnCount()];
+
+						fila[0] = numero;
+						fila[1] = candidato.getNombre();
+						fila[2] = obtenerPerfilLaboral(candidato);
+						fila[3] = match.getPorcentaje() +"%";
+						fila[4] = match.getSolicitud().getFechaSolicitud();
+
+						model.addRow(fila);
+						mostrados.add(match.getSolicitud().getCandidato());
+						numero++;
+					}
+
+					postulantesMostrados.clear();
+					postulantesMostrados.addAll(mostrados);
+
+				} catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(VerTodosPostulantesOferta.this, mensaje != null ? mensaje : "No se pudieron cargar los postulantes.", "Error", JOptionPane.ERROR_MESSAGE);
 				}
-				return Float.compare(soli2.getPorcentaje(),soli1.getPorcentaje());
 			}
-		}
-				);
-
-		int numero = 1;
-
-		for (ResultMatch match : solicitudesFiltradas) {
-
-			Persona candidato = match.getSolicitud().getCandidato();
-
-			Object[] fila =new Object[model.getColumnCount()];
-
-			fila[0] = numero;
-			fila[1] = candidato.getNombre();
-			fila[2] = obtenerPerfilLaboral(candidato);
-			fila[3] = match.getPorcentaje() +"%";
-			fila[4] = match.getSolicitud().getFechaSolicitud();
-			
-			model.addRow(fila);
-			mostrados.add(match.getSolicitud().getCandidato());
-			numero++;
-		}
-		
-		postulantesMostrados.clear();
-		postulantesMostrados.addAll(mostrados);
-		
+		};
+		hilo.execute();
 	}
 
 	private String obtenerPerfilLaboral(Persona candidato) {
