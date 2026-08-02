@@ -11,9 +11,11 @@ import java.time.LocalDate;
 import logico.BolsaEmpleo;
 import logico.Empresa;
 import logico.EstadoOferta;
+import logico.EstadoSolicitud;
 import logico.Obrero;
 import logico.Oferta;
 import logico.Persona;
+import logico.SolicitudEmpleo;
 import logico.Tecnico;
 import logico.TipoPersona;
 import logico.TipoUser;
@@ -21,6 +23,7 @@ import logico.Universitario;
 import logico.Usuario;
 import red.DatosLogin;
 import red.DatosPublicarOferta;
+import red.DatosRegistrarSolicitud;
 import red.DatosRegistroEmpresa;
 import red.DatosRegistroSolicitante;
 import red.Peticion;
@@ -90,6 +93,8 @@ public class ServidorBolsaEmpleo {
             case PUBLICAR_OFERTA:
                 return procesarPublicarOferta(bolsa, (DatosPublicarOferta) peticion.getDatos());
 
+            case REGISTRAR_SOLICITUD:
+                return procesarRegistrarSolicitud(bolsa, (DatosRegistrarSolicitud) peticion.getDatos());
             default:
                 return new Respuesta(false, "Operación no reconocida");
         }
@@ -186,5 +191,23 @@ public class ServidorBolsaEmpleo {
         empresa.agregarOferta(oferta);
 
         return new Respuesta(true, oferta);
+    }
+    
+    private static Respuesta procesarRegistrarSolicitud(BolsaEmpleo bolsa, DatosRegistrarSolicitud datos) {
+        Usuario loginUser = bolsa.getLoginUser();
+        if (loginUser == null || loginUser.getPersona() == null) {
+            return new Respuesta(false, "Debe iniciar sesión como candidato para crear una solicitud.");
+        }
+
+        String id = "S-" + BolsaEmpleo.generadorIdSolicitud;
+        LocalDate fechaHoy = LocalDate.now();
+
+        SolicitudEmpleo solicitud = new SolicitudEmpleo(id, EstadoSolicitud.ACTIVA, loginUser.getPersona(),
+                fechaHoy, datos.getAreaLaboral(), datos.getSueldoEsperado(), datos.getModalidad(),
+                datos.getPuesto(), datos.getJornada());
+
+        bolsa.regSolicitud(solicitud, loginUser.getPersona());
+
+        return new Respuesta(true, solicitud);
     }
 }

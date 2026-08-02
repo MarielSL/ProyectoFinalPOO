@@ -304,7 +304,7 @@ public class VerEmpresasAdmin extends JFrame {
 			public void componentResized(java.awt.event.ComponentEvent e) {
 				int ancho = panelVacio.getWidth();
 				lblIlustracion.setBounds((ancho - 220) / 2, 30, 220, 180);
-				colocarImagen(lblIlustracion, "/img/empresasvacias.png");
+				colocarImagen(lblIlustracion, "/img/ofertassvacias.png");
 				lblTitulo.setBounds(0, 226, ancho, 28);
 				lblSubtitulo.setBounds((ancho - 520) / 2, 258, 520, 40);
 			}
