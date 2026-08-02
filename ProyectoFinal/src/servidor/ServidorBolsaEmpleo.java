@@ -25,6 +25,7 @@ import logico.TipoPersona;
 import logico.TipoUser;
 import logico.Universitario;
 import logico.Usuario;
+import red.DatosDashboardAdmin;
 import red.DatosDecidirCandidato;
 import red.DatosEstadisticas;
 import red.DatosEstadisticasCandidato;
@@ -126,6 +127,15 @@ public class ServidorBolsaEmpleo {
             case OBTENER_ESTADISTICAS_EMPRESA:
                 return procesarEstadisticasEmpresa(bolsa);
             
+            case OBTENER_TODAS_EMPRESAS:
+                return new Respuesta(true, bolsa.getEmpresas() != null ? bolsa.getEmpresas() : new ArrayList<Empresa>());
+
+            case OBTENER_TODOS_USUARIOS:
+                return new Respuesta(true, bolsa.getUsuarios() != null ? bolsa.getUsuarios() : new ArrayList<Usuario>());
+
+            case OBTENER_DASHBOARD_ADMIN:
+                return procesarDashboardAdmin(bolsa);
+                
             default:
                 return new Respuesta(false, "Operación no reconocida");
         }
@@ -435,6 +445,15 @@ public class ServidorBolsaEmpleo {
         }
 
         DatosEstadisticasEmpresa resultado = new DatosEstadisticasEmpresa(ofertasActivas, candidatosCompatibles, contratadosEsteMes);
+        return new Respuesta(true, resultado);
+    }
+    
+    private static Respuesta procesarDashboardAdmin(BolsaEmpleo bolsa) {
+        ArrayList<Oferta> ofertas = bolsa.getOfertas() != null ? bolsa.getOfertas() : new ArrayList<Oferta>();
+        ArrayList<Persona> personas = bolsa.getPersonas() != null ? bolsa.getPersonas() : new ArrayList<Persona>();
+        int totalEmpresas = bolsa.getEmpresas() != null ? bolsa.getEmpresas().size() : 0;
+
+        DatosDashboardAdmin resultado = new DatosDashboardAdmin(ofertas, personas, totalEmpresas);
         return new Respuesta(true, resultado);
     }
 }

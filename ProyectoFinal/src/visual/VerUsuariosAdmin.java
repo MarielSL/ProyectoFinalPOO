@@ -37,6 +37,9 @@ import javax.swing.table.TableRowSorter;
 import logico.BolsaEmpleo;
 import logico.TipoUser;
 import logico.Usuario;
+import red.ConexionCliente;
+import red.Peticion;
+import red.Respuesta;
 
 public class VerUsuariosAdmin extends JFrame {
 
@@ -356,8 +359,14 @@ public class VerUsuariosAdmin extends JFrame {
 
 			@Override
 			protected Object[] doInBackground() throws Exception {
-				ArrayList<Usuario> usuariosOriginales = BolsaEmpleo.getInstancia().getUsuarios();
-				ArrayList<Usuario> usuarios = usuariosOriginales == null ? new ArrayList<Usuario>() : new ArrayList<Usuario>(usuariosOriginales);
+				Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_TODOS_USUARIOS, null);
+				Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
+
+				if (!respuesta.isExito()) {
+				    throw new IllegalArgumentException(respuesta.getDatos().toString());
+				}
+
+				ArrayList<Usuario> usuarios = (ArrayList<Usuario>) respuesta.getDatos();
 
 				int totalUsuarios = usuarios.size();
 				int totalEmpresas = 0;

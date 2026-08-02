@@ -42,6 +42,10 @@ import logico.Oferta;
 import logico.Persona;
 import logico.Tecnico;
 import logico.Universitario;
+import red.ConexionCliente;
+import red.DatosDashboardAdmin;
+import red.Peticion;
+import red.Respuesta;
 
 public class HomeAdministrador extends JFrame {
 
@@ -468,18 +472,20 @@ public class HomeAdministrador extends JFrame {
 		SwingWorker<Object[], Void> hilo = new SwingWorker<Object[], Void>() {
 			@Override
 			protected Object[] doInBackground() throws Exception {
-				BolsaEmpleo bolsa = BolsaEmpleo.getInstancia();
+				Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_DASHBOARD_ADMIN, null);
+				Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-				ArrayList<Oferta> ofertas = bolsa.getOfertas() == null
-						? new ArrayList<Oferta>()
-						: new ArrayList<Oferta>(bolsa.getOfertas());
+				if (!respuesta.isExito()) {
+				    throw new IllegalArgumentException(respuesta.getDatos().toString());
+				}
 
-				ArrayList<Persona> personas = bolsa.getPersonas() == null
-						? new ArrayList<Persona>()
-						: new ArrayList<Persona>(bolsa.getPersonas());
+				DatosDashboardAdmin datosDashboard = (DatosDashboardAdmin) respuesta.getDatos();
+
+				ArrayList<Oferta> ofertas = datosDashboard.getOfertas();
+				ArrayList<Persona> personas = datosDashboard.getPersonas();
 
 				int ofertasActivas = contarOfertasActivas(ofertas);
-				int empresas = bolsa.getEmpresas() == null ? 0 : bolsa.getEmpresas().size();
+				int empresas = datosDashboard.getTotalEmpresas();
 				int contratados = contarContratados(ofertas);
 				int solicitantes = personas.size();
 

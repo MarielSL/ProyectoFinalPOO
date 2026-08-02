@@ -24,6 +24,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -41,6 +42,9 @@ import javax.swing.table.TableRowSorter;
 import logico.BolsaEmpleo;
 import logico.Empresa;
 import logico.TipoEmpresa;
+import red.ConexionCliente;
+import red.Peticion;
+import red.Respuesta;
 
 public class VerEmpresasAdmin extends JFrame {
 
@@ -53,6 +57,8 @@ public class VerEmpresasAdmin extends JFrame {
 	private JLabel lblIlustracion;
 	private JTable table;
 	private TableRowSorter<DefaultTableModel> sorterEmpresas;
+	private JLabel lblTotalEmpresasNum;
+	private JLabel lblEmpresasActivasNum;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -163,7 +169,7 @@ public class VerEmpresasAdmin extends JFrame {
 		lblTotalEmpresas.setBounds(64, 12, anchoTarjeta - 84, 20);
 		panelTotalEmpresas.add(lblTotalEmpresas);
 
-		JLabel lblTotalEmpresasNum = new JLabel(String.valueOf(contarTotalEmpresas()));
+		lblTotalEmpresasNum = new JLabel("...");
 		lblTotalEmpresasNum.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblTotalEmpresasNum.setForeground(new Color(204, 102, 0));
 		lblTotalEmpresasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
@@ -190,7 +196,7 @@ public class VerEmpresasAdmin extends JFrame {
 		lblEmpresasActivas.setBounds(64, 12, anchoTarjeta - 84, 20);
 		panelEmpresasActivas.add(lblEmpresasActivas);
 
-		JLabel lblEmpresasActivasNum = new JLabel(String.valueOf(contarEmpresasActivas()));
+		lblEmpresasActivasNum = new JLabel("...");
 		lblEmpresasActivasNum.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblEmpresasActivasNum.setForeground(new Color(46, 125, 50));
 		lblEmpresasActivasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
@@ -315,65 +321,89 @@ public class VerEmpresasAdmin extends JFrame {
 	}
 
 	private JPanel crearTabla(int ancho, int alto) {
-		JPanel panelTabla = new JPanel();
-		panelTabla.setOpaque(false);
-		panelTabla.setLayout(null);
+	    JPanel panelTabla = new JPanel();
+	    panelTabla.setOpaque(false);
+	    panelTabla.setLayout(null);
 
-		table = new JTable();
-		table.setModel(crearModeloEmpresas());
-		table.setFont(new Font("Calibri", Font.PLAIN, 16));
-		table.setRowHeight(38);
-		table.setForeground(new Color(50, 50, 50));
-		table.setSelectionBackground(new Color(240, 240, 245));
-		table.setShowGrid(false);
-		table.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 15));
-		table.getTableHeader().setForeground(new Color(0, 0, 51));
+	    table = new JTable();
+	    table.setModel(crearModeloEmpresas(new ArrayList<Empresa>()));
+	    table.setFont(new Font("Calibri", Font.PLAIN, 16));
+	    table.setRowHeight(38);
+	    table.setForeground(new Color(50, 50, 50));
+	    table.setSelectionBackground(new Color(240, 240, 245));
+	    table.setShowGrid(false);
+	    table.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 15));
+	    table.getTableHeader().setForeground(new Color(0, 0, 51));
 
-		table.setDefaultRenderer(Object.class, new RenderCentrado());
-		table.getColumnModel().getColumn(4).setCellRenderer(new RenderEstado());
+	    table.setDefaultRenderer(Object.class, new RenderCentrado());
+	    table.getColumnModel().getColumn(4).setCellRenderer(new RenderEstado());
 
-		sorterEmpresas = new TableRowSorter<DefaultTableModel>((DefaultTableModel) table.getModel());
-		table.setRowSorter(sorterEmpresas);
+	    sorterEmpresas = new TableRowSorter<DefaultTableModel>((DefaultTableModel) table.getModel());
+	    table.setRowSorter(sorterEmpresas);
 
-		JScrollPane scrollTabla = new JScrollPane(table);
-		scrollTabla.setBorder(null);
-		scrollTabla.setBounds(24, 20, ancho - 48, alto - 40);
-		panelTabla.add(scrollTabla);
+	    JScrollPane scrollTabla = new JScrollPane(table);
+	    scrollTabla.setBorder(null);
+	    scrollTabla.setBounds(24, 20, ancho - 48, alto - 40);
+	    panelTabla.add(scrollTabla);
 
-		return panelTabla;
+	    return panelTabla;
 	}
 
-	//implementacion hilos
+	//implementacion hilos y sockets
 	private void cargarDatosConHilo() {
-		SwingWorker<ArrayList<Empresa>, Void> worker = new SwingWorker<ArrayList<Empresa>, Void>() {
-			@Override
-			protected ArrayList<Empresa> doInBackground() throws Exception {
-				ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
-				if (lasEmpresas == null) {
-					return new ArrayList<Empresa>();
-				}
-				return new ArrayList<Empresa>(lasEmpresas);
-			}
+	    SwingWorker<ArrayList<Empresa>, Void> worker = new SwingWorker<ArrayList<Empresa>, Void>() {
+	        @Override
+	        protected ArrayList<Empresa> doInBackground() throws Exception {
+	            Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_TODAS_EMPRESAS, null);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-			@Override
-			protected void done() {
-				try {
-					ArrayList<Empresa> lasEmpresas = get();
-					if (lasEmpresas.isEmpty()) {
-						pnlVacio.setVisible(true);
-						pnlTabla.setVisible(false);
-					} else {
-						pnlVacio.setVisible(false);
-						pnlTabla.setVisible(true);
-					}
-				} catch (Exception e) {
-					pnlVacio.setVisible(true);
-					pnlTabla.setVisible(false);
-				}
-			}
-		};
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-		worker.execute();
+	            return (ArrayList<Empresa>) respuesta.getDatos();
+	        }
+
+	        @Override
+	        protected void done() {
+	            try {
+	                ArrayList<Empresa> lasEmpresas = get();
+
+	                int total = lasEmpresas.size();
+	                int activas = 0;
+	                for (Empresa empresa : lasEmpresas) {
+	                    if (empresa.isEstado()) {
+	                        activas++;
+	                    }
+	                }
+
+	                lblTotalEmpresasNum.setText(String.valueOf(total));
+	                lblEmpresasActivasNum.setText(String.valueOf(activas));
+
+	                table.setModel(crearModeloEmpresas(lasEmpresas));
+	                sorterEmpresas = new TableRowSorter<DefaultTableModel>((DefaultTableModel) table.getModel());
+	                table.setRowSorter(sorterEmpresas);
+	                table.getColumnModel().getColumn(4).setCellRenderer(new RenderEstado());
+	                table.setDefaultRenderer(Object.class, new RenderCentrado());
+
+	                boolean hayEmpresas = !lasEmpresas.isEmpty();
+	                pnlVacio.setVisible(!hayEmpresas);
+	                pnlTabla.setVisible(hayEmpresas);
+
+	                aplicarFiltros();
+
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	                lblTotalEmpresasNum.setText("0");
+	                lblEmpresasActivasNum.setText("0");
+	                pnlVacio.setVisible(true);
+	                pnlTabla.setVisible(false);
+	                JOptionPane.showMessageDialog(VerEmpresasAdmin.this, "No se pudieron cargar las empresas.", "Error", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	    };
+
+	    worker.execute();
 	}
 
 	private void aplicarFiltros() {
@@ -402,27 +432,6 @@ public class VerEmpresasAdmin extends JFrame {
 		}
 	}
 
-	private int contarTotalEmpresas() {
-		ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
-		if (lasEmpresas == null) {
-			return 0;
-		}
-		return lasEmpresas.size();
-	}
-
-	private int contarEmpresasActivas() {
-		ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
-		if (lasEmpresas == null) {
-			return 0;
-		}
-		int contador = 0;
-		for (Empresa empresa : lasEmpresas) {
-			if (empresa.isEstado()) {
-				contador++;
-			}
-		}
-		return contador;
-	}
 
 	private String capitalizar(String texto) {
 		if (texto == null || texto.isEmpty()) {
@@ -468,28 +477,26 @@ public class VerEmpresasAdmin extends JFrame {
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
 
-	private DefaultTableModel crearModeloEmpresas() {
-		DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Empresa", "Contacto", "Tipo", "Registro", "Estado" }) {
-			public boolean isCellEditable(int fila, int columna) {
-				return false;
-			}
-		};
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
-		ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
-		if (lasEmpresas == null) {
-			return modelo;
-		}
-		for (Empresa empresa : lasEmpresas) {
-			String tipo = capitalizar(empresa.getTipo().name());
-			String estadoTexto = formatearEstadoEmpresa(empresa.isEstado());
-			String fechaTexto = (empresa.getUser() != null && empresa.getUser().getFechaRegistro() != null)
-					? empresa.getUser().getFechaRegistro().format(formato)
-					: "N/A";
-			modelo.addRow(new Object[] { empresa.getNombre(), empresa.getTelefono(), tipo, fechaTexto, estadoTexto });
-		}
-		return modelo;
+	private DefaultTableModel crearModeloEmpresas(ArrayList<Empresa> lasEmpresas) {
+	    DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Empresa", "Contacto", "Tipo", "Registro", "Estado" }) {
+	        public boolean isCellEditable(int fila, int columna) {
+	            return false;
+	        }
+	    };
+	    DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
+	    if (lasEmpresas == null) {
+	        return modelo;
+	    }
+	    for (Empresa empresa : lasEmpresas) {
+	        String tipo = capitalizar(empresa.getTipo().name());
+	        String estadoTexto = formatearEstadoEmpresa(empresa.isEstado());
+	        String fechaTexto = (empresa.getUser() != null && empresa.getUser().getFechaRegistro() != null)
+	                ? empresa.getUser().getFechaRegistro().format(formato)
+	                : "N/A";
+	        modelo.addRow(new Object[] { empresa.getNombre(), empresa.getTelefono(), tipo, fechaTexto, estadoTexto });
+	    }
+	    return modelo;
 	}
-
 	public class RenderCentrado extends DefaultTableCellRenderer {
 		public RenderCentrado() {
 			setHorizontalAlignment(SwingConstants.CENTER);

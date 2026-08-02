@@ -33,6 +33,9 @@ import logico.BolsaEmpleo;
 import logico.Empresa;
 import logico.EstadoOferta;
 import logico.Oferta;
+import red.ConexionCliente;
+import red.Peticion;
+import red.Respuesta;
 
 public class VerOfertasAdmin extends JFrame {
 
@@ -46,6 +49,8 @@ public class VerOfertasAdmin extends JFrame {
 	private JPanel pnlVacio;
 	private JPanel pnlTabla;
 	private JLabel lblIlustracion;
+	private JLabel lblTotalOfertasNum;
+	private JLabel lblOfertasActivasNum;
 
 	public static void main(String[] args) {
 		java.awt.EventQueue.invokeLater(new Runnable() {
@@ -61,9 +66,6 @@ public class VerOfertasAdmin extends JFrame {
 	}
 
 	public VerOfertasAdmin() {
-		if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
-			empresa = BolsaEmpleo.getInstancia().getLoginUser().getEmpresa();
-		}
 
 		setTitle("Mis Ofertas");
 		Utilidades.aplicarIcono(this);
@@ -148,7 +150,7 @@ public class VerOfertasAdmin extends JFrame {
 		lblTotalOfertas.setBounds(64, 12, anchoTarjeta - 84, 20);
 		panelTotalOfertas.add(lblTotalOfertas);
 
-		JLabel lblTotalOfertasNum = new JLabel(String.valueOf(contarTotalOfertas()));
+		lblTotalOfertasNum = new JLabel("...");
 		lblTotalOfertasNum.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblTotalOfertasNum.setForeground(new Color(204, 102, 0));
 		lblTotalOfertasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
@@ -171,7 +173,7 @@ public class VerOfertasAdmin extends JFrame {
 		lblOfertasActivas.setBounds(64, 12, anchoTarjeta - 84, 20);
 		panelOfertasActivas.add(lblOfertasActivas);
 
-		JLabel lblOfertasActivasNum = new JLabel(String.valueOf(contarOfertasActivas()));
+		lblOfertasActivasNum = new JLabel("...");
 		lblOfertasActivasNum.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblOfertasActivasNum.setForeground(new Color(46, 125, 50));
 		lblOfertasActivasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
@@ -276,71 +278,75 @@ public class VerOfertasAdmin extends JFrame {
 	}
 
 	private JPanel crearTabla(int anchoContenido, int altoContenido) {
-		JPanel panelTabla = new JPanel();
-		panelTabla.setOpaque(false);
-		panelTabla.setLayout(new BorderLayout());
+	    JPanel panelTabla = new JPanel();
+	    panelTabla.setOpaque(false);
+	    panelTabla.setLayout(new BorderLayout());
 
-		tablaOfertas = new JTable(crearModeloOfertasRecientes());
-		tablaOfertas.setFont(new Font("Calibri", Font.PLAIN, 15));
-		tablaOfertas.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 16));
+	    tablaOfertas = new JTable(crearModeloOfertasRecientes(new ArrayList<Oferta>()));
+	    tablaOfertas.setFont(new Font("Calibri", Font.PLAIN, 15));
+	    tablaOfertas.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 16));
 
-		JScrollPane scrollPane = new JScrollPane(tablaOfertas);
-		scrollPane.setBorder(null);
-		panelTabla.add(scrollPane, BorderLayout.CENTER);
+	    JScrollPane scrollPane = new JScrollPane(tablaOfertas);
+	    scrollPane.setBorder(null);
+	    panelTabla.add(scrollPane, BorderLayout.CENTER);
 
-		return panelTabla;
+	    return panelTabla;
 	}
 	
 
-	//implementacion de hilos
+	//implementacion de hilos y sockets
 	private void cargarDatosConHilo() {
-		SwingWorker<DefaultTableModel, Void> worker = new SwingWorker<DefaultTableModel, Void>() {
-			@Override
-			protected DefaultTableModel doInBackground() {
-				return crearModeloOfertasRecientes();
-			}
+	    SwingWorker<ArrayList<Oferta>, Void> worker = new SwingWorker<ArrayList<Oferta>, Void>() {
+	        @Override
+	        protected ArrayList<Oferta> doInBackground() throws Exception {
+	            Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_OFERTAS, null);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-			@Override
-			protected void done() {
-				try {
-					DefaultTableModel modelo = get();
-					tablaOfertas.setModel(modelo);
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-					if (modelo.getRowCount() == 0) {
-						pnlVacio.setVisible(true);
-						pnlTabla.setVisible(false);
-					} else {
-						pnlVacio.setVisible(false);
-						pnlTabla.setVisible(true);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(VerOfertasAdmin.this, "No se pudieron cargar las ofertas.", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		};
-		worker.execute();
+	            return (ArrayList<Oferta>) respuesta.getDatos();
+	        }
+
+	        @Override
+	        protected void done() {
+	            try {
+	                ArrayList<Oferta> todasLasOfertas = get();
+
+	                int total = todasLasOfertas.size();
+	                int activas = 0;
+	                for (Oferta oferta : todasLasOfertas) {
+	                    if (oferta.getEstado() == EstadoOferta.PENDIENTE) {
+	                        activas++;
+	                    }
+	                }
+
+	                lblTotalOfertasNum.setText(String.valueOf(total));
+	                lblOfertasActivasNum.setText(String.valueOf(activas));
+
+	                DefaultTableModel modelo = crearModeloOfertasRecientes(todasLasOfertas);
+	                tablaOfertas.setModel(modelo);
+
+	                if (modelo.getRowCount() == 0) {
+	                    pnlVacio.setVisible(true);
+	                    pnlTabla.setVisible(false);
+	                } else {
+	                    pnlVacio.setVisible(false);
+	                    pnlTabla.setVisible(true);
+	                }
+
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	                lblTotalOfertasNum.setText("0");
+	                lblOfertasActivasNum.setText("0");
+	                JOptionPane.showMessageDialog(VerOfertasAdmin.this, "No se pudieron cargar las ofertas.", "Error", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	    };
+	    worker.execute();
 	}
 
-	private int contarTotalOfertas() {
-		if (empresa == null || empresa.getLasOfertas() == null) {
-			return 0;
-		}
-		return empresa.getLasOfertas().size();
-	}
-
-	private int contarOfertasActivas() {
-		if (empresa == null || empresa.getLasOfertas() == null) {
-			return 0;
-		}
-		int contador = 0;
-		for (Oferta oferta : empresa.getLasOfertas()) {
-			if (oferta.getEstado() == EstadoOferta.PENDIENTE) {
-				contador++;
-			}
-		}
-		return contador;
-	}
 
 	private String formatearEstado(EstadoOferta estado) {
 		if (estado == EstadoOferta.PENDIENTE) {
@@ -352,48 +358,43 @@ public class VerOfertasAdmin extends JFrame {
 		return "N/A";
 	}
 
-	private ArrayList<Oferta> obtenerOfertasRecientes() {
-		ArrayList<Oferta> todas = new ArrayList<Oferta>();
-		if (empresa == null || empresa.getLasOfertas() == null) {
-			return todas;
-		}
+	private ArrayList<Oferta> obtenerOfertasRecientes(ArrayList<Oferta> todasLasOfertas) {
+	    ArrayList<Oferta> todas = new ArrayList<Oferta>(todasLasOfertas);
 
-		todas.addAll(empresa.getLasOfertas());
-
-		for (int i = 0; i < todas.size() - 1; i++) {
-			for (int j = 0; j < todas.size() - 1 - i; j++) {
-				if (todas.get(j).getFechaPublicacion() != null && todas.get(j + 1).getFechaPublicacion() != null
-						&& todas.get(j).getFechaPublicacion().isBefore(todas.get(j + 1).getFechaPublicacion())) {
-					Oferta temporal = todas.get(j);
-					todas.set(j, todas.get(j + 1));
-					todas.set(j + 1, temporal);
-				}
-			}
-		}
-		return todas;
+	    for (int i = 0; i < todas.size() - 1; i++) {
+	        for (int j = 0; j < todas.size() - 1 - i; j++) {
+	            if (todas.get(j).getFechaPublicacion() != null && todas.get(j + 1).getFechaPublicacion() != null
+	                    && todas.get(j).getFechaPublicacion().isBefore(todas.get(j + 1).getFechaPublicacion())) {
+	                Oferta temporal = todas.get(j);
+	                todas.set(j, todas.get(j + 1));
+	                todas.set(j + 1, temporal);
+	            }
+	        }
+	    }
+	    return todas;
 	}
 
-	private DefaultTableModel crearModeloOfertasRecientes() {
-		DefaultTableModel modelo = new DefaultTableModel(new Object[][] {},
-				new String[] { "Puesto", "Empresa", "Fecha Publicación", "Solicitudes", "Estado" }) {
-			public boolean isCellEditable(int fila, int columna) {
-				return false;
-			}
-		};
+	private DefaultTableModel crearModeloOfertasRecientes(ArrayList<Oferta> todasLasOfertas) {
+	    DefaultTableModel modelo = new DefaultTableModel(new Object[][] {},
+	            new String[] { "Puesto", "Empresa", "Fecha Publicación", "Solicitudes", "Estado" }) {
+	        public boolean isCellEditable(int fila, int columna) {
+	            return false;
+	        }
+	    };
 
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
+	    DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
 
-		for (Oferta oferta : obtenerOfertasRecientes()) {
-			String fecha = "";
-			if (oferta.getFechaPublicacion() != null) {
-				fecha = oferta.getFechaPublicacion().format(formato);
-			}
-			String estadoTexto = formatearEstadoOferta(oferta.getEstado());
-			modelo.addRow(new Object[] { oferta.getPuesto(),
-					oferta.getEmpresa() != null ? oferta.getEmpresa().getNombre() : "",
-					fecha, oferta.cantContratados(), estadoTexto });
-		}
-		return modelo;
+	    for (Oferta oferta : obtenerOfertasRecientes(todasLasOfertas)) {
+	        String fecha = "";
+	        if (oferta.getFechaPublicacion() != null) {
+	            fecha = oferta.getFechaPublicacion().format(formato);
+	        }
+	        String estadoTexto = formatearEstadoOferta(oferta.getEstado());
+	        modelo.addRow(new Object[] { oferta.getPuesto(),
+	                oferta.getEmpresa() != null ? oferta.getEmpresa().getNombre() : "",
+	                fecha, oferta.cantContratados(), estadoTexto });
+	    }
+	    return modelo;
 	}
 
 	private String formatearEstadoOferta(EstadoOferta estado) {
