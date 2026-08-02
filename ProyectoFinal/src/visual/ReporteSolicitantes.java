@@ -12,14 +12,23 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 
 import logico.BolsaEmpleo;
 import logico.Persona;
 
 public class ReporteSolicitantes extends JDialog {
+
+	private static final long serialVersionUID = 1L;
+
+	private JLabel lblTotalSolicitantes;
+	private JLabel lblBuscandoEmpleo;
+	private JLabel lblEstado;
+	private JButton cerrarButton;
 
 	public static void main(String[] args) {
 		try {
@@ -33,9 +42,10 @@ public class ReporteSolicitantes extends JDialog {
 
 	public ReporteSolicitantes() {
 		setTitle("Reporte de Solicitantes");
-		setBounds(100, 100, 427, 225);
+		setBounds(100, 100, 427, 293);
 		setLocationRelativeTo(null);
 		setResizable(false);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout());
 
 		JPanel contentPanel = new JPanel();
@@ -45,57 +55,113 @@ public class ReporteSolicitantes extends JDialog {
 
 		JLabel lblTitulo = new JLabel("Resumen de solicitantes registrados:");
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTitulo.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 16));
 		contentPanel.add(lblTitulo, BorderLayout.NORTH);
 
-		ArrayList<Persona> lasPersonas = BolsaEmpleo.getInstancia().getPersonas();
-		int total = lasPersonas == null ? 0 : lasPersonas.size();
-		int disponibles = 0;
-		if (lasPersonas != null) {
-			for (Persona persona : lasPersonas) {
-				if (!persona.isEstadoEmpleo()) {
-					disponibles++;
-				}
-			}
-		}
+		lblTotalSolicitantes = crearLabelValor(new Color(0, 120, 0));
+		lblBuscandoEmpleo = crearLabelValor(new Color(204, 102, 0));
 
 		JPanel panelStats = new JPanel();
 		panelStats.setLayout(new GridLayout(1, 2, 20, 0));
-		panelStats.add(crearBloque("Total de solicitantes", String.valueOf(total), new Color(0, 120, 0)));
-		panelStats.add(crearBloque("Buscando empleo", String.valueOf(disponibles), new Color(204, 102, 0)));
+		panelStats.add(crearBloque("Total de solicitantes", lblTotalSolicitantes));
+		panelStats.add(crearBloque("Buscando empleo", lblBuscandoEmpleo));
 		contentPanel.add(panelStats, BorderLayout.CENTER);
 
-		JLabel lblCantidad = new JLabel("Basado en los datos actuales de la plataforma");
-		lblCantidad.setHorizontalAlignment(SwingConstants.CENTER);
-		lblCantidad.setFont(new Font("Arial", Font.ITALIC, 11));
-		contentPanel.add(lblCantidad, BorderLayout.SOUTH);
+		lblEstado = new JLabel("Cargando datos...");
+		lblEstado.setHorizontalAlignment(SwingConstants.CENTER);
+		lblEstado.setFont(new Font("Calibri", Font.ITALIC, 14));
+		contentPanel.add(lblEstado, BorderLayout.SOUTH);
 
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
-		JButton cerrarButton = new JButton("Cerrar");
+		cerrarButton = new JButton("Cerrar");
 		cerrarButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
 		});
 		buttonPane.add(cerrarButton);
+
+		cargarReporteConHilo();
 	}
 
-	private JPanel crearBloque(String titulo, String valor, Color color) {
+	private void cargarReporteConHilo() {
+		cerrarButton.setEnabled(false);
+		lblTotalSolicitantes.setText("...");
+		lblBuscandoEmpleo.setText("...");
+		lblEstado.setText("Cargando datos...");
+
+		SwingWorker<int[], Void> hilo = new SwingWorker<int[], Void>() {
+
+			@Override
+			protected int[] doInBackground() throws Exception {
+				ArrayList<Persona> lasPersonas = BolsaEmpleo.getInstancia().getPersonas();
+
+				int total = lasPersonas == null ? 0 : lasPersonas.size();
+				int disponibles = 0;
+
+				if (lasPersonas != null) {
+					for (Persona persona : lasPersonas) {
+						if (persona != null && !persona.isEstadoEmpleo()) {
+							disponibles++;
+						}
+					}
+				}
+
+				return new int[] {total, disponibles};
+			}
+
+			@Override
+			protected void done() {
+				try {
+					int[] datos = get();
+
+					lblTotalSolicitantes.setText(String.valueOf(datos[0]));
+					lblBuscandoEmpleo.setText(String.valueOf(datos[1]));
+					lblEstado.setText("Basado en los datos actuales de la plataforma");
+
+				} catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+
+					e.printStackTrace();
+
+					lblTotalSolicitantes.setText("0");
+					lblBuscandoEmpleo.setText("0");
+					lblEstado.setText("No se pudieron cargar los datos");
+
+					JOptionPane.showMessageDialog(ReporteSolicitantes.this,mensaje != null ? mensaje : "No se pudo generar el reporte de solicitantes.","Error",JOptionPane.ERROR_MESSAGE);
+
+				} finally {
+					cerrarButton.setEnabled(true);
+				}
+			}
+		};
+
+		hilo.execute();
+	}
+
+	private JLabel crearLabelValor(Color color) {
+		JLabel lblValor = new JLabel("...");
+		lblValor.setHorizontalAlignment(SwingConstants.CENTER);
+		lblValor.setFont(new Font("Calibri", Font.BOLD, 28));
+		lblValor.setForeground(color);
+
+		return lblValor;
+	}
+
+	private JPanel crearBloque(String titulo, JLabel lblValor) {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout(0, 5));
 
 		JLabel lblTitulo = new JLabel(titulo);
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTitulo.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblTitulo.setFont(new Font("Calibri", Font.PLAIN, 16));
 		panel.add(lblTitulo, BorderLayout.NORTH);
 
-		JLabel lblValor = new JLabel(valor);
-		lblValor.setHorizontalAlignment(SwingConstants.CENTER);
-		lblValor.setFont(new Font("Arial", Font.BOLD, 28));
-		lblValor.setForeground(color);
 		panel.add(lblValor, BorderLayout.CENTER);
 
 		return panel;
