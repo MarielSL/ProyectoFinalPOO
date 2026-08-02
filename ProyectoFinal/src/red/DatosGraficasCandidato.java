@@ -10,6 +10,7 @@ public class DatosGraficasCandidato implements Serializable {
     private ArrayList<String> categoriasLaborales;
     private ArrayList<Integer> cantidadPorCategoria;
 
+    //constructor
     public DatosGraficasCandidato(ArrayList<String> ofertasTop, ArrayList<Float> porcentajesTop,
             ArrayList<String> categoriasLaborales, ArrayList<Integer> cantidadPorCategoria) {
         this.ofertasTop = ofertasTop;
