@@ -31,6 +31,7 @@ import red.DatosEstadisticas;
 import red.DatosEstadisticasCandidato;
 import red.DatosEstadisticasEmpresa;
 import red.DatosLogin;
+import red.DatosMejorMatchCandidato;
 import red.DatosObtenerMatch;
 import red.DatosPublicarOferta;
 import red.DatosRegistrarSolicitud;
@@ -136,6 +137,9 @@ public class ServidorBolsaEmpleo {
             case OBTENER_DASHBOARD_ADMIN:
                 return procesarDashboardAdmin(bolsa);
                 
+            case OBTENER_MEJOR_MATCH_EMPRESA:
+                return procesarMejorMatchEmpresa(bolsa);
+            
             default:
                 return new Respuesta(false, "Operación no reconocida");
         }
@@ -263,9 +267,13 @@ public class ServidorBolsaEmpleo {
             return new Respuesta(false, "No se encontró la oferta.");
         }
 
+        System.out.println("Puesto de la oferta: " + oferta.getPuesto());
         System.out.println("Total de solicitudes en el sistema: " + bolsa.getSolicitudes().size());
         for (SolicitudEmpleo s : bolsa.getSolicitudes()) {
-            System.out.println("  - Solicitud id=" + s.getId() + " candidato=" + (s.getCandidato() != null ? s.getCandidato().getNombre() : "null") + " estado=" + s.getEstado());
+            System.out.println("  - candidato=" + (s.getCandidato() != null ? s.getCandidato().getNombre() : "null")
+                    + " estado=" + s.getEstado());
+            
+            System.out.println("Decisiones ya registradas para esta oferta: " + oferta.getDecisionesCandidatos().size());
         }
 
         ArrayList<ResultMatch> resultados = bolsa.calcularMatch(oferta);
@@ -465,6 +473,46 @@ public class ServidorBolsaEmpleo {
         int totalEmpresas = bolsa.getEmpresas() != null ? bolsa.getEmpresas().size() : 0;
 
         DatosDashboardAdmin resultado = new DatosDashboardAdmin(ofertas, personas, totalEmpresas);
+        return new Respuesta(true, resultado);
+    }
+    
+    private static Respuesta procesarMejorMatchEmpresa(BolsaEmpleo bolsa) {
+        Usuario loginUser = bolsa.getLoginUser();
+        if (loginUser == null || loginUser.getEmpresa() == null) {
+            return new Respuesta(false, "Debe iniciar sesión como empresa.");
+        }
+
+        ArrayList<Oferta> misOfertas = loginUser.getEmpresa().getLasOfertas();
+        if (misOfertas == null || misOfertas.isEmpty()) {
+            return new Respuesta(true, new ArrayList<DatosMejorMatchCandidato>());
+        }
+
+        ArrayList<DatosMejorMatchCandidato> resultado = new ArrayList<DatosMejorMatchCandidato>();
+
+        for (SolicitudEmpleo solicitud : bolsa.getSolicitudes()) {
+            if (solicitud == null || solicitud.getCandidato() == null || solicitud.getEstado() != EstadoSolicitud.ACTIVA) {
+                continue;
+            }
+
+            Oferta mejorOferta = null;
+            float mejorPorcentaje = -1f;
+
+            for (Oferta oferta : misOfertas) {
+                if (oferta == null) {
+                    continue;
+                }
+                float porcentaje = bolsa.calcCoincidencia(oferta, solicitud);
+                if (porcentaje > mejorPorcentaje) {
+                    mejorPorcentaje = porcentaje;
+                    mejorOferta = oferta;
+                }
+            }
+
+            if (mejorOferta != null) {
+                resultado.add(new DatosMejorMatchCandidato(solicitud.getCandidato(), solicitud, mejorOferta, mejorPorcentaje));
+            }
+        }
+
         return new Respuesta(true, resultado);
     }
     

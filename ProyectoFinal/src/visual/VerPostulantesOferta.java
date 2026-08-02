@@ -46,8 +46,6 @@ import red.Respuesta;
 
 public class VerPostulantesOferta extends JDialog {
 
-	private static final long serialVersionUID = 1L;
-
 	private final JPanel contentPanel = new JPanel();
 	private final ArrayList<ResultMatch> candidatosMostrados = new ArrayList<ResultMatch>();
 	private Dimension dim;

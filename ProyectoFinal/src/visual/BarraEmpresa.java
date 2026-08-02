@@ -159,10 +159,11 @@ public class BarraEmpresa extends JDialog {
 			btnSolicitudes.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent e) {
 			        cerrarTodasLasVentanas();
-			        VerPostulantesOferta ver = new VerPostulantesOferta(null);
+			        VerCandidatosEmpresa ver = new VerCandidatosEmpresa();
 			        ver.setVisible(true);
 			    }
 			});
+			btnSolicitudes.setText("Candidatos");
 			btnSolicitudes.setText("Candidatos");
 			btnSolicitudes.setHorizontalAlignment(SwingConstants.LEFT);
 			btnSolicitudes.setFont(new Font("Calibri", Font.PLAIN, 20));

@@ -19,7 +19,8 @@ public class Peticion implements Serializable {
         OBTENER_ESTADISTICAS_EMPRESA,
         OBTENER_TODAS_EMPRESAS,      
         OBTENER_TODOS_USUARIOS,      
-        OBTENER_DASHBOARD_ADMIN 
+        OBTENER_DASHBOARD_ADMIN,
+        OBTENER_MEJOR_MATCH_EMPRESA
     }
 
     private Tipo tipo;
