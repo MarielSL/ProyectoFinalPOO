@@ -1,4 +1,6 @@
 package visual;
+
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -8,6 +10,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -17,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -29,12 +34,17 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.ui.RectangleInsets;
+
 import red.ConexionCliente;
 import red.DatosGraficasAdmin;
 import red.Peticion;
 import red.Respuesta;
 
 public class VerGraficas extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+
 	private JPanel contentPane;
 	private Dimension dim;
 	private JPanel panelContenido;
@@ -54,30 +64,38 @@ public class VerGraficas extends JFrame {
 	}
 
 	public VerGraficas() {
-		setTitle("Ver Gr\u00E1ficas");
+		setTitle("Ver Gráficas");
 		Utilidades.aplicarIcono(this);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
 		dim = getToolkit().getScreenSize();
 		setSize(dim.width, dim.height - 55);
 		setLocationRelativeTo(null);
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+
 		JLayeredPane layeredPane = new JLayeredPane();
 		contentPane.add(layeredPane, BorderLayout.CENTER);
 		layeredPane.setLayout(new BorderLayout(0, 0));
+
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(245, 245, 245));
 		panel.setLayout(null);
 		layeredPane.add(panel, BorderLayout.CENTER);
+
 		int margen = 40;
 		int anchoContenidoLocal = dim.width - (margen * 2);
+		this.anchoContenido = anchoContenidoLocal;
+
 		PanelConSombra panelMenu = new PanelConSombra(25);
 		panelMenu.setBackground(new Color(0, 0, 51));
-		panelMenu.setBounds(40, 20, 1840, 82);
+		panelMenu.setBounds(40, 20, anchoContenidoLocal, 82);
 		panel.add(panelMenu);
 		panelMenu.setLayout(null);
+
 		BotonRedond btnAtras = new BotonRedond("", 18);
 		btnAtras.setBackground(new Color(0, 0, 51));
 		btnAtras.setBounds(20, 12, 46, 46);
@@ -94,14 +112,14 @@ public class VerGraficas extends JFrame {
 			}
 		});
 		panelMenu.add(btnAtras);
-		JLabel lblTitulo = new JLabel("Ver Gr\u00E1ficas");
+
+		JLabel lblTitulo = new JLabel("Ver Gráficas");
 		lblTitulo.setForeground(new Color(255, 51, 51));
 		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblTitulo.setBounds(74, 22, 400, 30);
 		panelMenu.add(lblTitulo);
 
-		this.panelContenido = panel;
-		this.anchoContenido = anchoContenidoLocal;
+		panelContenido = panel;
 		cargarGraficasConHilo();
 	}
 
@@ -127,7 +145,8 @@ public class VerGraficas extends JFrame {
 					dibujarPantalla(datos);
 				} catch (Exception e) {
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(VerGraficas.this, "No se pudieron cargar las gr\u00E1ficas.", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(VerGraficas.this, "No se pudieron cargar las gráficas.", "Error", JOptionPane.ERROR_MESSAGE);
+					dibujarPantallaVacia();
 				}
 			}
 		};
@@ -135,29 +154,44 @@ public class VerGraficas extends JFrame {
 		hilo.execute();
 	}
 
+	private void dibujarPantallaVacia() {
+		dibujarPantalla(null);
+	}
+
 	private void dibujarPantalla(DatosGraficasAdmin datos) {
+		panelContenido.removeAll();
+
 		int y = 110;
-		crearKpi(panelContenido, 40, y, 420, 95, "Solicitantes empleados", datos.getSolicitantesEmpleados());
-		crearKpi(panelContenido, 480, y, 420, 95, "Empresas activas", datos.getEmpresasActivas());
+		int tarjetaKpiW = 420;
+		int tarjetaKpiH = 95;
+		int gapKpi = 20;
+
+		crearKpi(panelContenido, 40, y, tarjetaKpiW, tarjetaKpiH, "Solicitantes empleados", datos != null ? datos.getSolicitantesEmpleados() : 0);
+		crearKpi(panelContenido, 40 + tarjetaKpiW + gapKpi, y, tarjetaKpiW, tarjetaKpiH, "Empresas activas", datos != null ? datos.getEmpresasActivas() : 0);
 
 		int yGraficas = 220;
 		int gap = 20;
 		int anchoTarjeta = (anchoContenido - (gap * 2)) / 3;
 		int altoTarjeta = 340;
 
-		PanelConSombra tarjeta1 = crearTarjeta(panelContenido, 40, yGraficas, anchoTarjeta, altoTarjeta, "Top 5 empresas con mas ofertas");
+		PanelConSombra tarjeta1 = crearTarjeta(panelContenido, 40, yGraficas, anchoTarjeta, altoTarjeta, "Top 5 empresas con más ofertas");
 		tarjeta1.add(crearChartPanel(graficoTopEmpresas(datos), anchoTarjeta - 30, 255), BorderLayout.CENTER);
 
-		PanelConSombra tarjeta2 = crearTarjeta(panelContenido, 60 + anchoTarjeta, yGraficas, anchoTarjeta, altoTarjeta, "Solicitudes del mes vs ofertas del mes");
-		tarjeta2.add(crearChartPanel(graficoSolicitudesVsOfertasMes(datos), anchoTarjeta - 30, 255), BorderLayout.CENTER);
+		PanelConSombra tarjeta2 = crearTarjeta(panelContenido, 40 + anchoTarjeta + gap, yGraficas, anchoTarjeta, altoTarjeta, "Actividad mensual de la plataforma");
+		tarjeta2.add(crearChartPanel(graficoActividadMensual(datos), anchoTarjeta - 30, 255), BorderLayout.CENTER);
 
-		PanelConSombra tarjeta3 = crearTarjeta(panelContenido, 80 + (anchoTarjeta * 2), yGraficas, anchoTarjeta, altoTarjeta, "Solicitudes recibidas vs aceptadas");
-		tarjeta3.add(crearChartPanel(graficoSolicitudesAceptadas(datos), anchoTarjeta - 30, 255), BorderLayout.CENTER);
+		PanelConSombra tarjeta3 = crearTarjeta(panelContenido, 40 + (anchoTarjeta + gap) * 2, yGraficas, anchoTarjeta, altoTarjeta, "Estado de las decisiones de candidatos");
+		tarjeta3.add(crearChartPanel(graficoEstadoDecisiones(datos), anchoTarjeta - 30, 255), BorderLayout.CENTER);
 
 		int y2 = 580;
 		int anchoInferior = anchoContenido - 80;
-		PanelConSombra tarjeta4 = crearTarjeta(panelContenido, 40, y2, anchoInferior, 300, "% de hombres y mujeres empleados");
-		tarjeta4.add(crearChartPanel(graficoGeneroEmpleados(datos), anchoInferior - 30, 215), BorderLayout.CENTER);
+
+		PanelConSombra tarjeta4 = crearTarjeta(panelContenido, 40, y2, anchoInferior, 300, "Oferta vs. demanda por área laboral");
+		tarjeta4.add(crearChartPanel(graficoOfertaVsDemandaArea(datos), anchoInferior - 30, 215), BorderLayout.CENTER);
+
+		int y3 = 900;
+		PanelConSombra tarjeta5 = crearTarjeta(panelContenido, 40, y3, anchoInferior, 300, "Distribución de coincidencias");
+		tarjeta5.add(crearChartPanel(graficoDistribucionCoincidencias(datos), anchoInferior - 30, 215), BorderLayout.CENTER);
 
 		panelContenido.revalidate();
 		panelContenido.repaint();
@@ -169,11 +203,13 @@ public class VerGraficas extends JFrame {
 		card.setBounds(x, y, ancho, alto);
 		card.setLayout(null);
 		padre.add(card);
+
 		JLabel lblTitulo = new JLabel(titulo);
 		lblTitulo.setForeground(new Color(0, 0, 51));
 		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 17));
 		lblTitulo.setBounds(20, 14, ancho - 40, 20);
 		card.add(lblTitulo);
+
 		JLabel lblValor = new JLabel(String.valueOf(valor));
 		lblValor.setForeground(new Color(0, 0, 51));
 		lblValor.setFont(new Font("Calibri", Font.BOLD, 34));
@@ -187,20 +223,25 @@ public class VerGraficas extends JFrame {
 		tarjeta.setBounds(x, y, ancho, alto);
 		tarjeta.setLayout(new BorderLayout());
 		padre.add(tarjeta);
+
 		JPanel header = new JPanel();
 		header.setOpaque(false);
 		header.setLayout(null);
 		header.setPreferredSize(new Dimension(ancho, 48));
+
 		JLabel lblTitulo = new JLabel(titulo);
 		lblTitulo.setForeground(new Color(0, 0, 51));
 		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 20));
 		lblTitulo.setBounds(18, 12, ancho - 36, 24);
 		header.add(lblTitulo);
+
 		tarjeta.add(header, BorderLayout.NORTH);
+
 		JPanel body = new JPanel();
 		body.setOpaque(false);
 		body.setLayout(new BorderLayout());
 		tarjeta.add(body, BorderLayout.CENTER);
+
 		return tarjeta;
 	}
 
@@ -219,21 +260,19 @@ public class VerGraficas extends JFrame {
 	private JFreeChart graficoTopEmpresas(DatosGraficasAdmin datos) {
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-		if (datos.getNombresEmpresasTop().isEmpty()) {
+		if (datos != null && datos.getNombresEmpresasTop() != null && !datos.getNombresEmpresasTop().isEmpty()) {
+			for (int i = 0; i < datos.getNombresEmpresasTop().size() && i < datos.getOfertasPorEmpresaTop().size(); i++) {
+				dataset.addValue(datos.getOfertasPorEmpresaTop().get(i), "Ofertas", datos.getNombresEmpresasTop().get(i));
+			}
+		} else {
 			dataset.addValue(12, "Ofertas", "Constructora X");
 			dataset.addValue(9, "Ofertas", "Tech RD");
 			dataset.addValue(7, "Ofertas", "Servicios SRL");
 			dataset.addValue(6, "Ofertas", "Global Soluciones");
 			dataset.addValue(5, "Ofertas", "Grupo Norte");
-		} else {
-			for (int i = 0; i < datos.getNombresEmpresasTop().size(); i++) {
-				dataset.addValue(datos.getOfertasPorEmpresaTop().get(i), "Ofertas", datos.getNombresEmpresasTop().get(i));
-			}
 		}
 
-		JFreeChart chart = ChartFactory.createBarChart(
-				null, "Empresa", "Ofertas", dataset, PlotOrientation.HORIZONTAL, false, true, false);
-
+		JFreeChart chart = ChartFactory.createBarChart(null, "Empresa", "Ofertas", dataset, PlotOrientation.HORIZONTAL, false, true, false);
 		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setBackgroundPaint(Color.WHITE);
 		plot.setRangeGridlinePaint(new Color(232, 232, 232));
@@ -250,11 +289,10 @@ public class VerGraficas extends JFrame {
 		return chart;
 	}
 
-	private JFreeChart graficoSolicitudesVsOfertasMes(DatosGraficasAdmin datos) {
+	private JFreeChart graficoActividadMensual(DatosGraficasAdmin datos) {
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-		int solicitudesMes = datos.getSolicitudesMes();
-		int ofertasMes = datos.getOfertasMes();
+		int solicitudesMes = datos != null ? datos.getSolicitudesMes() : 0;
+		int ofertasMes = datos != null ? datos.getOfertasMes() : 0;
 
 		if (solicitudesMes == 0 && ofertasMes == 0) {
 			solicitudesMes = 18;
@@ -264,9 +302,7 @@ public class VerGraficas extends JFrame {
 		dataset.addValue(solicitudesMes, "Cantidad", "Solicitudes");
 		dataset.addValue(ofertasMes, "Cantidad", "Ofertas");
 
-		JFreeChart chart = ChartFactory.createBarChart(
-				null, "Tipo", "Cantidad", dataset, PlotOrientation.VERTICAL, false, true, false);
-
+		JFreeChart chart = ChartFactory.createBarChart(null, "Tipo", "Cantidad", dataset, PlotOrientation.VERTICAL, false, true, false);
 		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setBackgroundPaint(Color.WHITE);
 		plot.setRangeGridlinePaint(new Color(232, 232, 232));
@@ -276,25 +312,28 @@ public class VerGraficas extends JFrame {
 		renderer.setSeriesPaint(0, new Color(102, 126, 234));
 		renderer.setBarPainter(new StandardBarPainter());
 		renderer.setDrawBarOutline(false);
+		renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+		renderer.setBaseItemLabelsVisible(true);
 
 		chart.setBackgroundPaint(Color.WHITE);
 		return chart;
 	}
 
-	private JFreeChart graficoSolicitudesAceptadas(DatosGraficasAdmin datos) {
+	private JFreeChart graficoEstadoDecisiones(DatosGraficasAdmin datos) {
 		DefaultPieDataset dataset = new DefaultPieDataset();
+		int recibidas = datos != null ? datos.getSolicitudesRecibidas() : 0;
+		int aceptadas = datos != null ? datos.getSolicitudesAceptadas() : 0;
 
-		int recibidas = datos.getSolicitudesRecibidas();
-		int aceptadas = datos.getSolicitudesAceptadas();
-
-		if (recibidas == 0) {
+		if (recibidas == 0 && aceptadas == 0) {
 			recibidas = 20;
 			aceptadas = 8;
 		}
 
-		int restantes = Math.max(0, recibidas - aceptadas);
-		dataset.setValue("Aceptadas", aceptadas);
-		dataset.setValue("En proceso", restantes);
+		int rechazadas = Math.max(0, recibidas - aceptadas);
+
+		dataset.setValue("Pendientes", Math.max(0, recibidas - aceptadas - rechazadas));
+		dataset.setValue("Contratados", aceptadas);
+		dataset.setValue("Rechazados", rechazadas);
 
 		JFreeChart chart = ChartFactory.createPieChart(null, dataset, true, true, false);
 		PiePlot plot = (PiePlot) chart.getPlot();
@@ -304,8 +343,9 @@ public class VerGraficas extends JFrame {
 		plot.setLabelBackgroundPaint(new Color(255, 255, 255, 0));
 		plot.setLabelOutlinePaint(null);
 		plot.setLabelShadowPaint(null);
-		plot.setSectionPaint("Aceptadas", new Color(46, 125, 50));
-		plot.setSectionPaint("En proceso", new Color(255, 183, 77));
+		plot.setSectionPaint("Pendientes", new Color(255, 183, 77));
+		plot.setSectionPaint("Contratados", new Color(46, 125, 50));
+		plot.setSectionPaint("Rechazados", new Color(198, 40, 40));
 		plot.setSimpleLabels(true);
 		plot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0}: {1} ({2})"));
 
@@ -313,32 +353,53 @@ public class VerGraficas extends JFrame {
 		return chart;
 	}
 
-	private JFreeChart graficoGeneroEmpleados(DatosGraficasAdmin datos) {
-		DefaultPieDataset dataset = new DefaultPieDataset();
+	private JFreeChart graficoOfertaVsDemandaArea(DatosGraficasAdmin datos) {
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-		int hombres = datos.getHombresEmpleados();
-		int mujeres = datos.getMujeresEmpleadas();
+		dataset.addValue(5, "Ofertas", "Tecnología");
+		dataset.addValue(9, "Solicitudes", "Tecnología");
+		dataset.addValue(3, "Ofertas", "Salud");
+		dataset.addValue(2, "Solicitudes", "Salud");
+		dataset.addValue(2, "Ofertas", "Administración");
+		dataset.addValue(7, "Solicitudes", "Administración");
 
-		if (hombres == 0 && mujeres == 0) {
-			hombres = 1;
-			mujeres = 1;
-		}
-
-		dataset.setValue("Hombres", hombres);
-		dataset.setValue("Mujeres", mujeres);
-
-		JFreeChart chart = ChartFactory.createPieChart(null, dataset, true, true, false);
-		PiePlot plot = (PiePlot) chart.getPlot();
+		JFreeChart chart = ChartFactory.createBarChart(null, "Área laboral", "Cantidad", dataset, PlotOrientation.HORIZONTAL, true, true, false);
+		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setBackgroundPaint(Color.WHITE);
+		plot.setRangeGridlinePaint(new Color(232, 232, 232));
 		plot.setOutlineVisible(false);
-		plot.setLabelFont(new Font("Calibri", Font.PLAIN, 13));
-		plot.setLabelBackgroundPaint(new Color(255, 255, 255, 0));
-		plot.setLabelOutlinePaint(null);
-		plot.setLabelShadowPaint(null);
-		plot.setSectionPaint("Hombres", new Color(102, 126, 234));
-		plot.setSectionPaint("Mujeres", new Color(132, 169, 255));
-		plot.setSimpleLabels(true);
-		plot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0}: {1} ({2})"));
+
+		BarRenderer renderer = (BarRenderer) plot.getRenderer();
+		renderer.setSeriesPaint(0, new Color(0, 102, 153));
+		renderer.setSeriesPaint(1, new Color(255, 183, 77));
+		renderer.setBarPainter(new StandardBarPainter());
+		renderer.setDrawBarOutline(false);
+		renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+		renderer.setBaseItemLabelsVisible(true);
+
+		chart.setBackgroundPaint(Color.WHITE);
+		return chart;
+	}
+
+	private JFreeChart graficoDistribucionCoincidencias(DatosGraficasAdmin datos) {
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		dataset.addValue(12, "Coincidencias", "0-39% Baja");
+		dataset.addValue(23, "Coincidencias", "40-59% Media");
+		dataset.addValue(18, "Coincidencias", "60-79% Buena");
+		dataset.addValue(9, "Coincidencias", "80-100% Alta");
+
+		JFreeChart chart = ChartFactory.createBarChart(null, "Rango", "Cantidad", dataset, PlotOrientation.VERTICAL, false, true, false);
+		CategoryPlot plot = chart.getCategoryPlot();
+		plot.setBackgroundPaint(Color.WHITE);
+		plot.setRangeGridlinePaint(new Color(232, 232, 232));
+		plot.setOutlineVisible(false);
+
+		BarRenderer renderer = (BarRenderer) plot.getRenderer();
+		renderer.setSeriesPaint(0, new Color(76, 175, 80));
+		renderer.setBarPainter(new StandardBarPainter());
+		renderer.setDrawBarOutline(false);
+		renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+		renderer.setBaseItemLabelsVisible(true);
 
 		chart.setBackgroundPaint(Color.WHITE);
 		return chart;
@@ -349,26 +410,8 @@ public class VerGraficas extends JFrame {
 		if (recurso == null) {
 			return;
 		}
-	    ImageIcon icono = new ImageIcon(recurso);
-	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-	    boton.setIcon(new ImageIcon(imagenEscalada));
-	}
-
-	private void colocarImagen(JLabel label, String ruta) {
-		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-		int anchoLabel = label.getWidth();
-		int altoLabel = label.getHeight();
-		int anchoImagen = icono.getIconWidth();
-		int altoImagen = icono.getIconHeight();
-		double escalaAncho = (double) anchoLabel / anchoImagen;
-		double escalaAlto = (double) altoLabel / altoImagen;
-		double escala = Math.max(escalaAncho, escalaAlto);
-		int nuevoAncho = (int) (anchoImagen * escala);
-		int nuevoAlto = (int) (altoImagen * escala);
-		Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
-		label.setIcon(new ImageIcon(imagenEscalada));
-		label.setText("");
-		label.setHorizontalAlignment(JLabel.CENTER);
-		label.setVerticalAlignment(JLabel.CENTER);
+		ImageIcon icono = new ImageIcon(recurso);
+		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }

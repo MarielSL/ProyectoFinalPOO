@@ -775,6 +775,7 @@ public class ServidorBolsaEmpleo {
         int solicitantesEmpleados = 0;
         int hombresEmpleados = 0;
         int mujeresEmpleadas = 0;
+
         for (Persona p : personas) {
             if (p != null && p.isEstadoEmpleo()) {
                 solicitantesEmpleados++;
@@ -789,19 +790,20 @@ public class ServidorBolsaEmpleo {
 
         int empresasActivas = 0;
         for (Oferta o : ofertas) {
-            if (o != null && (o.getEstado() == EstadoOferta.PENDIENTE || o.getEstado() == EstadoOferta.COMPLETADA)) {
+            if (o != null && o.getEmpresa() != null && o.getEstado() == EstadoOferta.PENDIENTE) {
                 empresasActivas++;
             }
         }
 
         Map<String, Integer> conteoEmpresas = new LinkedHashMap<String, Integer>();
         for (Oferta o : ofertas) {
-            if (o == null) {
+            if (o == null || o.getEmpresa() == null) {
                 continue;
             }
-            String nombre = o.getEmpresa() != null ? o.getEmpresa().getNombre() : "Sin empresa";
+            String nombre = o.getEmpresa().getNombre();
             conteoEmpresas.put(nombre, conteoEmpresas.getOrDefault(nombre, 0) + 1);
         }
+
         List<Map.Entry<String, Integer>> listaEmpresas = new ArrayList<Map.Entry<String, Integer>>(conteoEmpresas.entrySet());
         listaEmpresas.sort((a, b) -> b.getValue().compareTo(a.getValue()));
 
@@ -813,24 +815,162 @@ public class ServidorBolsaEmpleo {
             ofertasPorEmpresaTop.add(listaEmpresas.get(i).getValue());
         }
 
-        int solicitudesMes = solicitudes.size();
-        int ofertasMes = ofertas.size();
+        int solicitudesMes = contarSolicitudesDelMes(solicitudes);
+        int ofertasMes = contarOfertasDelMes(ofertas);
 
         int solicitudesRecibidas = solicitudes.size();
         int solicitudesAceptadas = 0;
+        int pendientes = 0;
+        int rechazados = 0;
+        int contratados = 0;
+
         for (SolicitudEmpleo s : solicitudes) {
-            if (s != null && s.getEstado() == EstadoSolicitud.CERRADA) {
-                solicitudesAceptadas++;
+            if (s == null) {
+                continue;
+            }
+
+            if (s.getEstado() == EstadoSolicitud.ACTIVA) {
+                pendientes++;
+            } else if (s.getEstado() == EstadoSolicitud.CERRADA) {
+                contratados++;
             }
         }
+
+        solicitudesAceptadas = contratados;
+        rechazados = Math.max(0, solicitudesRecibidas - pendientes - contratados);
+
+        Map<String, Integer> ofertasPorArea = new LinkedHashMap<String, Integer>();
+        Map<String, Integer> solicitudesPorArea = new LinkedHashMap<String, Integer>();
+
+        for (Oferta o : ofertas) {
+            if (o == null || o.getAreaLaboral() == null) {
+                continue;
+            }
+            String area = o.getAreaLaboral().toString();
+            ofertasPorArea.put(area, ofertasPorArea.getOrDefault(area, 0) + 1);
+        }
+
+        for (SolicitudEmpleo s : solicitudes) {
+            if (s == null || s.getAreaLaboral() == null) {
+                continue;
+            }
+            String area = s.getAreaLaboral().toString();
+            solicitudesPorArea.put(area, solicitudesPorArea.getOrDefault(area, 0) + 1);
+        }
+
+        ArrayList<String> nombresAreasLaborales = new ArrayList<String>();
+        ArrayList<Integer> ofertasPorAreaLaboral = new ArrayList<Integer>();
+        ArrayList<Integer> solicitudesPorAreaLaboral = new ArrayList<Integer>();
+
+        ArrayList<String> areasUnidas = new ArrayList<String>();
+        for (String area : ofertasPorArea.keySet()) {
+            if (!areasUnidas.contains(area)) {
+                areasUnidas.add(area);
+            }
+        }
+        for (String area : solicitudesPorArea.keySet()) {
+            if (!areasUnidas.contains(area)) {
+                areasUnidas.add(area);
+            }
+        }
+
+        for (String area : areasUnidas) {
+            nombresAreasLaborales.add(area);
+            ofertasPorAreaLaboral.add(ofertasPorArea.getOrDefault(area, 0));
+            solicitudesPorAreaLaboral.add(solicitudesPorArea.getOrDefault(area, 0));
+        }
+
+        ArrayList<String> rangosCoincidencia = new ArrayList<String>();
+        ArrayList<Integer> cantidadCoincidencias = new ArrayList<Integer>();
+        int c0_39 = 0;
+        int c40_59 = 0;
+        int c60_79 = 0;
+        int c80_100 = 0;
+
+        for (Oferta o : ofertas) {
+            if (o == null || o.getEstado() != EstadoOferta.PENDIENTE) {
+                continue;
+            }
+            for (SolicitudEmpleo s : solicitudes) {
+                if (s == null || s.getEstado() != EstadoSolicitud.ACTIVA) {
+                    continue;
+                }
+                float coincidencia = bolsa.calcCoincidencia(o, s);
+                if (coincidencia < 40f) {
+                    c0_39++;
+                } else if (coincidencia < 60f) {
+                    c40_59++;
+                } else if (coincidencia < 80f) {
+                    c60_79++;
+                } else {
+                    c80_100++;
+                }
+            }
+        }
+
+        rangosCoincidencia.add("0-39% Baja");
+        rangosCoincidencia.add("40-59% Media");
+        rangosCoincidencia.add("60-79% Buena");
+        rangosCoincidencia.add("80-100% Alta");
+
+        cantidadCoincidencias.add(c0_39);
+        cantidadCoincidencias.add(c40_59);
+        cantidadCoincidencias.add(c60_79);
+        cantidadCoincidencias.add(c80_100);
 
         DatosGraficasAdmin resultado = new DatosGraficasAdmin(
                 solicitantesEmpleados, empresasActivas,
                 nombresEmpresasTop, ofertasPorEmpresaTop,
                 solicitudesMes, ofertasMes,
                 solicitudesRecibidas, solicitudesAceptadas,
-                hombresEmpleados, mujeresEmpleadas);
+                hombresEmpleados, mujeresEmpleadas,
+                nombresAreasLaborales, ofertasPorAreaLaboral, solicitudesPorAreaLaboral,
+                pendientes, contratados, rechazados,
+                rangosCoincidencia, cantidadCoincidencias
+        );
 
         return new Respuesta(true, resultado);
+    }
+    
+    private static int contarSolicitudesDelMes(ArrayList<SolicitudEmpleo> solicitudes) {
+        if (solicitudes == null) {
+            return 0;
+        }
+
+        LocalDate hoy = LocalDate.now();
+        int contador = 0;
+
+        for (SolicitudEmpleo s : solicitudes) {
+            if (s == null || s.getFechaSolicitud() == null) {
+                continue;
+            }
+            if (s.getFechaSolicitud().getMonthValue() == hoy.getMonthValue()
+                    && s.getFechaSolicitud().getYear() == hoy.getYear()) {
+                contador++;
+            }
+        }
+
+        return contador;
+    }
+
+    private static int contarOfertasDelMes(ArrayList<Oferta> ofertas) {
+        if (ofertas == null) {
+            return 0;
+        }
+
+        LocalDate hoy = LocalDate.now();
+        int contador = 0;
+
+        for (Oferta o : ofertas) {
+            if (o == null || o.getFechaPublicacion() == null) {
+                continue;
+            }
+            if (o.getFechaPublicacion().getMonthValue() == hoy.getMonthValue()
+                    && o.getFechaPublicacion().getYear() == hoy.getYear()) {
+                contador++;
+            }
+        }
+
+        return contador;
     }
 }
