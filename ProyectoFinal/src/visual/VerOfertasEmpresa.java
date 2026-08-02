@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -18,7 +19,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -26,9 +30,6 @@ import logico.BolsaEmpleo;
 import logico.Empresa;
 import logico.EstadoOferta;
 import logico.Oferta;
-import java.awt.CardLayout;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 
 public class VerOfertasEmpresa extends JFrame {
 
@@ -97,7 +98,7 @@ public class VerOfertasEmpresa extends JFrame {
 		construirBusqueda(panel, margen, anchoContenido);
 		construirContenido(panel, margen, anchoContenido);
 
-		cargarDatos();
+		cargarDatosConHilo();
 	}
 
 	private void construirHeader(JPanel panel, int margen, int anchoContenido) {
@@ -174,7 +175,7 @@ public class VerOfertasEmpresa extends JFrame {
 		panelTotalOfertas.add(lblTotalOfertasNum);
 
 		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setBounds(-3, 3, 78,78);
+		lblNewLabel.setBounds(-3, 3, 78, 78);
 		panelTotalOfertas.add(lblNewLabel);
 		colocarImagen(lblNewLabel, "/img/empresa_edificio.png");
 
@@ -271,11 +272,11 @@ public class VerOfertasEmpresa extends JFrame {
 		panelContenedor.setLayout(new CardLayout(0, 0));
 
 		pnlVacio = crearEstadoVacio();
-		panelContenedor.add(pnlVacio, "name_15485631297600");
+		panelContenedor.add(pnlVacio, "vacio");
 
 		pnlTabla = crearTabla();
 		pnlTabla.setVisible(false);
-		panelContenedor.add(pnlTabla, "name_15485659564600");
+		panelContenedor.add(pnlTabla, "tabla");
 	}
 
 	private JPanel crearEstadoVacio() {
@@ -292,14 +293,14 @@ public class VerOfertasEmpresa extends JFrame {
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
 		lblTitulo.setForeground(new Color(0, 0, 51));
-		lblTitulo.setBounds(919, 361, 1, 1);
+		lblTitulo.setBounds(0, 226, 1, 1);
 		panelVacio.add(lblTitulo);
 
 		JLabel lblSubtitulo = new JLabel("Cuando publiques una nueva oferta aparecera aqui para que puedas gestionarla facilmente.");
 		lblSubtitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSubtitulo.setFont(new Font("Calibri", Font.PLAIN, 18));
 		lblSubtitulo.setForeground(new Color(130, 130, 130));
-		lblSubtitulo.setBounds(919, 361, 1, 1);
+		lblSubtitulo.setBounds(0, 258, 1, 1);
 		panelVacio.add(lblSubtitulo);
 
 		panelVacio.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -345,35 +346,56 @@ public class VerOfertasEmpresa extends JFrame {
 
 		return panelTabla;
 	}
+	
+	//implementacion de hilos
+	private void cargarDatosConHilo() {
+		SwingWorker<ArrayList<Oferta>, Void> worker = new SwingWorker<ArrayList<Oferta>, Void>() {
+			@Override
+			protected ArrayList<Oferta> doInBackground() {
+				ArrayList<Oferta> ofertas = new ArrayList<Oferta>();
+				if (empresa != null) {
+					ofertas = empresa.getLasOfertas();
+				}
+				if (ofertas == null) {
+					ofertas = new ArrayList<Oferta>();
+				}
+				return ofertas;
+			}
 
-	private void cargarDatos() {
-		modeloTabla.setRowCount(0);
-		lasOfertasMostradas.clear();
+			@Override
+			protected void done() {
+				try {
+					ArrayList<Oferta> lasOfertas = get();
+					modeloTabla.setRowCount(0);
+					lasOfertasMostradas.clear();
 
-		ArrayList<Oferta> lasOfertas = new ArrayList<Oferta>();
-		
-		if (empresa != null) {
-			lasOfertas = empresa.getLasOfertas();
-		}
+					if (lasOfertas.isEmpty()) {
+						btnPublicarOferta.setText("Publicar nueva oferta");
+						pnlVacio.setVisible(true);
+						pnlTabla.setVisible(false);
+					} else {
+						btnPublicarOferta.setText("Anadir oferta");
+						pnlVacio.setVisible(false);
+						pnlTabla.setVisible(true);
 
-		if (lasOfertas.isEmpty()) {
-			btnPublicarOferta.setText("Publicar nueva oferta");
-			pnlVacio.setVisible(true);
-			pnlTabla.setVisible(false);
-			return;
-		}
+						for (Oferta oferta : lasOfertas) {
+							lasOfertasMostradas.add(oferta);
+							modeloTabla.addRow(new Object[] {
+									oferta.getPuesto(),
+									oferta.getCiudad(),
+									oferta.getJornada(),
+									formatearEstado(oferta.getEstado())
+							});
+						}
+					}
 
-		btnPublicarOferta.setText("A\u00F1adir oferta");
-		pnlVacio.setVisible(false);
-		pnlTabla.setVisible(true);
-
-		modeloTabla.setRowCount(0);
-		lasOfertasMostradas.clear();
-
-		for (Oferta oferta : lasOfertas) {
-			lasOfertasMostradas.add(oferta);
-			modeloTabla.addRow(new Object[] { oferta.getPuesto(), oferta.getCiudad(), oferta.getJornada(), formatearEstado(oferta.getEstado()) });
-		}
+					actualizarContadores();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		worker.execute();
 	}
 
 	private void abrirPostulantesDeLaFila(int fila) {
@@ -420,13 +442,10 @@ public class VerOfertasEmpresa extends JFrame {
 			return;
 		}
 
-		RegistrarOferta registrarOferta =
-				new RegistrarOferta(empresa);
-
+		RegistrarOferta registrarOferta = new RegistrarOferta(empresa);
 		registrarOferta.setModal(true);
 		registrarOferta.setVisible(true);
-		cargarDatos();
-		actualizarContadores();
+		cargarDatosConHilo();
 	}
 
 	private void actualizarContadores() {

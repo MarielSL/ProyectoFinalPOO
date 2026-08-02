@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -66,9 +67,10 @@ public class VerOfertasCandidato extends JFrame {
     }
 
     public VerOfertasCandidato() {
-    	if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
-			candidato = BolsaEmpleo.getInstancia().getLoginUser().getPersona();
-		}
+        if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
+            candidato = BolsaEmpleo.getInstancia().getLoginUser().getPersona();
+        }
+
         setTitle("Ofertas de Empleo");
         Utilidades.aplicarIcono(this);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -80,7 +82,7 @@ public class VerOfertasCandidato extends JFrame {
         contentPane.setLayout(new BorderLayout(0, 0));
 
         dim = getToolkit().getScreenSize();
-        setSize(dim.width, dim.height-55);
+        setSize(dim.width, dim.height - 55);
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -98,17 +100,15 @@ public class VerOfertasCandidato extends JFrame {
 
         construirHeader(panel, margen, anchoContenido);
         construirFiltros(panel, margen, anchoContenido);
-
-        cargarDatos();
         construirContenido(panel, margen, anchoContenido);
-        
-        btnVolver = new BotonRedond(" \u2190  Volver", 30);
+
+        btnVolver = new BotonRedond(" <-  Volver", 30);
         btnVolver.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		HomeCandidato volver = new HomeCandidato();
-        		volver.setVisible(true);
-        		dispose();
-        	}
+            public void actionPerformed(ActionEvent e) {
+                HomeCandidato volver = new HomeCandidato();
+                volver.setVisible(true);
+                dispose();
+            }
         });
         btnVolver.setForeground(new Color(0, 0, 51));
         btnVolver.setFont(new Font("Calibri", Font.PLAIN, 20));
@@ -116,6 +116,8 @@ public class VerOfertasCandidato extends JFrame {
         btnVolver.setBackground(new Color(255, 235, 215));
         btnVolver.setBounds(40, 902, 220, 50);
         panel.add(btnVolver);
+
+        cargarDatosConHilo();
     }
 
     private void construirHeader(JPanel panel, int margen, int anchoContenido) {
@@ -124,47 +126,46 @@ public class VerOfertasCandidato extends JFrame {
         panelHeader.setBounds(0, 0, 1920, 90);
         panel.add(panelHeader);
         panelHeader.setLayout(null);
-        
-        String nombreCondidato = "Nombre";
-		if (candidato != null) {
-			nombreCondidato = candidato.getNombre();
-		}
-		int anchoNombre = 14 * nombreCondidato.length() + 20;
 
-		JLabel lblNombreEmpresa = new JLabel(nombreCondidato);
-		lblNombreEmpresa.setFont(new Font("Calibri", Font.BOLD, 24));
-		lblNombreEmpresa.setForeground(Color.WHITE);
-		lblNombreEmpresa.setBounds(1708, 36, anchoNombre, 20);
-		panelHeader.add(lblNombreEmpresa);
-	
+        String nombreCondidato = "Nombre";
+        if (candidato != null) {
+            nombreCondidato = candidato.getNombre();
+        }
+        int anchoNombre = 14 * nombreCondidato.length() + 20;
+
+        JLabel lblNombreEmpresa = new JLabel(nombreCondidato);
+        lblNombreEmpresa.setFont(new Font("Calibri", Font.BOLD, 24));
+        lblNombreEmpresa.setForeground(Color.WHITE);
+        lblNombreEmpresa.setBounds(1708, 36, anchoNombre, 20);
+        panelHeader.add(lblNombreEmpresa);
 
         BotonRedond btnAtras = new BotonRedond("", 18);
-		btnAtras.setBackground(new Color(0, 0, 51));
-		btnAtras.setBounds(12, 26, 46, 46);
-		btnAtras.setBorderPainted(false);
-		btnAtras.setContentAreaFilled(false);
-		btnAtras.setFocusPainted(false);
-		btnAtras.setOpaque(false);
-		colocarIconoBoton(btnAtras,"/img/menu-dots-vertical(White).png",25,25);
-		btnAtras.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				BarraSolicitante home = new BarraSolicitante();
-				home.setVisible(true);
-				dispose();
-			}
-		});
-		panelHeader.add(btnAtras);
+        btnAtras.setBackground(new Color(0, 0, 51));
+        btnAtras.setBounds(12, 26, 46, 46);
+        btnAtras.setBorderPainted(false);
+        btnAtras.setContentAreaFilled(false);
+        btnAtras.setFocusPainted(false);
+        btnAtras.setOpaque(false);
+        colocarIconoBoton(btnAtras, "/img/menu-dots-vertical(White).png", 25, 25);
+        btnAtras.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                BarraSolicitante home = new BarraSolicitante();
+                home.setVisible(true);
+                dispose();
+            }
+        });
+        panelHeader.add(btnAtras);
 
         JLabel lblTitulo = new JLabel("Ofertas de Empleo");
         lblTitulo.setFont(new Font("Calibri", Font.BOLD, 35));
         lblTitulo.setForeground(new Color(255, 153, 0));
         lblTitulo.setBounds(77, 28, 600, 30);
         panelHeader.add(lblTitulo);
-        
+
         JLabel iconoLogo = new JLabel("");
         iconoLogo.setBounds(1784, 0, 114, 88);
-		colocarImagen(iconoLogo, "/img/iconoLogo_FondoOscuro.png");
-		panelHeader.add(iconoLogo);
+        colocarImagen(iconoLogo, "/img/iconoLogo_FondoOscuro.png");
+        panelHeader.add(iconoLogo);
     }
 
     private void construirFiltros(JPanel panel, int margen, int anchoContenido) {
@@ -264,10 +265,6 @@ public class VerOfertasCandidato extends JFrame {
         pnlTabla = crearTabla(anchoContenido, altoContenido);
         pnlTabla.setBounds(0, 0, 1840, 686);
         panelContenedor.add(pnlTabla);
-
-        boolean hayOfertas = listaOfertas != null && !listaOfertas.isEmpty();
-        pnlVacio.setVisible(!hayOfertas);
-        pnlTabla.setVisible(hayOfertas);
     }
 
     private JPanel crearEstadoVacio() {
@@ -280,14 +277,14 @@ public class VerOfertasCandidato extends JFrame {
         lblIlustracion.setBounds(0, 40, 1, 1);
         panelVacio.add(lblIlustracion);
 
-        JLabel lblTitulo = new JLabel("A\u00FAn no hay ofertas publicadas");
+        JLabel lblTitulo = new JLabel("Aun no hay ofertas publicadas");
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Calibri", Font.BOLD, 20));
         lblTitulo.setForeground(new Color(0, 0, 51));
         lblTitulo.setBounds(0, 220, 1, 1);
         panelVacio.add(lblTitulo);
 
-        JLabel lblSubtitulo = new JLabel("Cuando las empresas publiquen ofertas, aparecer\u00E1n aqu\u00ED.");
+        JLabel lblSubtitulo = new JLabel("Cuando las empresas publiquen ofertas, apareceran aqui.");
         lblSubtitulo.setHorizontalAlignment(SwingConstants.CENTER);
         lblSubtitulo.setFont(new Font("Calibri", Font.PLAIN, 14));
         lblSubtitulo.setForeground(new Color(130, 130, 130));
@@ -336,11 +333,37 @@ public class VerOfertasCandidato extends JFrame {
         return panelTabla;
     }
 
-    private void cargarDatos() {
-        listaOfertas = BolsaEmpleo.getInstancia().getOfertas();
-        if (listaOfertas == null) {
-            listaOfertas = new ArrayList<>();
-        }
+	//implementacion de hilos
+    private void cargarDatosConHilo() {
+        SwingWorker<ArrayList<Oferta>, Void> worker = new SwingWorker<ArrayList<Oferta>, Void>() {
+            @Override
+            protected ArrayList<Oferta> doInBackground() {
+                ArrayList<Oferta> ofertas = BolsaEmpleo.getInstancia().getOfertas();
+                return ofertas != null ? ofertas : new ArrayList<Oferta>();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    listaOfertas = get();
+                    table.setModel(crearModeloOfertas());
+
+                    sorterOfertas = new TableRowSorter<DefaultTableModel>((DefaultTableModel) table.getModel());
+                    table.setRowSorter(sorterOfertas);
+                    table.getColumnModel().getColumn(6).setCellRenderer(new RenderBadgeEstado());
+                    table.setDefaultRenderer(Object.class, new RenderCentrado());
+
+                    boolean hayOfertas = listaOfertas != null && !listaOfertas.isEmpty();
+                    pnlVacio.setVisible(!hayOfertas);
+                    pnlTabla.setVisible(hayOfertas);
+
+                    aplicarFiltros();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        worker.execute();
     }
 
     private DefaultTableModel crearModeloOfertas() {
@@ -407,19 +430,15 @@ public class VerOfertasCandidato extends JFrame {
         return "";
     }
 
-    
     private String formatearEstado(EstadoOferta estado) {
         if (estado == null) {
             return "Inactiva";
         }
-
         switch (estado) {
             case PENDIENTE:
                 return "Activa";
-
             case COMPLETADA:
                 return "Inactiva";
-
             default:
                 return "Inactiva";
         }
@@ -455,30 +474,26 @@ public class VerOfertasCandidato extends JFrame {
     }
 
     private void colocarImagen(JLabel label, String ruta) {
-		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+        ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+        int anchoLabel = Math.max(1, label.getWidth());
+        int altoLabel = Math.max(1, label.getHeight());
 
-		int anchoLabel = label.getWidth();
-		int altoLabel = label.getHeight();
+        int anchoImagen = icono.getIconWidth();
+        int altoImagen = icono.getIconHeight();
 
-		int anchoImagen = icono.getIconWidth();
-		int altoImagen = icono.getIconHeight();
+        double escalaAncho = (double) anchoLabel / anchoImagen;
+        double escalaAlto = (double) altoLabel / altoImagen;
+        double escala = Math.max(escalaAncho, escalaAlto);
 
-		double escalaAncho = (double) anchoLabel / anchoImagen;
-		double escalaAlto = (double) altoLabel / altoImagen;
+        int nuevoAncho = (int) (anchoImagen * escala);
+        int nuevoAlto = (int) (altoImagen * escala);
 
-		double escala = Math.max(escalaAncho, escalaAlto);
-
-		int nuevoAncho = (int) (anchoImagen * escala);
-		int nuevoAlto = (int) (altoImagen * escala);
-
-		Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
-		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-
-		label.setIcon(iconoEscalado);
-		label.setText("");
-		label.setHorizontalAlignment(JLabel.CENTER);
-		label.setVerticalAlignment(JLabel.CENTER);
-	}
+        Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+        label.setIcon(new ImageIcon(imagenEscalada));
+        label.setText("");
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setVerticalAlignment(JLabel.CENTER);
+    }
 
     private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
         ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
@@ -510,7 +525,7 @@ public class VerOfertasCandidato extends JFrame {
             if ("Activa".equals(estado)) {
                 setBackground(new Color(198, 239, 206));
                 setForeground(new Color(46, 125, 50));
-            } else { // Inactiva
+            } else {
                 setBackground(new Color(255, 205, 210));
                 setForeground(new Color(198, 40, 40));
             }
