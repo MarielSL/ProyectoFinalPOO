@@ -37,6 +37,7 @@ import logico.SolicitudEmpleo;
 import logico.TipoEmpresa;
 import logico.Usuario;
 import red.ConexionCliente;
+import red.DatosModificarSolicitud;
 import red.DatosRegistrarSolicitud;
 import red.DatosRegistroEmpresa;
 import red.Peticion;
@@ -465,69 +466,59 @@ public class RegSolicitud extends JDialog {
 	}
 
 	private void modificarSolicitudConHilo() {
+	    if (mySolicitud == null) {
+	        JOptionPane.showMessageDialog(RegSolicitud.this, "No se pudo identificar la búsqueda laboral.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
 
-		if (mySolicitud == null) {
+	    String puesto = txtPuesto.getText().trim();
+	    AreaLaboral areaLaboral = (AreaLaboral) cbxAreaLaboral.getSelectedItem();
+	    Modalidad modalidad = (Modalidad) cbxModalidad.getSelectedItem();
+	    Jornada jornada = (Jornada) cbxJornada.getSelectedItem();
+	    float sueldoEsperado = ((Number) spnSueldo_1.getValue()).floatValue();
 
-			JOptionPane.showMessageDialog( RegSolicitud.this,"No se pudo identificar la búsqueda laboral.", "Error", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+	    btnCrear.setEnabled(false);
+	    btnVolver.setEnabled(false);
+	    btnCrear.setText("Modificando...");
 
-		String puesto = txtPuesto.getText().trim();
-		AreaLaboral areaLaboral =(AreaLaboral) cbxAreaLaboral.getSelectedItem();
-		Modalidad modalidad =(Modalidad) cbxModalidad.getSelectedItem();
-		Jornada jornada =(Jornada) cbxJornada.getSelectedItem();
-		float sueldoEsperado = ((Number) spnSueldo_1.getValue()).floatValue();
+	    SwingWorker<SolicitudEmpleo, Void> hilo = new SwingWorker<SolicitudEmpleo, Void>() {
+	        @Override
+	        protected SolicitudEmpleo doInBackground() throws Exception {
 
-		btnCrear.setEnabled(false);
-		btnVolver.setEnabled(false);
-		btnCrear.setText("Modificando...");
+	            DatosModificarSolicitud datos = new DatosModificarSolicitud(
+	                    puesto, areaLaboral, jornada, modalidad, sueldoEsperado);
 
-		SwingWorker<SolicitudEmpleo, Void> hilo = new SwingWorker<SolicitudEmpleo, Void>() {
+	            Peticion peticion = new Peticion(Peticion.Tipo.MODIFICAR_SOLICITUD, datos);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-			@Override
-			protected SolicitudEmpleo doInBackground() throws Exception {
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-				mySolicitud.setPuesto(puesto);
-				mySolicitud.setAreaLaboral(areaLaboral);
-				mySolicitud.setModalidad(modalidad);
-				mySolicitud.setJornada(jornada);
-				mySolicitud.setSueldoEsperado(sueldoEsperado );
+	            return (SolicitudEmpleo) respuesta.getDatos();
+	        }
 
-				BolsaEmpleo.getInstancia().modSolicitud(mySolicitud);
-				return mySolicitud;
-			}
-
-			@Override
-			protected void done() {
-
-				try {
-					mySolicitud = get();
-
-					JOptionPane.showMessageDialog(RegSolicitud.this,"La Solicitud fue modificada correctamente.","Información",JOptionPane.INFORMATION_MESSAGE);
-					dispose();
-
-					VerMiSolicitudLaboral ventana = new VerMiSolicitudLaboral();
-					ventana.setVisible(true);
-					ventana.toFront();
-
-				} catch (Exception e) {
-
-					Throwable causa = e.getCause();
-
-					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
-
-					e.printStackTrace();
-
-					JOptionPane.showMessageDialog( RegSolicitud.this,mensaje != null? mensaje : "No se pudo modificar la búsqueda laboral.","Error",JOptionPane.ERROR_MESSAGE);
-
-					btnCrear.setEnabled(true);
-					btnVolver.setEnabled(true);
-					btnCrear.setText("Modificar");
-				}
-			}
-		};
-
-		hilo.execute();
+	        @Override
+	        protected void done() {
+	            try {
+	                mySolicitud = get();
+	                JOptionPane.showMessageDialog(RegSolicitud.this, "La Solicitud fue modificada correctamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
+	                dispose();
+	                VerMiSolicitudLaboral ventana = new VerMiSolicitudLaboral();
+	                ventana.setVisible(true);
+	                ventana.toFront();
+	            } catch (Exception e) {
+	                Throwable causa = e.getCause();
+	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+	                e.printStackTrace();
+	                JOptionPane.showMessageDialog(RegSolicitud.this, mensaje != null ? mensaje : "No se pudo modificar la búsqueda laboral.", "Error", JOptionPane.ERROR_MESSAGE);
+	                btnCrear.setEnabled(true);
+	                btnVolver.setEnabled(true);
+	                btnCrear.setText("Modificar");
+	            }
+	        }
+	    };
+	    hilo.execute();
 	}
 
 }
