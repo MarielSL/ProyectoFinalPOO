@@ -31,6 +31,10 @@ import red.DatosEstadisticas;
 import red.DatosEstadisticasCandidato;
 import red.DatosEstadisticasEmpresa;
 import red.DatosLogin;
+import red.DatosMejorMatchCandidato;
+import red.DatosModificarEmpresa;
+import red.DatosModificarSolicitante;
+import red.DatosModificarSolicitud;
 import red.DatosObtenerMatch;
 import red.DatosPublicarOferta;
 import red.DatosRegistrarSolicitud;
@@ -136,6 +140,18 @@ public class ServidorBolsaEmpleo {
             case OBTENER_DASHBOARD_ADMIN:
                 return procesarDashboardAdmin(bolsa);
                 
+            case OBTENER_MEJOR_MATCH_EMPRESA:
+                return procesarMejorMatchEmpresa(bolsa);
+            
+            case MODIFICAR_EMPRESA:
+                return procesarModificarEmpresa(bolsa, (DatosModificarEmpresa) peticion.getDatos());
+
+            case MODIFICAR_SOLICITANTE:
+                return procesarModificarSolicitante(bolsa, (DatosModificarSolicitante) peticion.getDatos());
+
+            case MODIFICAR_SOLICITUD:
+                return procesarModificarSolicitud(bolsa, (DatosModificarSolicitud) peticion.getDatos());
+            
             default:
                 return new Respuesta(false, "Operación no reconocida");
         }
@@ -263,9 +279,13 @@ public class ServidorBolsaEmpleo {
             return new Respuesta(false, "No se encontró la oferta.");
         }
 
+        System.out.println("Puesto de la oferta: " + oferta.getPuesto());
         System.out.println("Total de solicitudes en el sistema: " + bolsa.getSolicitudes().size());
         for (SolicitudEmpleo s : bolsa.getSolicitudes()) {
-            System.out.println("  - Solicitud id=" + s.getId() + " candidato=" + (s.getCandidato() != null ? s.getCandidato().getNombre() : "null") + " estado=" + s.getEstado());
+            System.out.println("  - candidato=" + (s.getCandidato() != null ? s.getCandidato().getNombre() : "null")
+                    + " estado=" + s.getEstado());
+            
+            System.out.println("Decisiones ya registradas para esta oferta: " + oferta.getDecisionesCandidatos().size());
         }
 
         ArrayList<ResultMatch> resultados = bolsa.calcularMatch(oferta);
@@ -466,6 +486,135 @@ public class ServidorBolsaEmpleo {
 
         DatosDashboardAdmin resultado = new DatosDashboardAdmin(ofertas, personas, totalEmpresas);
         return new Respuesta(true, resultado);
+    }
+    
+    private static Respuesta procesarMejorMatchEmpresa(BolsaEmpleo bolsa) {
+        Usuario loginUser = bolsa.getLoginUser();
+        if (loginUser == null || loginUser.getEmpresa() == null) {
+            return new Respuesta(false, "Debe iniciar sesión como empresa.");
+        }
+
+        ArrayList<Oferta> misOfertas = loginUser.getEmpresa().getLasOfertas();
+        if (misOfertas == null || misOfertas.isEmpty()) {
+            return new Respuesta(true, new ArrayList<DatosMejorMatchCandidato>());
+        }
+
+        ArrayList<DatosMejorMatchCandidato> resultado = new ArrayList<DatosMejorMatchCandidato>();
+
+        for (SolicitudEmpleo solicitud : bolsa.getSolicitudes()) {
+            if (solicitud == null || solicitud.getCandidato() == null || solicitud.getEstado() != EstadoSolicitud.ACTIVA) {
+                continue;
+            }
+
+            Oferta mejorOferta = null;
+            float mejorPorcentaje = -1f;
+
+            for (Oferta oferta : misOfertas) {
+                if (oferta == null) {
+                    continue;
+                }
+                float porcentaje = bolsa.calcCoincidencia(oferta, solicitud);
+                if (porcentaje > mejorPorcentaje) {
+                    mejorPorcentaje = porcentaje;
+                    mejorOferta = oferta;
+                }
+            }
+
+            if (mejorOferta != null) {
+                resultado.add(new DatosMejorMatchCandidato(solicitud.getCandidato(), solicitud, mejorOferta, mejorPorcentaje));
+            }
+        }
+
+        return new Respuesta(true, resultado);
+    }
+    
+    private static Respuesta procesarModificarEmpresa(BolsaEmpleo bolsa, DatosModificarEmpresa datos) {
+        Usuario loginUser = bolsa.getLoginUser();
+        if (loginUser == null || loginUser.getEmpresa() == null) {
+            return new Respuesta(false, "Debe iniciar sesión como empresa.");
+        }
+
+        Empresa empresa = loginUser.getEmpresa();
+
+        empresa.setNombre(datos.getNombre());
+        empresa.setRnc(datos.getRnc());
+        empresa.setDireccion(datos.getDireccion());
+        empresa.setTelefono(datos.getTelefono());
+        empresa.setTipo(datos.getTipo());
+
+        Usuario user = empresa.getUser();
+        user.setCorreo(datos.getCorreo());
+        user.setUsername(datos.getUsername());
+        user.setPassword(datos.getPassword());
+        if (datos.getFotoPerfil() != null) {
+            user.setFotoPerfil(datos.getFotoPerfil());
+        }
+
+        bolsa.modEmpresa(empresa);
+
+        return new Respuesta(true, empresa);
+    }
+
+    private static Respuesta procesarModificarSolicitante(BolsaEmpleo bolsa, DatosModificarSolicitante datos) {
+        Usuario loginUser = bolsa.getLoginUser();
+        if (loginUser == null || loginUser.getPersona() == null) {
+            return new Respuesta(false, "Debe iniciar sesión como candidato.");
+        }
+
+        Persona candidato = loginUser.getPersona();
+
+        candidato.setNombre(datos.getNombre());
+        candidato.setApellido(datos.getApellido());
+        candidato.setCedula(datos.getCedula());
+        candidato.setFechNacim(datos.getFechaNacim());
+        candidato.setTelefono(datos.getTelefono());
+        candidato.setDireccion(datos.getDireccion());
+        candidato.setSexo(datos.getSexo());
+        candidato.setCiudad(datos.getCiudad());
+        candidato.setDispParaMudarse(datos.isDispMudarse());
+        candidato.setLicenciaConducir(datos.isLicenciaConducir());
+        candidato.setEstadoEmpleo(datos.isEstadoEmpleo());
+        candidato.setYearsExp(datos.getYearsExp());
+
+        Usuario user = candidato.getUser();
+        user.setCorreo(datos.getCorreo());
+        user.setUsername(datos.getUsername());
+        user.setPassword(datos.getPassword());
+        if (datos.getFotoPerfil() != null) {
+            user.setFotoPerfil(datos.getFotoPerfil());
+        }
+
+        if (candidato instanceof Universitario) {
+            ((Universitario) candidato).setCarrera(datos.getCampoExtra());
+        } else if (candidato instanceof Tecnico) {
+            ((Tecnico) candidato).setTecnico(datos.getCampoExtra());
+        } else if (candidato instanceof Obrero) {
+            ((Obrero) candidato).setHabilidades(datos.getCampoExtra());
+        }
+
+        bolsa.modSolicitante(candidato);
+        bolsa.modUsuario(user);
+
+        return new Respuesta(true, candidato);
+    }
+
+    private static Respuesta procesarModificarSolicitud(BolsaEmpleo bolsa, DatosModificarSolicitud datos) {
+        Usuario loginUser = bolsa.getLoginUser();
+        if (loginUser == null || loginUser.getPersona() == null || loginUser.getPersona().getSolicitud() == null) {
+            return new Respuesta(false, "No se encontró una solicitud activa para este candidato.");
+        }
+
+        SolicitudEmpleo solicitud = loginUser.getPersona().getSolicitud();
+
+        solicitud.setPuesto(datos.getPuesto());
+        solicitud.setAreaLaboral(datos.getAreaLaboral());
+        solicitud.setJornada(datos.getJornada());
+        solicitud.setModalidad(datos.getModalidad());
+        solicitud.setSueldoEsperado(datos.getSueldoEsperado());
+
+        bolsa.modSolicitud(solicitud);
+
+        return new Respuesta(true, solicitud);
     }
     
     

@@ -44,6 +44,7 @@ import logico.TipoUser;
 import logico.Universitario;
 import logico.Usuario;
 import red.ConexionCliente;
+import red.DatosModificarSolicitante;
 import red.DatosRegistroSolicitante;
 import red.Peticion;
 import red.Respuesta;
@@ -1015,110 +1016,89 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	private void modificarSolcitanteConHilo() {
+	    String password = new String(passwordField.getPassword());
+	    String name = txtNombre.getText().trim();
+	    String apellido = txtApellido.getText().trim();
+	    String cedula = txtCedula.getText().trim();
 
-		String password = new String (passwordField.getPassword());
-		String name = txtNombre.getText().trim();
-		String apellido = txtApellido.getText().trim();
-		String cedula = txtCedula.getText().trim();
-		
-		Date fechaSeleccionada = (Date) spnFechaNacim.getValue();
-		LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		
-		String telefono = txtTelefono.getText().trim();
-		String direccion = txtDireccion.getText().trim();
-		Sexo sexo = (Sexo) cbxSexo.getSelectedItem();
-		String ciudad = txtCiudad.getText().trim();
-		int yearsExp = (int) spnExp.getValue();
-		boolean licencia = chkLicencia.isSelected();
-		boolean mudarse = chkMudarse.isSelected();
-		boolean empleo = chkEmpleado.isSelected();
-		
-		String carrera = txtCarrera.getText().trim();
-		String habilidades = txtHabilidades.getText().trim();
-		String areaTecnico = txtTecnico.getText().trim();
-		
-		String correo = txtCorreo.getText().trim();
-		String username = txtUser.getText().trim();
-		String foto = fotoPerfil.getRutaFotoPerfil();
+	    Date fechaSeleccionada = (Date) spnFechaNacim.getValue();
+	    LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-		btnSiguiente.setEnabled(false);
-		btnSiguiente.setText("Modificando...");
+	    String telefono = txtTelefono.getText().trim();
+	    String direccion = txtDireccion.getText().trim();
+	    Sexo sexo = (Sexo) cbxSexo.getSelectedItem();
+	    String ciudad = txtCiudad.getText().trim();
+	    int yearsExp = (int) spnExp.getValue();
+	    boolean licencia = chkLicencia.isSelected();
+	    boolean mudarse = chkMudarse.isSelected();
+	    boolean empleo = chkEmpleado.isSelected();
 
-		SwingWorker<Persona, Void> hilo = new SwingWorker<Persona, Void>(){
+	    TipoPersona tipo = (mySolicitante instanceof Universitario) ? TipoPersona.UNIVERSITARIO
+	            : (mySolicitante instanceof Tecnico) ? TipoPersona.TECNICO
+	            : TipoPersona.OBRERO;
 
-			@Override
-			protected Persona doInBackground() throws Exception {
+	    String carrera = txtCarrera.getText().trim();
+	    String habilidades = txtHabilidades.getText().trim();
+	    String areaTecnico = txtTecnico.getText().trim();
 
-				Usuario userActual = mySolicitante.getUser();
+	    String correo = txtCorreo.getText().trim();
+	    String username = txtUser.getText().trim();
+	    String foto = fotoPerfil.getRutaFotoPerfil();
 
-				mySolicitante.setNombre(name);
-				mySolicitante.setDireccion(direccion);
-				mySolicitante.setTelefono(telefono);
-				mySolicitante.setApellido(apellido);
-				mySolicitante.setCedula(cedula);
-				mySolicitante.setCiudad(ciudad);
-				mySolicitante.setDispParaMudarse(mudarse);
-				mySolicitante.setLicenciaConducir(licencia);
-				mySolicitante.setEstadoEmpleo(empleo);
-				mySolicitante.setYearsExp(yearsExp);
-				mySolicitante.setFechNacim(fecha);
-				mySolicitante.setSexo(sexo);
-				
-				userActual.setCorreo(correo);
-				userActual.setFotoPerfil(foto);
-				userActual.setPassword(password);
-				userActual.setUsername(username);
+	    btnSiguiente.setEnabled(false);
+	    btnSiguiente.setText("Modificando...");
 
-				mySolicitante.setUser(userActual);
-				if(mySolicitante instanceof Universitario) {
-					Universitario uni = (Universitario) mySolicitante;
-					uni.setCarrera(carrera);
-					BolsaEmpleo.getInstancia().modSolicitante(uni);
-				}
+	    SwingWorker<Persona, Void> hilo = new SwingWorker<Persona, Void>() {
+	        @Override
+	        protected Persona doInBackground() throws Exception {
 
-				if(mySolicitante instanceof Tecnico) {
-					Tecnico tecnico = (Tecnico) mySolicitante;
-					tecnico.setTecnico(areaTecnico);
-					BolsaEmpleo.getInstancia().modSolicitante(tecnico);
-				}
-				if(mySolicitante instanceof Obrero) {
-					Obrero obrero = (Obrero) mySolicitante;
-					obrero.setHabilidades(habilidades);
-					BolsaEmpleo.getInstancia().modSolicitante(obrero);
+	            String campoExtra;
+	            if (tipo == TipoPersona.UNIVERSITARIO) {
+	                campoExtra = carrera;
+	            } else if (tipo == TipoPersona.TECNICO) {
+	                campoExtra = areaTecnico;
+	            } else {
+	                campoExtra = habilidades;
+	            }
 
-				}
-				
-				
-				return mySolicitante;
-			}
+	            DatosModificarSolicitante datos = new DatosModificarSolicitante(
+	                    name, apellido, cedula, fecha, telefono, direccion, sexo, ciudad,
+	                    mudarse, licencia, empleo, yearsExp, tipo, campoExtra,
+	                    correo, username, password, foto);
 
-			protected void done() {
+	            Peticion peticion = new Peticion(Peticion.Tipo.MODIFICAR_SOLICITANTE, datos);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-				try {
-					get();
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-					JOptionPane.showMessageDialog(RegistrarSolicitante.this,"Los datos fueron modificados correctamente.","Información",JOptionPane.INFORMATION_MESSAGE);
-					
-					dispose();
-					VerUserSolicitante ventana = new VerUserSolicitante();
-					ventana.setVisible(true);
-					ventana.toFront();
+	            return (Persona) respuesta.getDatos();
+	        }
 
-				}catch (Exception e) {
-					Throwable causa = e.getCause();
-					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
-					
-					e.printStackTrace();
-					
-					JOptionPane.showMessageDialog(RegistrarSolicitante.this, mensaje!= null ? mensaje : "No se pudieron modificar los datos", "Error", JOptionPane.ERROR_MESSAGE);
-				
-					btnSiguiente.setEnabled(true);
-					btnSiguiente.setText("Modificar");
-				}
-			}
+	        protected void done() {
+	            try {
+	                get();
+	                JOptionPane.showMessageDialog(RegistrarSolicitante.this, "Los datos fueron modificados correctamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
 
-		};
-		
-		hilo.execute();
+	                dispose();
+	                VerUserSolicitante ventana = new VerUserSolicitante();
+	                ventana.setVisible(true);
+	                ventana.toFront();
+	            } catch (Exception e) {
+	                Throwable causa = e.getCause();
+	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+
+	                e.printStackTrace();
+
+	                JOptionPane.showMessageDialog(RegistrarSolicitante.this, mensaje != null ? mensaje : "No se pudieron modificar los datos", "Error", JOptionPane.ERROR_MESSAGE);
+
+	                btnSiguiente.setEnabled(true);
+	                btnSiguiente.setText("Modificar");
+	            }
+	        }
+	    };
+
+	    hilo.execute();
 	}
 }

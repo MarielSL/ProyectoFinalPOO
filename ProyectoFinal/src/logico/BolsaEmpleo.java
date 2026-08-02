@@ -447,22 +447,70 @@ public class BolsaEmpleo implements Serializable {
 	}
 
 	private static BolsaEmpleo cargarDatos() {
-		try(ObjectInputStream entrada = new ObjectInputStream (new FileInputStream("BolsaEmpleo.dat"))){
-			return (BolsaEmpleo) entrada.readObject();
+	    try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream("BolsaEmpleo.dat"))) {
+	        BolsaEmpleo bolsa = (BolsaEmpleo) entrada.readObject();
+	        recalcularContadores(bolsa);
+	        return bolsa;
 
-		}catch(FileNotFoundException e) {
-			return new BolsaEmpleo();
+	    } catch (FileNotFoundException e) {
+	        return new BolsaEmpleo();
 
-		}catch(IOException e) {
-			e.printStackTrace();
-			return new BolsaEmpleo();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return new BolsaEmpleo();
 
-		}catch(ClassNotFoundException e) {
-			e.printStackTrace();
-			return new BolsaEmpleo();
-		}
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	        return new BolsaEmpleo();
+	    }
 	}
 
+	private static void recalcularContadores(BolsaEmpleo bolsa) {
+	    int maxPersona = -1;
+	    for (Persona p : bolsa.personas) {
+	        maxPersona = Math.max(maxPersona, extraerNumero(p.getId()));
+	    }
+	    generadorIdPersona = maxPersona + 1;
+
+	    int maxEmpresa = -1;
+	    for (Empresa e : bolsa.empresas) {
+	        maxEmpresa = Math.max(maxEmpresa, extraerNumero(e.getId()));
+	    }
+	    generadorIdEmpresa = maxEmpresa + 1;
+
+	    int maxOferta = -1;
+	    for (Oferta o : bolsa.ofertas) {
+	        maxOferta = Math.max(maxOferta, extraerNumero(o.getId()));
+	    }
+	    generadorIdOferta = maxOferta + 1;
+
+	    int maxSolicitud = -1;
+	    for (SolicitudEmpleo s : bolsa.solicitudes) {
+	        maxSolicitud = Math.max(maxSolicitud, extraerNumero(s.getId()));
+	    }
+	    generadorIdSolicitud = maxSolicitud + 1;
+
+	    int maxUser = -1;
+	    for (Usuario u : bolsa.usuarios) {
+	        maxUser = Math.max(maxUser, extraerNumero(u.getId()));
+	    }
+	    generadorIdUser = maxUser + 1;
+	}
+
+	private static int extraerNumero(String id) {
+	    if (id == null) {
+	        return -1;
+	    }
+	    String digitos = id.replaceAll("\\D+", "");
+	    if (digitos.isEmpty()) {
+	        return -1;
+	    }
+	    try {
+	        return Integer.parseInt(digitos);
+	    } catch (NumberFormatException e) {
+	        return -1;
+	    }
+	}
 	public ArrayList<ResultMatch> calcularMatch(Oferta oferta) {
 		ArrayList<ResultMatch> resultados = new ArrayList<ResultMatch>();
 

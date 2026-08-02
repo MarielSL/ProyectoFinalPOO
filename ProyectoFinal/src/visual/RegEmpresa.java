@@ -13,6 +13,7 @@ import logico.TipoEmpresa;
 import logico.TipoUser;
 import logico.Usuario;
 import red.ConexionCliente;
+import red.DatosModificarEmpresa;
 import red.DatosRegistroEmpresa;
 import red.Peticion;
 import red.Respuesta;
@@ -522,73 +523,60 @@ public class RegEmpresa extends JDialog {
 	}
 
 	private void modificarEmpresaConHilo() {
+	    String password = new String(passwordField.getPassword());
+	    String name = txtNombEmpresa.getText().trim();
+	    String rnc = txtRnc.getText().trim();
+	    String telefono = txtTelefono.getText().trim();
+	    String direccion = txtDireccion.getText().trim();
+	    String correo = txtCorreo.getText().trim();
+	    String username = txtUser.getText().trim();
+	    TipoEmpresa tipoEmpresa = (TipoEmpresa) cbxTipo.getSelectedItem();
+	    String foto = fotoPerfil.getRutaFotoPerfil();
 
-		String password = new String (passwordField.getPassword());
-		String name = txtNombEmpresa.getText().trim();
-		String rnc = txtRnc.getText().trim();
-		String telefono = txtTelefono.getText().trim();
-		String direccion = txtDireccion.getText().trim();
-		String correo = txtCorreo.getText().trim();
-		String username = txtUser.getText().trim();
-		TipoEmpresa tipoEmpresa = (TipoEmpresa) cbxTipo.getSelectedItem();
-		String foto = fotoPerfil.getRutaFotoPerfil();
+	    btnGuardar.setEnabled(false);
+	    btnGuardar.setText("Modificando...");
 
-		btnGuardar.setEnabled(false);
-		btnGuardar.setText("Modificando...");
+	    SwingWorker<Empresa, Void> hilo = new SwingWorker<Empresa, Void>() {
+	        @Override
+	        protected Empresa doInBackground() throws Exception {
 
-		SwingWorker<Empresa, Void> hilo = new SwingWorker<Empresa, Void>(){
+	            DatosModificarEmpresa datos = new DatosModificarEmpresa(
+	                    name, rnc, direccion, telefono, tipoEmpresa, correo, username, password, foto);
 
-			@Override
-			protected Empresa doInBackground() throws Exception {
+	            Peticion peticion = new Peticion(Peticion.Tipo.MODIFICAR_EMPRESA, datos);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-				Usuario userActual = myEmpresa.getUser();
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-				myEmpresa.setNombre(name);
-				myEmpresa.setRnc(rnc);
-				myEmpresa.setDireccion(direccion);
-				myEmpresa.setTelefono(telefono);
-				myEmpresa.setTipo(tipoEmpresa);
+	            return (Empresa) respuesta.getDatos();
+	        }
 
-				userActual.setCorreo(correo);
-				userActual.setFotoPerfil(foto);
-				userActual.setPassword(password);
-				userActual.setUsername(username);
+	        protected void done() {
+	            try {
+	                get();
+	                JOptionPane.showMessageDialog(RegEmpresa.this, "Los datos fueron modificados correctamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
 
-				myEmpresa.setUser(userActual);
+	                dispose();
+	                VerUserEmpresa ventana = new VerUserEmpresa();
+	                ventana.setVisible(true);
+	                ventana.toFront();
+	            } catch (Exception e) {
+	                Throwable causa = e.getCause();
+	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
 
-				BolsaEmpleo.getInstancia().modEmpresa(myEmpresa);
+	                e.printStackTrace();
 
-				return myEmpresa;
-			}
+	                JOptionPane.showMessageDialog(RegEmpresa.this, mensaje != null ? mensaje : "No se pudieron modificar los datos", "Error", JOptionPane.ERROR_MESSAGE);
 
-			protected void done() {
+	                btnGuardar.setEnabled(true);
+	                btnGuardar.setText("Modificar");
+	            }
+	        }
+	    };
 
-				try {
-					get();
-
-					JOptionPane.showMessageDialog(RegEmpresa.this,"Los datos fueron modificados correctamente.","Información",JOptionPane.INFORMATION_MESSAGE);
-					
-					dispose();
-					VerUserEmpresa ventana = new VerUserEmpresa();
-					ventana.setVisible(true);
-					ventana.toFront();
-
-				}catch (Exception e) {
-					Throwable causa = e.getCause();
-					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
-					
-					e.printStackTrace();
-					
-					JOptionPane.showMessageDialog(RegEmpresa.this, mensaje!= null ? mensaje : "No se pudieron modificar los datos", "Error", JOptionPane.ERROR_MESSAGE);
-				
-					btnGuardar.setEnabled(true);
-					btnGuardar.setText("Modificar");
-				}
-			}
-
-		};
-		
-		hilo.execute();
+	    hilo.execute();
 	}
 
 }
