@@ -30,6 +30,7 @@ import javax.swing.text.AbstractDocument;
 import java.awt.Toolkit;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 public class RegEmpresa extends JDialog {
 
@@ -99,7 +100,7 @@ public class RegEmpresa extends JDialog {
 		panel.setBounds(0, 0, 999, 993);
 		contentPanel.add(panel);
 		panel.setLayout(null);
-		
+
 		JLabel labelVolverIcon = new JLabel("");
 		labelVolverIcon.setIcon(new ImageIcon(RegEmpresa.class.getResource("/img/arrow-small-right (Navy Blue).png")));
 		labelVolverIcon.setVerticalAlignment(SwingConstants.CENTER);
@@ -307,7 +308,7 @@ public class RegEmpresa extends JDialog {
 			}
 		});
 		colocarImagen(lblVerPassword, "/img/ver.png");
-		
+
 		BotonRedond botonRedond = new BotonRedond("    Volver", 25);
 		botonRedond.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -322,8 +323,8 @@ public class RegEmpresa extends JDialog {
 					volver.setVisible(true);
 					dispose();
 				}
-				
-				
+
+
 			}
 		});
 		botonRedond.setVerticalTextPosition(SwingConstants.TOP);
@@ -341,51 +342,11 @@ public class RegEmpresa extends JDialog {
 				if (!validarDatos()) {
 					return;
 				}
-				String contrasena = new String(passwordField.getPassword());
 				if (myEmpresa == null) {
-					if (BolsaEmpleo.getInstancia().isEmpressRep(txtRnc.getText())) {
-						JOptionPane.showMessageDialog(null, "ERROR!: esta empresa ha sido registrada", "Advertenicia", JOptionPane.WARNING_MESSAGE);
-						return;
-					}
-					if (BolsaEmpleo.getInstancia().verifUsuario(txtUser.getText(), contrasena)) {
-						JOptionPane.showMessageDialog(null, "Usuario en uso.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-						return;
-					}
+					registrarEmpresaConHilo();
 
-					Empresa empresa = new Empresa("E-" + BolsaEmpleo.generadorIdEmpresa, txtRnc.getText(), txtNombEmpresa.getText(), txtTelefono.getText(),
-							txtDireccion.getText(), (TipoEmpresa) cbxTipo.getSelectedItem(), null);
-					Usuario nuevoUsuario = new Usuario("U-" + BolsaEmpleo.generadorIdUser, txtUser.getText(), contrasena, null, null, null, null, null);
-					nuevoUsuario.setEmpresa(empresa);
-					nuevoUsuario.setCorreo(txtCorreo.getText());
-					nuevoUsuario.setTipoUser(TipoUser.EMPRESA);
-					nuevoUsuario.setFotoPerfil(fotoPerfil.getRutaFotoPerfil());
-					BolsaEmpleo.getInstancia().regUser(nuevoUsuario);
-					BolsaEmpleo.getInstancia().setLoginUser(nuevoUsuario);
-					BolsaEmpleo.getInstancia().regEmpresa(empresa);
-					empresa.setUser(nuevoUsuario);
-
-					JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
-					clear();
-					
-					HomeEmpresa emp = new HomeEmpresa();
-					emp.setVisible(true);
-					dispose();
 				} else {
-					myEmpresa.setNombre(txtNombEmpresa.getText());
-					myEmpresa.setRnc(txtRnc.getText());
-					myEmpresa.setDireccion(txtDireccion.getText());
-					myEmpresa.setTelefono(txtTelefono.getText());
-					myEmpresa.setTipo((TipoEmpresa) cbxTipo.getSelectedItem());
-					Usuario modUser = myEmpresa.getUser();
-					modUser.setCorreo(txtCorreo.getText());
-					modUser.setFotoPerfil(fotoPerfil.getRutaFotoPerfil());
-					modUser.setPassword(contrasena);
-					modUser.setUsername(txtUser.getText());
-					myEmpresa.setUser(modUser);
-					BolsaEmpleo.getInstancia().modEmpresa(myEmpresa);
-					VerUserEmpresa verUser = new VerUserEmpresa();
-					verUser.setVisible(true);
-					dispose();
+					modificarEmpresaConHilo();
 				}
 			}
 		});
@@ -491,4 +452,144 @@ public class RegEmpresa extends JDialog {
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
+
+	private void registrarEmpresaConHilo() {
+
+		String password = new String (passwordField.getPassword());
+		String name = txtNombEmpresa.getText().trim();
+		String rnc = txtRnc.getText().trim();
+		String telefono = txtTelefono.getText().trim();
+		String direccion = txtDireccion.getText().trim();
+		String correo = txtCorreo.getText().trim();
+		String username = txtUser.getText().trim();
+		TipoEmpresa tipoEmpresa = (TipoEmpresa) cbxTipo.getSelectedItem();
+		String foto = fotoPerfil.getRutaFotoPerfil();
+
+		btnGuardar.setEnabled(false);
+		btnGuardar.setText("Registrando...");
+
+		SwingWorker<Usuario, Void> hilo = new SwingWorker<Usuario, Void>(){
+
+			@Override
+			protected Usuario doInBackground() throws Exception {
+
+				if(BolsaEmpleo.getInstancia().isEmpressRep(rnc)) {
+					throw new IllegalArgumentException("Empresa ya registrada.");
+				}
+
+				if(!BolsaEmpleo.getInstancia().dispUsername(username)) {
+					throw new IllegalArgumentException("El usuario ya fue registrado.");
+				}
+
+				Empresa nuevaEmpresa = new Empresa("E-"+BolsaEmpleo.generadorIdEmpresa,rnc,name,telefono,direccion,tipoEmpresa,null);
+
+				Usuario nuevoUser = new Usuario("U-"+BolsaEmpleo.generadorIdUser, username, password, correo, nuevaEmpresa, null, TipoUser.EMPRESA, foto);
+
+				nuevaEmpresa.setUser(nuevoUser);
+
+				BolsaEmpleo.getInstancia().regUser(nuevoUser);
+				BolsaEmpleo.getInstancia().regEmpresa(nuevaEmpresa);
+				BolsaEmpleo.getInstancia().setLoginUser(nuevoUser);
+
+
+				return nuevoUser;
+			}
+
+			protected void done() {
+
+				try {
+					get();
+
+					JOptionPane.showMessageDialog(null, "Se ha registrado la empresa.", "Información", JOptionPane.INFORMATION_MESSAGE);
+					dispose();
+					HomeEmpresa home = new HomeEmpresa();
+					home.setVisible(true);
+					home.toFront();
+
+				}catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(RegEmpresa.this, mensaje != null ? mensaje: "No se pudo registrar la empresa.","Error",JOptionPane.ERROR_MESSAGE);
+
+				}finally {
+					btnGuardar.setEnabled(true);
+					btnGuardar.setText("Registrar ->");
+				}
+			}
+
+		};
+		hilo.execute();
+	}
+
+	private void modificarEmpresaConHilo() {
+
+		String password = new String (passwordField.getPassword());
+		String name = txtNombEmpresa.getText().trim();
+		String rnc = txtRnc.getText().trim();
+		String telefono = txtTelefono.getText().trim();
+		String direccion = txtDireccion.getText().trim();
+		String correo = txtCorreo.getText().trim();
+		String username = txtUser.getText().trim();
+		TipoEmpresa tipoEmpresa = (TipoEmpresa) cbxTipo.getSelectedItem();
+		String foto = fotoPerfil.getRutaFotoPerfil();
+
+		btnGuardar.setEnabled(false);
+		btnGuardar.setText("Modificando...");
+
+		SwingWorker<Empresa, Void> hilo = new SwingWorker<Empresa, Void>(){
+
+			@Override
+			protected Empresa doInBackground() throws Exception {
+
+				Usuario userActual = myEmpresa.getUser();
+
+				myEmpresa.setNombre(name);
+				myEmpresa.setRnc(rnc);
+				myEmpresa.setDireccion(direccion);
+				myEmpresa.setTelefono(telefono);
+				myEmpresa.setTipo(tipoEmpresa);
+
+				userActual.setCorreo(correo);
+				userActual.setFotoPerfil(foto);
+				userActual.setPassword(password);
+				userActual.setUsername(username);
+
+				myEmpresa.setUser(userActual);
+
+				BolsaEmpleo.getInstancia().modEmpresa(myEmpresa);
+
+				return myEmpresa;
+			}
+
+			protected void done() {
+
+				try {
+					get();
+
+					JOptionPane.showMessageDialog(RegEmpresa.this,"Los datos fueron modificados correctamente.","Información",JOptionPane.INFORMATION_MESSAGE);
+					
+					dispose();
+					VerUserEmpresa ventana = new VerUserEmpresa();
+					ventana.setVisible(true);
+					ventana.toFront();
+
+				}catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+					
+					e.printStackTrace();
+					
+					JOptionPane.showMessageDialog(RegEmpresa.this, mensaje!= null ? mensaje : "No se pudieron modificar los datos", "Error", JOptionPane.ERROR_MESSAGE);
+				
+					btnGuardar.setEnabled(true);
+					btnGuardar.setText("Modificar");
+				}
+			}
+
+		};
+		
+		hilo.execute();
+	}
+
 }
