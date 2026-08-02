@@ -294,7 +294,7 @@ public class VerReportesAdmin extends JFrame {
 	    boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 	
-	//metodo colocar img
+	//metodo colocar png
 	private void colocarImagen(JLabel label, String ruta) {
 		java.net.URL recurso = getClass().getResource(ruta);
 		if (recurso == null) {
