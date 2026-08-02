@@ -33,6 +33,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.CardLayout;
+import javax.swing.SwingWorker;
 
 public class VerMiSolicitudLaboral extends JFrame {
 
@@ -63,16 +64,11 @@ public class VerMiSolicitudLaboral extends JFrame {
 	private JLabel lblSueldo;
 	private JLabel lblModalidad;
 	private JLabel lblJornada;
-	//private Persona candidato = BolsaEmpleo.getInstancia().getLoginUser().getPersona();
 	private JLabel lblEstadoIcon;
 	private JLabel lblFechaSolicitud;
 	private Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
 	private BotonRedond btnVolver;
 
-
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -86,15 +82,12 @@ public class VerMiSolicitudLaboral extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public VerMiSolicitudLaboral() {
 		Utilidades.aplicarIcono(this);
 		setTitle("Mi Solicitud Laboral");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		dim = getToolkit().getScreenSize();
-		setSize(dim.width, dim.height-55);
+		setSize(dim.width, dim.height - 55);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(0, 0, 51));
@@ -108,7 +101,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 		contentPane.add(panelFondo);
 		panelFondo.setLayout(null);
 
-		lblNewLabel_2 = new JLabel("\u00A1Vamos por tu pr\u00F3xima ");
+		lblNewLabel_2 = new JLabel("¡Vamos por tu próxima ");
 		lblNewLabel_2.setForeground(new Color(0, 0, 51));
 		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_2.setFont(new Font("Calibri", Font.BOLD, 38));
@@ -195,7 +188,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 		lblDocumentIcon.setIcon(new ImageIcon(VerMiSolicitudLaboral.class.getResource("/img/document (1).png")));
 		lblDocumentIcon.setBounds(122, 344, 55, 55);
 		panelFondo.add(lblDocumentIcon);
-		colocarImagen(lblDocumentIcon,"/img/document (1).png");
+		colocarImagen(lblDocumentIcon, "/img/document (1).png");
 
 		PanelRedond panelPuesto = new PanelRedond(30);
 		panelPuesto.setBackground(new Color(255, 255, 255));
@@ -261,7 +254,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 		panelRedond_2.setBounds(0, 0, 83, 70);
 		panelAreaLaboral.add(panelRedond_2);
 
-		JLabel lbl2 = new JLabel("\u00C1rea Laboral");
+		JLabel lbl2 = new JLabel("Área Laboral");
 		lbl2.setForeground(new Color(0, 0, 51));
 		lbl2.setFont(new Font("Calibri", Font.BOLD, 25));
 		lbl2.setBounds(145, 23, 143, 27);
@@ -420,21 +413,19 @@ public class VerMiSolicitudLaboral extends JFrame {
 		lblOpcionesParaTi.setBounds(1204, 785, 425, 26);
 		panelFondo.add(lblOpcionesParaTi);
 
-		BotonRedond btnModificar = new BotonRedond("Modificar",30);
+		BotonRedond btnModificar = new BotonRedond("Modificar", 30);
 		btnModificar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(user != null && user.getPersona() != null) {
+				if (user != null && user.getPersona() != null) {
 					Persona candidato = user.getPersona();
 					RegSolicitud modificar = new RegSolicitud(candidato.getSolicitud());
 					modificar.setVisible(true);
 					dispose();
-				}
-				else {
+				} else {
 					RegSolicitud modificar = new RegSolicitud(null);
 					modificar.setVisible(true);
 					dispose();
 				}
-
 			}
 		});
 		btnModificar.setFont(new Font("Calibri", Font.BOLD, 22));
@@ -449,7 +440,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 		lblDefineLoQue.setFont(new Font("Calibri", Font.PLAIN, 25));
 		lblDefineLoQue.setBounds(106, 155, 611, 25);
 		panelFondo.add(lblDefineLoQue);
-		
+
 		btnVolver = new BotonRedond(" \u2190  Volver", 30);
 		btnVolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -464,7 +455,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 		btnVolver.setBackground(new Color(255, 235, 215));
 		btnVolver.setBounds(26, 860, 220, 50);
 		panelFondo.add(btnVolver);
-		
+
 		BotonRedond btnNewButton = new BotonRedond("", 18);
 		btnNewButton.setBackground(new Color(255, 255, 255));
 		btnNewButton.setBounds(0, 0, 46, 46);
@@ -472,7 +463,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 		btnNewButton.setContentAreaFilled(false);
 		btnNewButton.setFocusPainted(false);
 		btnNewButton.setOpaque(false);
-		colocarIconoBoton(btnNewButton,"/img/menu-dots-vertical (Blue).png",25,25);
+		colocarIconoBoton(btnNewButton, "/img/menu-dots-vertical (Blue).png", 25, 25);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				BarraSolicitante home = new BarraSolicitante();
@@ -482,46 +473,72 @@ public class VerMiSolicitudLaboral extends JFrame {
 		});
 		panelFondo.add(btnNewButton);
 
-		if(user != null && user.getPersona() != null && user.getPersona().getSolicitud() != null) {
-			Persona candidato = user.getPersona();
-			SolicitudEmpleo solicitud = candidato.getSolicitud();
+		cargarSolicitudConHilo();
+	}
 
-			LocalDate fecha = solicitud.getFechaSolicitud();
-			DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			String FechaFormateada = Fecha.format(formato); 
+	private void cargarSolicitudConHilo() {
+		btnModificar.setEnabled(false);
 
-			lblPuesto.setText(solicitud.getPuesto());
-			lblAreaLaboral.setText(solicitud.getAreaLaboral().toString().toLowerCase());
-			lblSueldo.setText("$ " + solicitud.getSueldoEsperado());
-			lblModalidad.setText(solicitud.getModalidad().toString().toLowerCase());
-			lblJornada.setText(solicitud.getJornada().toString().toLowerCase());
-			lblFechaSolicitud.setText(FechaFormateada);
-			if(solicitud.getEstado() == EstadoSolicitud.ACTIVA) {
-				lblEstado.setText("Activa"); 
-				colocarImagen(lblEstadoIcon, "/img/check(lightBlue).png");
-			}
-			else {
-				lblEstado.setText("Inactiva"); 
-				colocarImagen(lblEstadoIcon, "/img/cross.png");
+		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+			private SolicitudEmpleo solicitud;
+
+			@Override
+			protected Void doInBackground() throws Exception {
+				if (user != null && user.getPersona() != null) {
+					solicitud = user.getPersona().getSolicitud();
+				}
+				return null;
 			}
 
+			@Override
+			protected void done() {
+				try {
+					get();
 
-		}
-		else {
-			LocalDate fecha = LocalDate.now();
-			DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			String FechaFormateada = Fecha.format(formato); 
+					if (user != null && user.getPersona() != null && solicitud != null) {
+						Persona candidato = user.getPersona();
 
-			lblPuesto.setText("Desarroladora de Software");
-			lblAreaLaboral.setText(AreaLaboral.TECNOLOGIA.toString().toLowerCase());
-			lblSueldo.setText("$ " + "80,000");
-			lblModalidad.setText(Modalidad.PRESENCIAL.toString().toLowerCase());
-			lblJornada.setText(Jornada.MATUTINA.toString().toLowerCase());
-			lblFechaSolicitud.setText(FechaFormateada);
-			lblEstado.setText("Activa"); 
-			colocarImagen(lblEstadoIcon, "/img/check(lightBlue).png");
-		}
+						lblPuesto.setText(solicitud.getPuesto());
+						lblAreaLaboral.setText(solicitud.getAreaLaboral().toString().toLowerCase());
+						lblSueldo.setText("$ " + solicitud.getSueldoEsperado());
+						lblModalidad.setText(solicitud.getModalidad().toString().toLowerCase());
+						lblJornada.setText(solicitud.getJornada().toString().toLowerCase());
 
+						LocalDate fecha = solicitud.getFechaSolicitud();
+						DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+						String fechaFormateada = fecha.format(format);
+						lblFechaSolicitud.setText(fechaFormateada);
+
+						if (solicitud.getEstado() == EstadoSolicitud.ACTIVA) {
+							lblEstado.setText("Activa");
+							colocarImagen(lblEstadoIcon, "/img/check(lightBlue).png");
+						} else {
+							lblEstado.setText("Inactiva");
+							colocarImagen(lblEstadoIcon, "/img/cross.png");
+						}
+					} else {
+						LocalDate fecha = LocalDate.now();
+						DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+						String fechaFormateada = fecha.format(format);
+
+						lblPuesto.setText("Desarroladora de Software");
+						lblAreaLaboral.setText(AreaLaboral.TECNOLOGIA.toString().toLowerCase());
+						lblSueldo.setText("$ " + "80,000");
+						lblModalidad.setText(Modalidad.PRESENCIAL.toString().toLowerCase());
+						lblJornada.setText(Jornada.MATUTINA.toString().toLowerCase());
+						lblFechaSolicitud.setText(fechaFormateada);
+						lblEstado.setText("Activa");
+						colocarImagen(lblEstadoIcon, "/img/check(lightBlue).png");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					btnModificar.setEnabled(true);
+				}
+			}
+		};
+
+		worker.execute();
 	}
 
 	private void colocarImagen(JLabel label, String ruta) {
@@ -545,10 +562,10 @@ public class VerMiSolicitudLaboral extends JFrame {
 		label.setIcon(iconoEscalado);
 		label.repaint();
 	}
-	
+
 	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
-	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-	    boton.setIcon(new ImageIcon(imagenEscalada));
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }

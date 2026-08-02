@@ -3,6 +3,7 @@ package visual;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -86,7 +87,6 @@ public class HomeAdministrador extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		dim = getToolkit().getScreenSize();
-
 		setSize(dim.width, dim.height - 55);
 		setLocationRelativeTo(null);
 
@@ -124,25 +124,87 @@ public class HomeAdministrador extends JFrame {
 		btnMenu.setContentAreaFilled(false);
 		btnMenu.setFocusPainted(false);
 		btnMenu.setOpaque(false);
-
 		colocarIconoBoton(btnMenu, "/img/menu-dots-vertical(White).png", 25, 25);
-
 		btnMenu.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				BarraAdmin menu = new BarraAdmin();
-				menu.setModal(true);
 				menu.setVisible(true);
 				dispose();
 			}
 		});
-
 		panelMenu.add(btnMenu);
 
 		JLabel lblLogo = new JLabel("");
 		lblLogo.setBounds(0, 28, 400, 75);
 		colocarImagen(lblLogo, "/img/HireLink_FondoOscuro.png");
 		panelMenu.add(lblLogo);
+
+		JLabel lblInicio = new JLabel("Inicio");
+		lblInicio.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblInicio.setForeground(Color.WHITE);
+		lblInicio.setBounds(700, 35, 70, 20);
+		panelMenu.add(lblInicio);
+
+		JLabel lblVerReportes = new JLabel("Ver reportes");
+		lblVerReportes.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblVerReportes.setForeground(Color.WHITE);
+		lblVerReportes.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		lblVerReportes.setBounds(830, 35, 100, 20);
+		lblVerReportes.addMouseListener(new java.awt.event.MouseAdapter() {
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				VerReportesAdmin reporte = new VerReportesAdmin();
+				reporte.setVisible(true);
+				dispose();
+			}
+		});
+		panelMenu.add(lblVerReportes);
+
+		JLabel lblVerOfertas = new JLabel("Ver ofertas");
+		lblVerOfertas.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblVerOfertas.setForeground(Color.WHITE);
+		lblVerOfertas.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		lblVerOfertas.setBounds(960, 35, 100, 20);
+		lblVerOfertas.addMouseListener(new java.awt.event.MouseAdapter() {
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				VerOfertasAdmin ofertas = new VerOfertasAdmin();
+				ofertas.setVisible(true);
+				dispose();
+			}
+		});
+		panelMenu.add(lblVerOfertas);
+
+		JLabel lblVerEmpresas = new JLabel("Ver empresas");
+		lblVerEmpresas.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblVerEmpresas.setForeground(Color.WHITE);
+		lblVerEmpresas.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		lblVerEmpresas.setBounds(1090, 35, 110, 20);
+		lblVerEmpresas.addMouseListener(new java.awt.event.MouseAdapter() {
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				VerEmpresasAdmin empresas = new VerEmpresasAdmin();
+				empresas.setVisible(true);
+				dispose();
+			}
+		});
+		panelMenu.add(lblVerEmpresas);
+
+		JLabel lblVerUsuarios = new JLabel("Ver usuarios");
+		lblVerUsuarios.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblVerUsuarios.setForeground(Color.WHITE);
+		lblVerUsuarios.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		lblVerUsuarios.setBounds(1235, 35, 100, 20);
+		lblVerUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				VerUsuariosAdmin usuarios = new VerUsuariosAdmin();
+				usuarios.setVisible(true);
+				dispose();
+			}
+		});
+		panelMenu.add(lblVerUsuarios);
 	}
 
 	private void construirTarjetas(JPanel panel) {
@@ -328,7 +390,7 @@ public class HomeAdministrador extends JFrame {
 						"Registro",
 						"Estado"
 				}
-				) {
+		) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -348,7 +410,7 @@ public class HomeAdministrador extends JFrame {
 						"Vacantes Disp.",
 						"Estado"
 				}
-				) {
+		) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -403,40 +465,34 @@ public class HomeAdministrador extends JFrame {
 		prepararPantallaParaCarga();
 
 		SwingWorker<Object[], Void> hilo = new SwingWorker<Object[], Void>() {
-
 			@Override
 			protected Object[] doInBackground() throws Exception {
 				BolsaEmpleo bolsa = BolsaEmpleo.getInstancia();
 
 				ArrayList<Oferta> ofertas = bolsa.getOfertas() == null
 						? new ArrayList<Oferta>()
-								: new ArrayList<Oferta>(bolsa.getOfertas());
+						: new ArrayList<Oferta>(bolsa.getOfertas());
 
-						ArrayList<Persona> personas = bolsa.getPersonas() == null
-								? new ArrayList<Persona>()
-										: new ArrayList<Persona>(bolsa.getPersonas());
+				ArrayList<Persona> personas = bolsa.getPersonas() == null
+						? new ArrayList<Persona>()
+						: new ArrayList<Persona>(bolsa.getPersonas());
 
-								int ofertasActivas = contarOfertasActivas(ofertas);
-								int empresas = bolsa.getEmpresas() == null ? 0 : bolsa.getEmpresas().size();
-								int contratados = contarContratados(ofertas);
-								int solicitantes = personas.size();
+				int ofertasActivas = contarOfertasActivas(ofertas);
+				int empresas = bolsa.getEmpresas() == null ? 0 : bolsa.getEmpresas().size();
+				int contratados = contarContratados(ofertas);
+				int solicitantes = personas.size();
 
-								DefaultTableModel modeloSolicitantesCargado = crearModeloSolicitantesRecientes(personas);
-								DefaultTableModel modeloOfertasCargado = crearModeloOfertasRecientes(ofertas);
+				DefaultTableModel modeloSolicitantesCargado = crearModeloSolicitantesRecientes(personas);
+				DefaultTableModel modeloOfertasCargado = crearModeloOfertasRecientes(ofertas);
 
-								/*
-								 * Cuando el socket esté terminado, aquí pueden reemplazar
-								 * el acceso local por una petición al servidor.
-								 */
-
-								return new Object[] {
-										ofertasActivas,
-										empresas,
-										contratados,
-										solicitantes,
-										modeloSolicitantesCargado,
-										modeloOfertasCargado
-								};
+				return new Object[] {
+						ofertasActivas,
+						empresas,
+						contratados,
+						solicitantes,
+						modeloSolicitantesCargado,
+						modeloOfertasCargado
+				};
 			}
 
 			@Override
@@ -482,13 +538,10 @@ public class HomeAdministrador extends JFrame {
 
 					JOptionPane.showMessageDialog(
 							HomeAdministrador.this,
-							mensaje != null
-							? mensaje
-									: "No se pudieron cargar los datos del administrador.",
-									"Error",
-									JOptionPane.ERROR_MESSAGE
-							);
-
+							mensaje != null ? mensaje : "No se pudieron cargar los datos del administrador.",
+							"Error",
+							JOptionPane.ERROR_MESSAGE
+					);
 				} finally {
 					tableSolicitantes.setEnabled(true);
 					tableOfertas.setEnabled(true);
@@ -566,7 +619,6 @@ public class HomeAdministrador extends JFrame {
 			if (persona != null
 					&& persona.getUser() != null
 					&& persona.getUser().getFechaRegistro() != null) {
-
 				ordenadas.add(persona);
 			}
 		}
@@ -574,8 +626,7 @@ public class HomeAdministrador extends JFrame {
 		Collections.sort(ordenadas, new Comparator<Persona>() {
 			@Override
 			public int compare(Persona persona1, Persona persona2) {
-				return persona2.getUser().getFechaRegistro()
-						.compareTo(persona1.getUser().getFechaRegistro());
+				return persona2.getUser().getFechaRegistro().compareTo(persona1.getUser().getFechaRegistro());
 			}
 		});
 
@@ -585,15 +636,10 @@ public class HomeAdministrador extends JFrame {
 		for (int i = 0; i < limite; i++) {
 			Persona persona = ordenadas.get(i);
 
-			String nombre = textoSeguro(persona.getNombre())
-					+ " "
-					+ textoSeguro(persona.getApellido());
-
+			String nombre = textoSeguro(persona.getNombre()) + " " + textoSeguro(persona.getApellido());
 			String profesion = obtenerProfesion(persona);
 			String fecha = persona.getUser().getFechaRegistro().format(formato);
-			String estado = persona.isEstadoEmpleo()
-					? "Empleado"
-							: "Buscando empleo";
+			String estado = persona.isEstadoEmpleo() ? "Empleado" : "Buscando empleo";
 
 			modelo.addRow(new Object[] {
 					nombre,
@@ -623,8 +669,7 @@ public class HomeAdministrador extends JFrame {
 		Collections.sort(ordenadas, new Comparator<Oferta>() {
 			@Override
 			public int compare(Oferta oferta1, Oferta oferta2) {
-				return oferta2.getFechaPublicacion()
-						.compareTo(oferta1.getFechaPublicacion());
+				return oferta2.getFechaPublicacion().compareTo(oferta1.getFechaPublicacion());
 			}
 		});
 
@@ -635,22 +680,18 @@ public class HomeAdministrador extends JFrame {
 			Oferta oferta = ordenadas.get(i);
 
 			String puesto = textoSeguro(oferta.getPuesto());
+			String empresa = oferta.getEmpresa() != null ? textoSeguro(oferta.getEmpresa().getNombre()) : "Sin empresa";
+			String fecha = oferta.getFechaPublicacion().format(formato);
+			int cantidadPuestos = oferta.getCantPuestos();
+			String estado = formatearEstadoOferta(oferta.getEstado());
 
-			String empresa = oferta.getEmpresa() != null
-					? textoSeguro(oferta.getEmpresa().getNombre())
-							: "Sin empresa";
-
-					String fecha = oferta.getFechaPublicacion().format(formato);
-					int cantidadPuestos = oferta.getCantPuestos();
-					String estado = formatearEstadoOferta(oferta.getEstado());
-
-					modelo.addRow(new Object[] {
-							puesto,
-							empresa,
-							fecha,
-							cantidadPuestos,
-							estado
-					});
+			modelo.addRow(new Object[] {
+					puesto,
+					empresa,
+					fecha,
+					cantidadPuestos,
+					estado
+			});
 		}
 
 		return modelo;
@@ -685,9 +726,7 @@ public class HomeAdministrador extends JFrame {
 	}
 
 	private String textoSeguro(String texto) {
-		return texto == null || texto.trim().isEmpty()
-				? "No disponible"
-						: texto.trim();
+		return texto == null || texto.trim().isEmpty() ? "No disponible" : texto.trim();
 	}
 
 	private class RenderCentrado extends DefaultTableCellRenderer {
@@ -710,16 +749,10 @@ public class HomeAdministrador extends JFrame {
 		}
 
 		@Override
-		public Component getTableCellRendererComponent(
-				JTable table,
-				Object value,
-				boolean isSelected,
-				boolean hasFocus,
-				int row,
-				int column) {
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+				boolean hasFocus, int row, int column) {
 
 			String estado = value == null ? "" : value.toString();
-
 			setText(estado);
 
 			if (estado.equals("Empleado")
@@ -751,48 +784,23 @@ public class HomeAdministrador extends JFrame {
 		@Override
 		protected void paintComponent(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g.create();
-
-			g2.setRenderingHint(
-					RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON
-					);
-
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.setColor(getBackground());
 
 			int margenVertical = 6;
 			int margenHorizontal = 10;
 
-			int ancho = Math.max(
-					0,
-					getWidth() - margenHorizontal * 2
-					);
+			int ancho = Math.max(0, getWidth() - margenHorizontal * 2);
+			int alto = Math.max(0, getHeight() - margenVertical * 2);
 
-			int alto = Math.max(
-					0,
-					getHeight() - margenVertical * 2
-					);
-
-			g2.fillRoundRect(
-					margenHorizontal,
-					margenVertical,
-					ancho,
-					alto,
-					16,
-					16
-					);
-
+			g2.fillRoundRect(margenHorizontal, margenVertical, ancho, alto, 16, 16);
 			g2.dispose();
 
 			super.paintComponent(g);
 		}
 	}
 
-	private void colocarIconoBoton(
-			AbstractButton boton,
-			String ruta,
-			int ancho,
-			int alto) {
-
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
 		if (boton == null || ruta == null) {
 			return;
 		}
@@ -805,13 +813,7 @@ public class HomeAdministrador extends JFrame {
 		}
 
 		ImageIcon icono = new ImageIcon(recurso);
-
-		Image imagenEscalada = icono.getImage().getScaledInstance(
-				ancho,
-				alto,
-				Image.SCALE_SMOOTH
-				);
-
+		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
 		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 
@@ -835,11 +837,7 @@ public class HomeAdministrador extends JFrame {
 		int anchoImagen = icono.getIconWidth();
 		int altoImagen = icono.getIconHeight();
 
-		if (anchoLabel <= 0
-				|| altoLabel <= 0
-				|| anchoImagen <= 0
-				|| altoImagen <= 0) {
-
+		if (anchoLabel <= 0 || altoLabel <= 0 || anchoImagen <= 0 || altoImagen <= 0) {
 			return;
 		}
 
@@ -850,11 +848,7 @@ public class HomeAdministrador extends JFrame {
 		int nuevoAncho = (int) (anchoImagen * escala);
 		int nuevoAlto = (int) (altoImagen * escala);
 
-		Image imagenEscalada = icono.getImage().getScaledInstance(
-				nuevoAncho,
-				nuevoAlto,
-				Image.SCALE_SMOOTH
-				);
+		Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
 
 		label.setIcon(new ImageIcon(imagenEscalada));
 		label.setText("");
