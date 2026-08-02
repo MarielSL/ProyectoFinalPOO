@@ -1,5 +1,6 @@
 package servidor;
 
+
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import logico.BolsaEmpleo;
 import logico.DecisionCandidato;
@@ -35,6 +39,8 @@ import red.DatosDecidirCandidato;
 import red.DatosEstadisticas;
 import red.DatosEstadisticasCandidato;
 import red.DatosEstadisticasEmpresa;
+import red.DatosGraficasAdmin;
+import red.DatosGraficasEmpresa;
 import red.DatosLogin;
 import red.DatosMejorMatchCandidato;
 import red.DatosModificarEmpresa;
@@ -159,6 +165,12 @@ public class ServidorBolsaEmpleo {
             
             case CREAR_RESPALDO:
                 return procesarCrearRespaldo();
+            
+            case OBTENER_GRAFICAS_EMPRESA:
+                return procesarGraficasEmpresa(bolsa);
+            
+            case OBTENER_GRAFICAS_ADMIN:
+                return procesarGraficasAdmin(bolsa);
             
             default:
                 return new Respuesta(false, "Operación no reconocida");
@@ -650,5 +662,100 @@ public class ServidorBolsaEmpleo {
         }
     }
     
+    private static Respuesta procesarGraficasEmpresa(BolsaEmpleo bolsa) {
+        Usuario loginUser = bolsa.getLoginUser();
+        if (loginUser == null || loginUser.getEmpresa() == null) {
+            return new Respuesta(false, "Debe iniciar sesión como empresa.");
+        }
+
+        Empresa empresa = loginUser.getEmpresa();
+        ArrayList<Oferta> misOfertas = empresa.getLasOfertas();
+        if (misOfertas == null) {
+            misOfertas = new ArrayList<Oferta>();
+        }
+
+        ArrayList<String> puestos = new ArrayList<String>();
+        ArrayList<Integer> candidatosPorOferta = new ArrayList<Integer>();
+
+        for (Oferta oferta : misOfertas) {
+            if (oferta == null) {
+                continue;
+            }
+            puestos.add(oferta.getPuesto());
+            candidatosPorOferta.add(bolsa.cantCandidatosCompatibles(oferta));
+        }
+
+        DatosGraficasEmpresa resultado = new DatosGraficasEmpresa(
+                puestos, candidatosPorOferta, empresa.cantOfertasActivas(), empresa.cantOfertasCompletadas());
+
+        return new Respuesta(true, resultado);
+    }
+    
+    private static Respuesta procesarGraficasAdmin(BolsaEmpleo bolsa) {
+        ArrayList<Persona> personas = bolsa.getPersonas() != null ? bolsa.getPersonas() : new ArrayList<Persona>();
+        ArrayList<Oferta> ofertas = bolsa.getOfertas() != null ? bolsa.getOfertas() : new ArrayList<Oferta>();
+        ArrayList<SolicitudEmpleo> solicitudes = bolsa.getSolicitudes() != null ? bolsa.getSolicitudes() : new ArrayList<SolicitudEmpleo>();
+
+        int solicitantesEmpleados = 0;
+        int hombresEmpleados = 0;
+        int mujeresEmpleadas = 0;
+        for (Persona p : personas) {
+            if (p != null && p.isEstadoEmpleo()) {
+                solicitantesEmpleados++;
+                String sexo = p.getSexo() != null ? p.getSexo().toString().toLowerCase() : "";
+                if (sexo.contains("m") && !sexo.contains("f")) {
+                    hombresEmpleados++;
+                } else if (sexo.contains("f")) {
+                    mujeresEmpleadas++;
+                }
+            }
+        }
+
+        int empresasActivas = 0;
+        for (Oferta o : ofertas) {
+            if (o != null && (o.getEstado() == EstadoOferta.PENDIENTE || o.getEstado() == EstadoOferta.COMPLETADA)) {
+                empresasActivas++;
+            }
+        }
+
+        Map<String, Integer> conteoEmpresas = new LinkedHashMap<String, Integer>();
+        for (Oferta o : ofertas) {
+            if (o == null) {
+                continue;
+            }
+            String nombre = o.getEmpresa() != null ? o.getEmpresa().getNombre() : "Sin empresa";
+            conteoEmpresas.put(nombre, conteoEmpresas.getOrDefault(nombre, 0) + 1);
+        }
+        List<Map.Entry<String, Integer>> listaEmpresas = new ArrayList<Map.Entry<String, Integer>>(conteoEmpresas.entrySet());
+        listaEmpresas.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+
+        ArrayList<String> nombresEmpresasTop = new ArrayList<String>();
+        ArrayList<Integer> ofertasPorEmpresaTop = new ArrayList<Integer>();
+        int maxEmpresas = Math.min(5, listaEmpresas.size());
+        for (int i = 0; i < maxEmpresas; i++) {
+            nombresEmpresasTop.add(listaEmpresas.get(i).getKey());
+            ofertasPorEmpresaTop.add(listaEmpresas.get(i).getValue());
+        }
+
+        int solicitudesMes = solicitudes.size();
+        int ofertasMes = ofertas.size();
+
+        int solicitudesRecibidas = solicitudes.size();
+        int solicitudesAceptadas = 0;
+        for (SolicitudEmpleo s : solicitudes) {
+            if (s != null && s.getEstado() == EstadoSolicitud.CERRADA) {
+                solicitudesAceptadas++;
+            }
+        }
+
+        DatosGraficasAdmin resultado = new DatosGraficasAdmin(
+                solicitantesEmpleados, empresasActivas,
+                nombresEmpresasTop, ofertasPorEmpresaTop,
+                solicitudesMes, ofertasMes,
+                solicitudesRecibidas, solicitudesAceptadas,
+                hombresEmpleados, mujeresEmpleadas);
+
+        return new Respuesta(true, resultado);
+    }
     
 }

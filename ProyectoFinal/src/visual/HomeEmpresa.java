@@ -55,6 +55,7 @@ import logico.Oferta;
 import logico.SolicitudEmpleo;
 import red.ConexionCliente;
 import red.DatosEstadisticasEmpresa;
+import red.DatosGraficasEmpresa;
 import red.Peticion;
 import red.Respuesta;
 
@@ -356,8 +357,7 @@ public class HomeEmpresa extends JFrame {
 		panel.add(lblTitulo);
 
 		cargarDatosHomeConHilo();
-		crearGraficaCandidatosCompatibles(panel_Grafica1);
-		crearGraficaEstadoOfertas(panel_Grafica2);
+		cargarGraficasConHilo();
 	}
 
 	private void cargarDatosHomeConHilo() {
@@ -697,53 +697,75 @@ public class HomeEmpresa extends JFrame {
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
 
-	private void crearGraficaCandidatosCompatibles(JPanel panel) {
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+	private void cargarGraficasConHilo() {
+	    SwingWorker<DatosGraficasEmpresa, Void> hilo = new SwingWorker<DatosGraficasEmpresa, Void>() {
 
-		for(Oferta oferta : empresa.getLasOfertas()) {
-			int cantCompatibles =  BolsaEmpleo.getInstancia().cantCandidatosCompatibles(oferta);
+	        @Override
+	        protected DatosGraficasEmpresa doInBackground() throws Exception {
+	            Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_GRAFICAS_EMPRESA, null);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-			dataset.addValue(cantCompatibles, "Candidatos", oferta.getPuesto());
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-		}
+	            return (DatosGraficasEmpresa) respuesta.getDatos();
+	        }
 
-		JFreeChart grafica = ChartFactory.createBarChart("Candidatos Compatibles por Oferta", "Oferta", "Cantidad", dataset, PlotOrientation.VERTICAL, false, true, false);
+	        @Override
+	        protected void done() {
+	            try {
+	                DatosGraficasEmpresa datos = get();
+	                dibujarGraficaCandidatosCompatibles(panel_Grafica1, datos);
+	                dibujarGraficaEstadoOfertas(panel_Grafica2, datos);
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	                JOptionPane.showMessageDialog(HomeEmpresa.this, "No se pudieron cargar las gráficas.", "Error", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	    };
 
-		ChartPanel graficaPanel = new ChartPanel(grafica);
-
-		graficaPanel.setBounds(0, 0, panel.getWidth(), panel.getHeight());
-
-		personalizarGraficaBarras(grafica);
-
-		panel.removeAll();
-		panel.setLayout(new BorderLayout());
-		panel.add(graficaPanel, BorderLayout.CENTER);
-		panel.revalidate();
-		panel.repaint();
-
+	    hilo.execute();
 	}
 
-	private void crearGraficaEstadoOfertas(JPanel panel) {
+	private void dibujarGraficaCandidatosCompatibles(JPanel panel, DatosGraficasEmpresa datos) {
+	    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-		DefaultPieDataset dataset = new DefaultPieDataset();
+	    for (int i = 0; i < datos.getPuestos().size(); i++) {
+	        dataset.addValue(datos.getCandidatosPorOferta().get(i), "Candidatos", datos.getPuestos().get(i));
+	    }
 
-		dataset.setValue("Activas", empresa.cantOfertasActivas());
-		dataset.setValue("Completadas", empresa.cantOfertasCompletadas());
+	    JFreeChart grafica = ChartFactory.createBarChart("Candidatos Compatibles por Oferta", "Oferta", "Cantidad", dataset, PlotOrientation.VERTICAL, false, true, false);
 
-		JFreeChart grafica = ChartFactory.createPieChart("Estado de las Ofertas", dataset, true, true, false);
+	    ChartPanel graficaPanel = new ChartPanel(grafica);
+	    graficaPanel.setBounds(0, 0, panel.getWidth(), panel.getHeight());
 
-		ChartPanel panelGrafica = new ChartPanel(grafica);
+	    personalizarGraficaBarras(grafica);
 
-		personalizarGraficaCircular(grafica);
+	    panel.removeAll();
+	    panel.setLayout(new BorderLayout());
+	    panel.add(graficaPanel, BorderLayout.CENTER);
+	    panel.revalidate();
+	    panel.repaint();
+	}
 
-		panel.removeAll();
-		panel.setLayout(new BorderLayout());
-		panel.add(panelGrafica, BorderLayout.CENTER);
-		panel.revalidate();
-		panel.repaint();
+	private void dibujarGraficaEstadoOfertas(JPanel panel, DatosGraficasEmpresa datos) {
+	    DefaultPieDataset dataset = new DefaultPieDataset();
 
+	    dataset.setValue("Activas", datos.getOfertasActivas());
+	    dataset.setValue("Completadas", datos.getOfertasCompletadas());
 
+	    JFreeChart grafica = ChartFactory.createPieChart("Estado de las Ofertas", dataset, true, true, false);
 
+	    ChartPanel panelGrafica = new ChartPanel(grafica);
+
+	    personalizarGraficaCircular(grafica);
+
+	    panel.removeAll();
+	    panel.setLayout(new BorderLayout());
+	    panel.add(panelGrafica, BorderLayout.CENTER);
+	    panel.revalidate();
+	    panel.repaint();
 	}
 	private void personalizarGraficaBarras(JFreeChart grafica) {
 		Color fondoGeneral = Color.WHITE;
