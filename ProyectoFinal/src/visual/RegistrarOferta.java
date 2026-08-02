@@ -330,6 +330,7 @@ public class RegistrarOferta extends JDialog {
 		return true;
 	}
 
+	//implementacion de hilos
 	private void registrarOfertaConHilo() {
 
 		String puesto = txtPuesto.getText().trim();

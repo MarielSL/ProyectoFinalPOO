@@ -719,6 +719,7 @@ public class VerPostulantesOferta extends JDialog {
 		hilo.execute();
 	}
 
+	//implementacion de hilos
 	private void loadRestoPostulantes(Oferta oferta) {
 		if(oferta == null) {
 			return;

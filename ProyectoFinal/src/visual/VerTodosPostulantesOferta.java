@@ -259,6 +259,7 @@ public class VerTodosPostulantesOferta extends JFrame {
 		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 
+	//implementacion de hilos
 	private void loadPostulantes(String estado, String perfil, String fecha, String ordenCoincidencia) {
 		model.setRowCount(0);
 		if (oferta == null) {
