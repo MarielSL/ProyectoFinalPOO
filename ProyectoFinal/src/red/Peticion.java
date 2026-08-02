@@ -20,6 +20,7 @@ public class Peticion implements Serializable {
         OBTENER_TODAS_EMPRESAS,      
         OBTENER_TODOS_USUARIOS,      
         OBTENER_DASHBOARD_ADMIN,
+        OBTENER_TODOS_CANDIDATOS,
         OBTENER_MEJOR_MATCH_EMPRESA,
         MODIFICAR_EMPRESA,     
         MODIFICAR_SOLICITANTE,  
