@@ -17,7 +17,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import javax.swing.AbstractButton;
@@ -25,35 +24,38 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+
 import logico.BolsaEmpleo;
 import logico.Empresa;
 import logico.EstadoOferta;
 import logico.EstadoSolicitud;
 import logico.Oferta;
 import logico.SolicitudEmpleo;
-import javax.swing.JButton;
-import javax.swing.JSeparator;
+
 import java.awt.SystemColor;
 
 public class HomeEmpresa extends JFrame {
 
+	private static final long serialVersionUID = 1L;
+
 	private JPanel contentPane;
 	private Dimension dim;
 	private Empresa empresa;
-	private JLabel lblCandidatosComp;
 
-	/**
-	 * Launch the application.
-	 */
+	private JLabel lblOfertasActivasNum;
+	private JLabel lblCandidatosComp;
+	private JLabel lblContratadosNum;
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					HomeEmpresa frame = new HomeEmpresa();
@@ -65,17 +67,16 @@ public class HomeEmpresa extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public HomeEmpresa() {
 		if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
 			empresa = BolsaEmpleo.getInstancia().getLoginUser().getEmpresa();
 		}
+
 		setTitle("Home Empresa");
 		Utilidades.aplicarIcono(this);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -94,8 +95,6 @@ public class HomeEmpresa extends JFrame {
 		panel.setBackground(new Color(245, 245, 245));
 		panel.setLayout(null);
 
-
-
 		int margen = 40;
 		int anchoContenido = dim.width - (margen * 2);
 
@@ -106,15 +105,16 @@ public class HomeEmpresa extends JFrame {
 			panel.add(panelMenu);
 			panelMenu.setLayout(null);
 
-
-			String[] textosMenu = { "Inicio", "Publicar oferta", "Mis ofertas", "Ver perfil" };
-			int[] anchosMenu = { 70, 150, 110, 90 };
+			String[] textosMenu = {"Inicio", "Publicar oferta", "Mis ofertas", "Ver perfil"};
+			int[] anchosMenu = {70, 150, 110, 90};
 			int espacioEntreItems = 40;
 
 			int anchoTotalMenu = 0;
+
 			for (int i = 0; i < anchosMenu.length; i++) {
 				anchoTotalMenu += anchosMenu[i];
 			}
+
 			anchoTotalMenu += espacioEntreItems * (anchosMenu.length - 1);
 
 			int xMenu = anchoContenido - anchoTotalMenu - 40;
@@ -125,6 +125,7 @@ public class HomeEmpresa extends JFrame {
 			lblInicio.setForeground(Color.WHITE);
 			lblInicio.setBounds(680, 26, anchosMenu[0], 20);
 			panelMenu.add(lblInicio);
+
 			xMenu += anchosMenu[0] + espacioEntreItems;
 
 			JLabel lblPublicarOferta = new JLabel(textosMenu[1]);
@@ -132,7 +133,9 @@ public class HomeEmpresa extends JFrame {
 			lblPublicarOferta.setForeground(Color.WHITE);
 			lblPublicarOferta.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			lblPublicarOferta.setBounds(781, 26, 118, 20);
+
 			lblPublicarOferta.addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					if (empresa != null) {
 						RegistrarOferta registrarOferta = new RegistrarOferta(empresa);
@@ -141,26 +144,30 @@ public class HomeEmpresa extends JFrame {
 					}
 				}
 			});
+
 			panelMenu.add(lblPublicarOferta);
+
 			xMenu += anchosMenu[1] + espacioEntreItems;
 
 			JLabel lblMisOfertas = new JLabel(textosMenu[2]);
+
 			lblMisOfertas.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					if(empresa!= null) {
+					if (empresa != null) {
 						VerOfertasEmpresa verOfertas = new VerOfertasEmpresa();
 						verOfertas.setVisible(true);
 						dispose();
 					}
-
 				}
 			});
+
 			lblMisOfertas.setFont(new Font("Calibri", Font.PLAIN, 18));
 			lblMisOfertas.setForeground(Color.WHITE);
 			lblMisOfertas.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			lblMisOfertas.setBounds(938, 26, 90, 20);
 			panelMenu.add(lblMisOfertas);
+
 			xMenu += anchosMenu[2] + espacioEntreItems;
 
 			JLabel lblVerPerfil = new JLabel(textosMenu[3]);
@@ -168,41 +175,56 @@ public class HomeEmpresa extends JFrame {
 			lblVerPerfil.setForeground(Color.WHITE);
 			lblVerPerfil.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			lblVerPerfil.setBounds(1080, 26, anchosMenu[3], 20);
+
 			lblVerPerfil.addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
-					if(empresa != null) {
+					if (empresa != null) {
 						VerUserEmpresa verUserEmpresa = new VerUserEmpresa();
 						verUserEmpresa.setVisible(true);
 						dispose();
 					}
-
 				}
 			});
+
 			panelMenu.add(lblVerPerfil);
 
-			BotonRedond btnMenu = new BotonRedond("",25);
+			BotonRedond btnMenu = new BotonRedond("", 25);
+
 			btnMenu.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					BarraEmpresa menu = new BarraEmpresa();
 					menu.setVisible(true);
 					dispose();
 				}
 			});
+
 			btnMenu.setBackground(new Color(0, 0, 51));
 			btnMenu.setColorHover(new Color(0, 51, 102));
 			btnMenu.setBounds(12, 4, 60, 60);
-			colocarIconoBoton(btnMenu,"/img/menu-dots-vertical(White).png",25,25);
+
+			colocarIconoBoton(
+					btnMenu,
+					"/img/menu-dots-vertical(White).png",
+					25,
+					25
+					);
+
 			btnMenu.setMargin(new Insets(0, 0, 0, 0));
 			btnMenu.setBorderPainted(false);
 			btnMenu.setContentAreaFilled(false);
 			btnMenu.setFocusPainted(false);
 			btnMenu.setOpaque(false);
+
 			panelMenu.add(btnMenu);
-			
+
 			String nombreEmpresa = "Mi Empresa";
-			if (empresa != null) {
+
+			if (empresa != null && empresa.getNombre() != null) {
 				nombreEmpresa = empresa.getNombre();
 			}
+
 			int anchoNombre = 14 * nombreEmpresa.length() + 20;
 
 			JLabel lblNombreEmpresa = new JLabel(nombreEmpresa);
@@ -210,11 +232,11 @@ public class HomeEmpresa extends JFrame {
 			lblNombreEmpresa.setForeground(Color.WHITE);
 			lblNombreEmpresa.setBounds(1668, 25, anchoNombre, 20);
 			panelMenu.add(lblNombreEmpresa);
-			
-			JLabel lblNewLabel = new JLabel("");
-			lblNewLabel.setBounds(1741, -9, 114, 88);
-			colocarImagen(lblNewLabel, "/img/iconoLogo_FondoOscuro.png");
-			panelMenu.add(lblNewLabel);
+
+			JLabel lblLogo = new JLabel("");
+			lblLogo.setBounds(1741, -9, 114, 88);
+			colocarImagen(lblLogo, "/img/iconoLogo_FondoOscuro.png");
+			panelMenu.add(lblLogo);
 		}
 
 		int anchoTarjeta = (anchoContenido - 48) / 3;
@@ -232,7 +254,7 @@ public class HomeEmpresa extends JFrame {
 			lblOfertasActivas.setBounds(20, 14, anchoTarjeta - 40, 20);
 			panelOfertasActivas.add(lblOfertasActivas);
 
-			JLabel lblOfertasActivasNum = new JLabel(String.valueOf(contarOfertasActivas()));
+			lblOfertasActivasNum = new JLabel("...");
 			lblOfertasActivasNum.setFont(new Font("Calibri", Font.BOLD, 30));
 			lblOfertasActivasNum.setForeground(new Color(204, 102, 0));
 			lblOfertasActivasNum.setBounds(20, 38, anchoTarjeta - 40, 36);
@@ -252,7 +274,7 @@ public class HomeEmpresa extends JFrame {
 			lblSolicitudesPendientes.setBounds(20, 14, anchoTarjeta - 40, 20);
 			panelSolicitudesPendientes.add(lblSolicitudesPendientes);
 
-			lblCandidatosComp = new JLabel(String.valueOf(ContCandCompatibles()));
+			lblCandidatosComp = new JLabel("...");
 			lblCandidatosComp.setFont(new Font("Calibri", Font.BOLD, 30));
 			lblCandidatosComp.setForeground(new Color(65, 95, 170));
 			lblCandidatosComp.setBounds(20, 38, anchoTarjeta - 40, 36);
@@ -272,7 +294,7 @@ public class HomeEmpresa extends JFrame {
 			lblContratados.setBounds(20, 14, anchoTarjeta - 40, 20);
 			panelContratados.add(lblContratados);
 
-			JLabel lblContratadosNum = new JLabel(String.valueOf(contarContratadosEsteMes()));
+			lblContratadosNum = new JLabel("...");
 			lblContratadosNum.setFont(new Font("Calibri", Font.BOLD, 30));
 			lblContratadosNum.setForeground(new Color(198, 40, 40));
 			lblContratadosNum.setBounds(20, 38, anchoTarjeta - 40, 36);
@@ -288,7 +310,7 @@ public class HomeEmpresa extends JFrame {
 			panelSolicitudesRecientes.setBounds(26, 262, 1840, 761);
 			panel.add(panelSolicitudesRecientes);
 			panelSolicitudesRecientes.setLayout(null);
-			
+
 			JSeparator separator = new JSeparator();
 			separator.setOrientation(SwingConstants.VERTICAL);
 			separator.setForeground(SystemColor.controlShadow);
@@ -296,120 +318,235 @@ public class HomeEmpresa extends JFrame {
 			separator.setBounds(919, 67, 1, 600);
 			panelSolicitudesRecientes.add(separator);
 		}
-		
-		JLabel lblNewLabel = new JLabel("An\u00E1lisis de Coincidencias");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setForeground(new Color(0, 0, 51));
-		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 26));
-		lblNewLabel.setBounds(809, 233, 274, 25);
-		panel.add(lblNewLabel);
+
+		JLabel lblTitulo = new JLabel("Análisis de Coincidencias");
+		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitulo.setForeground(new Color(0, 0, 51));
+		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 26));
+		lblTitulo.setBounds(809, 233, 274, 25);
+		panel.add(lblTitulo);
+
+		cargarDatosHomeConHilo();
+	}
+
+	private void cargarDatosHomeConHilo() {
+		lblOfertasActivasNum.setText("...");
+		lblCandidatosComp.setText("...");
+		lblContratadosNum.setText("...");
+
+		SwingWorker<int[], Void> hilo = new SwingWorker<int[], Void>() {
+
+			@Override
+			protected int[] doInBackground() throws Exception {
+				int ofertasActivas = contarOfertasActivas();
+				int candidatosCompatibles = contarCandidatosCompatibles();
+				int contratadosEsteMes = contarContratadosEsteMes();
+
+				/*
+				 * Cuando implementen el socket, aquí se sustituye
+				 * el acceso local por una petición al servidor.
+				 */
+
+				return new int[] {
+						ofertasActivas,
+						candidatosCompatibles,
+						contratadosEsteMes
+				};
+			}
+
+			@Override
+			protected void done() {
+				try {
+					int[] datos = get();
+
+					lblOfertasActivasNum.setText(
+							String.valueOf(datos[0])
+							);
+
+					lblCandidatosComp.setText(
+							String.valueOf(datos[1])
+							);
+
+					lblContratadosNum.setText(
+							String.valueOf(datos[2])
+							);
+
+				} catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null
+							? causa.getMessage()
+									: e.getMessage();
+
+							e.printStackTrace();
+
+							lblOfertasActivasNum.setText("0");
+							lblCandidatosComp.setText("0");
+							lblContratadosNum.setText("0");
+
+							JOptionPane.showMessageDialog(
+									HomeEmpresa.this,
+									mensaje != null
+									? mensaje
+											: "No se pudieron cargar los datos de la empresa.",
+											"Error",
+											JOptionPane.ERROR_MESSAGE
+									);
+				}
+			}
+		};
+
+		hilo.execute();
 	}
 
 	private int contarOfertasActivas() {
-		if (empresa == null) {
+		if (empresa == null || empresa.getLasOfertas() == null) {
 			return 0;
 		}
+
 		int contador = 0;
+
 		for (Oferta oferta : empresa.getLasOfertas()) {
-			if (oferta.getEstado() == EstadoOferta.PENDIENTE) {
+			if (oferta != null && oferta.getEstado() == EstadoOferta.PENDIENTE) {
 				contador++;
 			}
 		}
+
 		return contador;
 	}
 
-	private int ContCandCompatibles() {
-		if (empresa == null) {
+	private int contarCandidatosCompatibles() {
+		if (empresa == null || empresa.getLasOfertas() == null) {
 			return 0;
 		}
-		int cant = 0;
+
+		int cantidad = 0;
+
 		for (Oferta oferta : empresa.getLasOfertas()) {
-			cant += BolsaEmpleo.getInstancia().cantCandidatosCompatibles(oferta);
+			if (oferta != null && oferta.getEstado() == EstadoOferta.PENDIENTE) {
+				cantidad += BolsaEmpleo.getInstancia().cantCandidatosCompatibles(oferta);
+			}
 		}
-		return cant;
+
+		return cantidad;
 	}
 
 	private int contarContratadosEsteMes() {
-		if (empresa == null) {
+		if (empresa == null || empresa.getLasOfertas() == null) {
 			return 0;
 		}
+
+		ArrayList<SolicitudEmpleo> solicitudes = BolsaEmpleo.getInstancia().getSolicitudes();
+
+		if (solicitudes == null) {
+			return 0;
+		}
+
 		int contador = 0;
 		LocalDate hoy = LocalDate.now();
-		for (SolicitudEmpleo solicitud : BolsaEmpleo.getInstancia().getSolicitudes()) {
-			if (solicitud.getEstado() == EstadoSolicitud.ACTIVA && solicitud.getFechaSolicitud().getMonthValue() == hoy.getMonthValue() && solicitud.getFechaSolicitud().getYear() == hoy.getYear()) {
-				boolean compatible = false;
-				for (Oferta oferta : empresa.getLasOfertas()) {
-					if (BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud) >= 60) {
-						compatible = true;
-					}
+
+		for (SolicitudEmpleo solicitud : solicitudes) {
+			if (solicitud == null || solicitud.getFechaSolicitud() == null) {
+				continue;
+			}
+
+			if (solicitud.getEstado() != EstadoSolicitud.CERRADA) {
+				continue;
+			}
+
+			if (solicitud.getFechaSolicitud().getMonthValue() != hoy.getMonthValue()) {
+				continue;
+			}
+
+			if (solicitud.getFechaSolicitud().getYear() != hoy.getYear()) {
+				continue;
+			}
+
+			boolean contratadoPorEmpresa = false;
+
+			for (Oferta oferta : empresa.getLasOfertas()) {
+				if (oferta == null || solicitud.getCandidato() == null) {
+					continue;
 				}
-				if (compatible) {
-					contador++;
+
+				if (oferta.buscarDecision(solicitud.getCandidato()) != null
+						&& oferta.buscarDecision(solicitud.getCandidato()).getEstado()
+						== logico.EstadoDecision.CONTRATADO) {
+
+					contratadoPorEmpresa = true;
+					break;
 				}
 			}
+
+			if (contratadoPorEmpresa) {
+				contador++;
+			}
 		}
+
 		return contador;
 	}
 
 	private ArrayList<SolicitudEmpleo> obtenerSolicitudesRecientes() {
 		ArrayList<SolicitudEmpleo> todas = new ArrayList<SolicitudEmpleo>();
-		if (empresa == null) {
+
+		if (empresa == null
+				|| empresa.getLasOfertas() == null
+				|| BolsaEmpleo.getInstancia().getSolicitudes() == null) {
+
 			return todas;
 		}
+
 		for (SolicitudEmpleo solicitud : BolsaEmpleo.getInstancia().getSolicitudes()) {
+			if (solicitud == null) {
+				continue;
+			}
+
 			boolean compatible = false;
+
 			for (Oferta oferta : empresa.getLasOfertas()) {
-				if (oferta.getEstado() == EstadoOferta.PENDIENTE && BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud) >= 60) {
+				if (oferta != null
+						&& oferta.getEstado() == EstadoOferta.PENDIENTE
+						&& BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud) >= 60) {
+
 					compatible = true;
+					break;
 				}
 			}
+
 			if (compatible) {
 				todas.add(solicitud);
 			}
 		}
+
 		for (int i = 0; i < todas.size() - 1; i++) {
 			for (int j = 0; j < todas.size() - 1 - i; j++) {
-				if (todas.get(j).getFechaSolicitud().isBefore(todas.get(j + 1).getFechaSolicitud())) {
+				LocalDate fechaActual = todas.get(j).getFechaSolicitud();
+				LocalDate fechaSiguiente = todas.get(j + 1).getFechaSolicitud();
+
+				if (fechaActual != null
+						&& fechaSiguiente != null
+						&& fechaActual.isBefore(fechaSiguiente)) {
+
 					SolicitudEmpleo temporal = todas.get(j);
 					todas.set(j, todas.get(j + 1));
 					todas.set(j + 1, temporal);
 				}
 			}
 		}
+
 		ArrayList<SolicitudEmpleo> recientes = new ArrayList<SolicitudEmpleo>();
+
 		int limite = Math.min(5, todas.size());
+
 		for (int i = 0; i < limite; i++) {
 			recientes.add(todas.get(i));
 		}
+
 		return recientes;
 	}
 
-	/*private DefaultTableModel crearModeloSolicitudesRecientes() {
-		DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Nombre", "Oferta", "Fecha", "Estado" }) {
-			public boolean isCellEditable(int fila, int columna) {
-				return false;
-			}
-		};
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
-		for (SolicitudEmpleo solicitud : obtenerSolicitudesRecientes()) {
-			String nombreCandidato = solicitud.getCandidato().getNombre() + " " + solicitud.getCandidato().getApellido();
-			String estadoTexto = formatearEstado(solicitud.getEstado());
-			modelo.addRow(new Object[] { nombreCandidato, solicitud.getPuesto(), solicitud.getFechaSolicitud().format(formato), estadoTexto });
-		}
-		return modelo;
-	}*/
-
-	/*private String formatearEstado(EstadoSolicitud estado) {
-		if (estado == EstadoSolicitud.CERRADA) {
-			return "Aceptada";
-		}
-		if (estado == EstadoSolicitud.RECHAZADA) {
-			return "Rechazada";
-		}
-		return "En Revisi\u00F3n";
-	}*/
-
 	private class RenderEstado extends JLabel implements TableCellRenderer {
+
+		private static final long serialVersionUID = 1L;
 
 		public RenderEstado() {
 			setOpaque(false);
@@ -417,20 +554,31 @@ public class HomeEmpresa extends JFrame {
 			setFont(new Font("Calibri", Font.BOLD, 14));
 		}
 
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-				boolean hasFocus, int row, int column) {
+		@Override
+		public Component getTableCellRendererComponent(
+				javax.swing.JTable table,
+				Object value,
+				boolean isSelected,
+				boolean hasFocus,
+				int row,
+				int column) {
+
 			String estado = "";
+
 			if (value != null) {
 				estado = value.toString();
 			}
+
 			setText(estado);
 
 			if (estado.equals("Aceptada")) {
 				setBackground(new Color(198, 239, 206));
 				setForeground(new Color(46, 125, 50));
+
 			} else if (estado.equals("Rechazada")) {
 				setBackground(new Color(255, 205, 210));
 				setForeground(new Color(198, 40, 40));
+
 			} else {
 				setBackground(new Color(255, 224, 178));
 				setForeground(new Color(204, 102, 0));
@@ -439,40 +587,92 @@ public class HomeEmpresa extends JFrame {
 			return this;
 		}
 
+		@Override
 		protected void paintComponent(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g.create();
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+			g2.setRenderingHint(
+					RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON
+					);
+
 			g2.setColor(getBackground());
 
 			int margenVertical = 6;
 			int margenHorizontal = 10;
-			g2.fillRoundRect(margenHorizontal, margenVertical,
-					getWidth() - margenHorizontal * 2, getHeight() - margenVertical * 2, 16, 16);
+
+			g2.fillRoundRect(
+					margenHorizontal,
+					margenVertical,
+					getWidth() - margenHorizontal * 2,
+					getHeight() - margenVertical * 2,
+					16,
+					16
+					);
+
 			g2.dispose();
 
 			super.paintComponent(g);
 		}
 	}
 
-	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
-		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	private void colocarIconoBoton(
+			AbstractButton boton,
+			String ruta,
+			int ancho,
+			int alto) {
+
+		if (boton == null || ruta == null) {
+			return;
+		}
+
+		java.net.URL recurso = getClass().getResource(ruta);
+
+		if (recurso == null) {
+			System.err.println("No se encontró la imagen: " + ruta);
+			return;
+		}
+
+		ImageIcon icono = new ImageIcon(recurso);
+
+		Image imagenEscalada = icono.getImage().getScaledInstance(
+				ancho,
+				alto,
+				Image.SCALE_SMOOTH
+				);
+
 		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
-	
-	private void colocarImagen(JLabel label, String ruta) {
 
-		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	private void colocarImagen(JLabel label, String ruta) {
+		if (label == null || ruta == null) {
+			return;
+		}
+
+		java.net.URL recurso = getClass().getResource(ruta);
+
+		if (recurso == null) {
+			System.err.println("No se encontró la imagen: " + ruta);
+			return;
+		}
+
+		ImageIcon icono = new ImageIcon(recurso);
 
 		int anchoLabel = label.getWidth();
 		int altoLabel = label.getHeight();
-
 		int anchoImagen = icono.getIconWidth();
 		int altoImagen = icono.getIconHeight();
 
+		if (anchoLabel <= 0
+				|| altoLabel <= 0
+				|| anchoImagen <= 0
+				|| altoImagen <= 0) {
+
+			return;
+		}
+
 		double escalaAncho = (double) anchoLabel / anchoImagen;
 		double escalaAlto = (double) altoLabel / altoImagen;
-
 		double escala = Math.max(escalaAncho, escalaAlto);
 
 		int nuevoAncho = (int) (anchoImagen * escala);
@@ -484,11 +684,10 @@ public class HomeEmpresa extends JFrame {
 				Image.SCALE_SMOOTH
 				);
 
-		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-
-		label.setIcon(iconoEscalado);
+		label.setIcon(new ImageIcon(imagenEscalada));
 		label.setText("");
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
+
 }
