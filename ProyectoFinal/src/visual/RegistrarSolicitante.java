@@ -321,11 +321,11 @@ public class RegistrarSolicitante extends JDialog {
 			pasoActual = 4;
 			btnSiguiente.setText("Finalizar");
 
-		}/* else if (pasoActual == 4) {
+		} else if (pasoActual == 4) {
 			if (!validarPaso4()) return;
 			registrarSolicitante();
 			return;
-		}*/
+		}
 		actualizarDots();
 	}
 
@@ -416,20 +416,13 @@ public class RegistrarSolicitante extends JDialog {
 		return true;
 	}
 
-	/*private boolean validarPaso4() {
-		if (!Validaciones.camposLlenos(txtUser.getText()) || passwordField.getPassword().length == 0) {
-			JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
-		if (mySolicitante == null) {
-			String contrasena = new String(passwordField.getPassword());
-			if (BolsaEmpleo.getInstancia().verifUsuario(txtUser.getText(), contrasena)) {
-				JOptionPane.showMessageDialog(null, "Usuario en uso.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-				return false;
-			}
-		}
-		return true;
-	}*/
+	private boolean validarPaso4() {
+	    if (!Validaciones.camposLlenos(txtUser.getText()) || passwordField.getPassword().length == 0) {
+	        JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+	        return false;
+	    }
+	    return true;
+	}
 
 	private void registrarSolicitante() {
 		if(mySolicitante == null) {

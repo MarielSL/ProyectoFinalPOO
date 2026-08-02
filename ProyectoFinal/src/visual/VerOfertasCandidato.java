@@ -148,7 +148,7 @@ public class VerOfertasCandidato extends JFrame {
 		colocarIconoBoton(btnAtras,"/img/menu-dots-vertical(White).png",25,25);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BarraAdmin home = new BarraAdmin();
+				BarraSolicitante home = new BarraSolicitante();
 				home.setVisible(true);
 				dispose();
 			}
