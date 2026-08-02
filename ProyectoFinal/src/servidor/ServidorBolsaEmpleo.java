@@ -775,7 +775,6 @@ public class ServidorBolsaEmpleo {
         int solicitantesEmpleados = 0;
         int hombresEmpleados = 0;
         int mujeresEmpleadas = 0;
-
         for (Persona p : personas) {
             if (p != null && p.isEstadoEmpleo()) {
                 solicitantesEmpleados++;
@@ -795,7 +794,37 @@ public class ServidorBolsaEmpleo {
             }
         }
 
-        Map<String, Integer> conteoEmpresas = new LinkedHashMap<String, Integer>();
+        java.time.LocalDate hoy = java.time.LocalDate.now();
+        int solicitudesMes = 0;
+        int ofertasMes = 0;
+        int contratadosMes = 0;
+
+        for (SolicitudEmpleo s : solicitudes) {
+            if (s != null && s.getFechaSolicitud() != null
+                    && s.getFechaSolicitud().getMonthValue() == hoy.getMonthValue()
+                    && s.getFechaSolicitud().getYear() == hoy.getYear()) {
+                solicitudesMes++;
+            }
+        }
+
+        for (Oferta o : ofertas) {
+            if (o != null && o.getFechaPublicacion() != null
+                    && o.getFechaPublicacion().getMonthValue() == hoy.getMonthValue()
+                    && o.getFechaPublicacion().getYear() == hoy.getYear()) {
+                ofertasMes++;
+            }
+        }
+
+        for (SolicitudEmpleo s : solicitudes) {
+            if (s != null && s.getEstado() == EstadoSolicitud.CERRADA
+                    && s.getFechaSolicitud() != null
+                    && s.getFechaSolicitud().getMonthValue() == hoy.getMonthValue()
+                    && s.getFechaSolicitud().getYear() == hoy.getYear()) {
+                contratadosMes++;
+            }
+        }
+
+        java.util.Map<String, Integer> conteoEmpresas = new java.util.LinkedHashMap<String, Integer>();
         for (Oferta o : ofertas) {
             if (o == null || o.getEmpresa() == null) {
                 continue;
@@ -804,7 +833,7 @@ public class ServidorBolsaEmpleo {
             conteoEmpresas.put(nombre, conteoEmpresas.getOrDefault(nombre, 0) + 1);
         }
 
-        List<Map.Entry<String, Integer>> listaEmpresas = new ArrayList<Map.Entry<String, Integer>>(conteoEmpresas.entrySet());
+        java.util.List<java.util.Map.Entry<String, Integer>> listaEmpresas = new java.util.ArrayList<java.util.Map.Entry<String, Integer>>(conteoEmpresas.entrySet());
         listaEmpresas.sort((a, b) -> b.getValue().compareTo(a.getValue()));
 
         ArrayList<String> nombresEmpresasTop = new ArrayList<String>();
@@ -815,32 +844,26 @@ public class ServidorBolsaEmpleo {
             ofertasPorEmpresaTop.add(listaEmpresas.get(i).getValue());
         }
 
-        int solicitudesMes = contarSolicitudesDelMes(solicitudes);
-        int ofertasMes = contarOfertasDelMes(ofertas);
-
         int solicitudesRecibidas = solicitudes.size();
-        int solicitudesAceptadas = 0;
         int pendientes = 0;
-        int rechazados = 0;
         int contratados = 0;
+        int rechazados = 0;
 
         for (SolicitudEmpleo s : solicitudes) {
             if (s == null) {
                 continue;
             }
-
             if (s.getEstado() == EstadoSolicitud.ACTIVA) {
                 pendientes++;
             } else if (s.getEstado() == EstadoSolicitud.CERRADA) {
                 contratados++;
+            } else {
+                rechazados++;
             }
         }
 
-        solicitudesAceptadas = contratados;
-        rechazados = Math.max(0, solicitudesRecibidas - pendientes - contratados);
-
-        Map<String, Integer> ofertasPorArea = new LinkedHashMap<String, Integer>();
-        Map<String, Integer> solicitudesPorArea = new LinkedHashMap<String, Integer>();
+        java.util.Map<String, Integer> ofertasPorArea = new java.util.LinkedHashMap<String, Integer>();
+        java.util.Map<String, Integer> solicitudesPorArea = new java.util.LinkedHashMap<String, Integer>();
 
         for (Oferta o : ofertas) {
             if (o == null || o.getAreaLaboral() == null) {
@@ -862,19 +885,15 @@ public class ServidorBolsaEmpleo {
         ArrayList<Integer> ofertasPorAreaLaboral = new ArrayList<Integer>();
         ArrayList<Integer> solicitudesPorAreaLaboral = new ArrayList<Integer>();
 
-        ArrayList<String> areasUnidas = new ArrayList<String>();
+        java.util.LinkedHashMap<String, Boolean> areasUnidas = new java.util.LinkedHashMap<String, Boolean>();
         for (String area : ofertasPorArea.keySet()) {
-            if (!areasUnidas.contains(area)) {
-                areasUnidas.add(area);
-            }
+            areasUnidas.put(area, true);
         }
         for (String area : solicitudesPorArea.keySet()) {
-            if (!areasUnidas.contains(area)) {
-                areasUnidas.add(area);
-            }
+            areasUnidas.put(area, true);
         }
 
-        for (String area : areasUnidas) {
+        for (String area : areasUnidas.keySet()) {
             nombresAreasLaborales.add(area);
             ofertasPorAreaLaboral.add(ofertasPorArea.getOrDefault(area, 0));
             solicitudesPorAreaLaboral.add(solicitudesPorArea.getOrDefault(area, 0));
@@ -922,7 +941,7 @@ public class ServidorBolsaEmpleo {
                 solicitantesEmpleados, empresasActivas,
                 nombresEmpresasTop, ofertasPorEmpresaTop,
                 solicitudesMes, ofertasMes,
-                solicitudesRecibidas, solicitudesAceptadas,
+                solicitudesRecibidas, contratados,
                 hombresEmpleados, mujeresEmpleadas,
                 nombresAreasLaborales, ofertasPorAreaLaboral, solicitudesPorAreaLaboral,
                 pendientes, contratados, rechazados,
