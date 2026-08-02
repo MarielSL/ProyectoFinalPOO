@@ -121,38 +121,33 @@ public class VerReportesAdmin extends JFrame {
 
 	private void construirReportes(JPanel panel, int margen, int anchoContenido) {
 		int yInicio = 110;
-		int filas = 2;
 		int columnas = 3;
 		int espacio = 24;
 		int anchoTarjeta = (anchoContenido - espacio * (columnas - 1)) / columnas;
 		int altoTarjeta = 160;
 
-		String[] titulos = { "Ofertas", "Solicitantes", "Postulaciones", "Empresas", "Actividad general", "Personalizado" };
+		String[] titulos = { "Ofertas", "Solicitantes", "Empresas", "Actividad general", "Ver Gr\u00E1ficas" };
 		String[] subtitulos = {
 			"Resumen de las ofertas publicadas",
 			"Resumen de solicitantes registrados",
-			"Resumen de postulaciones realizadas",
 			"Resumen de empresas asociadas",
 			"Vista general de la plataforma",
-			"Crea un reporte a tu medida"
+			"Visualiza los datos en gr\u00E1ficas"
 		};
 		String[] iconos = {
 			"/img/maletin_rojo.png",
 			"/img/esquema-de-trabajador-de-oficina.png",
-			"/img/archivo.png",
 			"/img/ciudad.png",
 			"/img/analisis-de-los-datos.png",
-			"/img/filtrar.png",
+			"/img/iconograf.png"
 		};
 
-		int indice = 0;
-		for (int fila = 0; fila < filas; fila++) {
-			for (int col = 0; col < columnas; col++) {
-				int x = margen + col * (anchoTarjeta + espacio);
-				int y = yInicio + fila * (altoTarjeta + espacio);
-				crearTarjetaReporte(panel, x, y, anchoTarjeta, altoTarjeta, titulos[indice], subtitulos[indice], iconos[indice], indice);
-				indice++;
-			}
+		for (int indice = 0; indice < titulos.length; indice++) {
+			int fila = indice / columnas;
+			int col = indice % columnas;
+			int x = margen + col * (anchoTarjeta + espacio);
+			int y = yInicio + fila * (altoTarjeta + espacio);
+			crearTarjetaReporte(panel, x, y, anchoTarjeta, altoTarjeta, titulos[indice], subtitulos[indice], iconos[indice], indice);
 		}
 	}
 
@@ -207,24 +202,18 @@ public class VerReportesAdmin extends JFrame {
 	            dialogoSolicitantes.setVisible(true);
 	            break;
 	        case 2:
-	            ReportePostulaciones dialogoPostulaciones = new ReportePostulaciones();
-	            dialogoPostulaciones.setModal(true);
-	            dialogoPostulaciones.setVisible(true);
-	            break;
-	        case 3:
 	            ReporteEmpresas dialogoEmpresas = new ReporteEmpresas();
 	            dialogoEmpresas.setModal(true);
 	            dialogoEmpresas.setVisible(true);
 	            break;
-	        case 4:
+	        case 3:
 	            ReporteActividadGeneral dialogoActividad = new ReporteActividadGeneral();
 	            dialogoActividad.setModal(true);
 	            dialogoActividad.setVisible(true);
 	            break;
 	        default:
-	            ReportePersonalizado dialogoPersonalizado = new ReportePersonalizado();
-	            dialogoPersonalizado.setModal(true);
-	            dialogoPersonalizado.setVisible(true);
+	            VerGraficas verGraficas = new VerGraficas();
+	            verGraficas.setVisible(true);
 	            break;
 	    }
 	}
@@ -273,28 +262,6 @@ public class VerReportesAdmin extends JFrame {
 		return contador;
 	}
 
-	private int contarTotalPostulaciones() {
-		ArrayList<SolicitudEmpleo> lasSolicitudes = BolsaEmpleo.getInstancia().getSolicitudes();
-		if (lasSolicitudes == null) {
-			return 0;
-		}
-		return lasSolicitudes.size();
-	}
-
-	private int contarPostulacionesPendientes() {
-		ArrayList<SolicitudEmpleo> lasSolicitudes = BolsaEmpleo.getInstancia().getSolicitudes();
-		if (lasSolicitudes == null) {
-			return 0;
-		}
-		int contador = 0;
-		for (SolicitudEmpleo solicitud : lasSolicitudes) {
-			if (solicitud.getEstado() == EstadoSolicitud.ACTIVA) {
-				contador++;
-			}
-		}
-		return contador;
-	}
-
 	private int contarTotalEmpresas() {
 		ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
 		if (lasEmpresas == null) {
@@ -318,13 +285,21 @@ public class VerReportesAdmin extends JFrame {
 	}
 	
 	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
-	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		java.net.URL recurso = getClass().getResource(ruta);
+		if (recurso == null) {
+			return;
+		}
+	    ImageIcon icono = new ImageIcon(recurso);
 	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
 	    boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 	
 	private void colocarImagen(JLabel label, String ruta) {
-		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		java.net.URL recurso = getClass().getResource(ruta);
+		if (recurso == null) {
+			return;
+		}
+		ImageIcon icono = new ImageIcon(recurso);
 
 		int anchoLabel = label.getWidth();
 		int altoLabel = label.getHeight();
