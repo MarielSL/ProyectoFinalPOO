@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -24,6 +25,10 @@ import javax.swing.text.AbstractDocument;
 import logico.BolsaEmpleo;
 import logico.TipoUser;
 import logico.Usuario;
+import red.ConexionCliente;
+import red.DatosLogin;
+import red.Peticion;
+import red.Respuesta;
 
 public class LogIn extends JDialog {
 
@@ -107,40 +112,52 @@ public class LogIn extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 String usuario = txtUser.getText().trim();
                 String password = new String(passwordField.getPassword()).trim();
-                
-                if(BolsaEmpleo.getInstancia().getUsuarios().size() == 0) {
-                	BolsaEmpleo.getInstancia().crearAdminPorDefecto();
-                }
-                
+
                 if (!Validaciones.camposLlenos(usuario, password)) {
                     JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
-                boolean logIn = BolsaEmpleo.getInstancia().confirmLogin(usuario, password);
+                try {
+                	DatosLogin datosLogin = new DatosLogin(usuario, password);
+                	Peticion peticion = new Peticion(Peticion.Tipo.LOGIN, datosLogin);
 
-                if (!logIn) {
-                    JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
+                    Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-                Usuario loginUser = BolsaEmpleo.getInstancia().getLoginUser();
+                    if (!respuesta.isExito()) {
+                        JOptionPane.showMessageDialog(null, respuesta.getDatos().toString(), "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
 
-                if (loginUser.getEmpresa() != null) {
-                    HomeEmpresa homeEmpresa = new HomeEmpresa();
-                    homeEmpresa.setVisible(true);
-                    dispose();
-                }
+                    Usuario loginUser = (Usuario) respuesta.getDatos();
 
-                if (loginUser.getPersona() != null) {
-                    HomeCandidato homeCandidato = new HomeCandidato();
-                    homeCandidato.setVisible(true);
-                    dispose();
-                }
-                if (loginUser.getTipoUser() == TipoUser.ADMINISTRADOR) {
-                    HomeAdministrador homeAdmin = new HomeAdministrador();
-                    homeAdmin.setVisible(true);
-                    dispose();
+                    // Puente temporal: guardamos el usuario logueado también en la
+                    // copia LOCAL de BolsaEmpleo del cliente, porque el resto de las
+                    // pantallas (HomeEmpresa, HomeCandidato, etc.) todavía leen
+                    // BolsaEmpleo.getInstancia().getLoginUser() directamente.
+                    // Esto se irá eliminando en las próximas tandas.
+                    BolsaEmpleo.getInstancia().setLoginUser(loginUser);
+
+                    if (loginUser.getTipoUser() == TipoUser.ADMINISTRADOR) {
+                        HomeAdministrador homeAdmin = new HomeAdministrador();
+                        homeAdmin.setVisible(true);
+                        dispose();
+                        return;
+                    }
+                    if (loginUser.getEmpresa() != null) {
+                        HomeEmpresa homeEmpresa = new HomeEmpresa();
+                        homeEmpresa.setVisible(true);
+                        dispose();
+                        return;
+                    }
+                    if (loginUser.getPersona() != null) {
+                        HomeCandidato homeCandidato = new HomeCandidato();
+                        homeCandidato.setVisible(true);
+                        dispose();
+                    }
+
+                } catch (IOException | ClassNotFoundException ex) {
+                    JOptionPane.showMessageDialog(null, "No se pudo conectar con el servidor.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

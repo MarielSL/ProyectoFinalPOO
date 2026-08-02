@@ -201,10 +201,10 @@ public class BarraEmpresa extends JDialog {
 			BotonConSombra btncnsmbrCerrarSessin = new BotonConSombra("Dashboard", 25);
 			btncnsmbrCerrarSessin.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					dispose();
 					LogIn ver = new LogIn();
 					setModal(true);
 					ver.setVisible(true);
+					dispose();
 				}
 			});
 			btncnsmbrCerrarSessin.setText("Cerrar Sessi\u00F3n");

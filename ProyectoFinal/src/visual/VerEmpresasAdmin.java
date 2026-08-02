@@ -417,7 +417,11 @@ public class VerEmpresasAdmin extends JFrame {
 	}
 
 	private void colocarImagen(JLabel label, String ruta) {
-		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		java.net.URL url = getClass().getResource(ruta);
+	    if (url == null) {
+	        return; 
+	    }
+	    ImageIcon icono = new ImageIcon(url); 
 
 		int anchoLabel = label.getWidth();
 		int altoLabel = label.getHeight();
@@ -443,22 +447,25 @@ public class VerEmpresasAdmin extends JFrame {
 	}
 
 	private DefaultTableModel crearModeloEmpresas() {
-		DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Empresa", "Contacto", "Tipo", "Registro", "Estado" }) {
-			public boolean isCellEditable(int fila, int columna) {
-				return false;
-			}
-		};
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
-		ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
-		if (lasEmpresas == null) {
-			return modelo;
-		}
-		for (Empresa empresa : lasEmpresas) {
-			String tipo = capitalizar(empresa.getTipo().name());
-			String estadoTexto = formatearEstadoEmpresa(empresa.isEstado());
-			modelo.addRow(new Object[] { empresa.getNombre(), empresa.getTelefono(), tipo, empresa.getUser().getFechaRegistro().format(formato), estadoTexto });
-		}
-		return modelo;
+	    DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Empresa", "Contacto", "Tipo", "Registro", "Estado" }) {
+	        public boolean isCellEditable(int fila, int columna) {
+	            return false;
+	        }
+	    };
+	    DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
+	    ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
+	    if (lasEmpresas == null) {
+	        return modelo;
+	    }
+	    for (Empresa empresa : lasEmpresas) {
+	        String tipo = capitalizar(empresa.getTipo().name());
+	        String estadoTexto = formatearEstadoEmpresa(empresa.isEstado());
+	        String fechaTexto = (empresa.getUser() != null && empresa.getUser().getFechaRegistro() != null)
+	                ? empresa.getUser().getFechaRegistro().format(formato)
+	                : "N/A";
+	        modelo.addRow(new Object[] { empresa.getNombre(), empresa.getTelefono(), tipo, fechaTexto, estadoTexto });
+	    }
+	    return modelo;
 	}
 
 	public class RenderCentrado extends DefaultTableCellRenderer {
