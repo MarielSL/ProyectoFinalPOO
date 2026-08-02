@@ -36,9 +36,11 @@ import javax.swing.JSeparator;
 import java.awt.SystemColor;
 import java.awt.CardLayout;
 import javax.swing.JButton;
+import javax.swing.SwingWorker;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import java.time.format.DateTimeFormatter;
 
 public class VerPostulante extends JFrame {
 
@@ -99,7 +101,7 @@ public class VerPostulante extends JFrame {
 		if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
 			empresa = BolsaEmpleo.getInstancia().getLoginUser().getEmpresa();
 		}
-		
+
 		setIconImage(Toolkit.getDefaultToolkit().getImage(VerPostulante.class.getResource("/img/AppIconoFull.png")));
 		Utilidades.aplicarIcono(this);
 		setTitle("Ver Postulante");
@@ -122,24 +124,18 @@ public class VerPostulante extends JFrame {
 		lblNewLabel.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblNewLabel.setBounds(333, 31, 187, 32);
 		panel.add(lblNewLabel);
-		
+
 		String nombreEmpresa = "Mi Empresa";
 		if (empresa != null) {
 			nombreEmpresa = empresa.getNombre();
 		}
 		int anchoNombre = 14 * nombreEmpresa.length() + 20;
 
-		JLabel lblNombreEmpresa = new JLabel(nombreEmpresa);
-		lblNombreEmpresa.setFont(new Font("Calibri", Font.BOLD, 24));
-		lblNombreEmpresa.setForeground(Color.WHITE);
-		lblNombreEmpresa.setBounds(728, 52, anchoNombre, 20);
-		panel.add(lblNombreEmpresa);
-		
 		JLabel iconoLogo = new JLabel("");
 		iconoLogo.setBounds(762, 0, 114, 88);
 		colocarImagen(iconoLogo, "/img/iconoLogo_FondoOscuro.png");
 		panel.add(iconoLogo);
-		
+
 		BotonRedond btnMenu = new BotonRedond("",25);
 		btnMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -157,7 +153,7 @@ public class VerPostulante extends JFrame {
 		btnMenu.setFocusPainted(false);
 		btnMenu.setOpaque(false);
 		panel.add(btnMenu);
-		
+
 
 
 		lblFotoPerfil = new JLabel("New label");
@@ -338,7 +334,7 @@ public class VerPostulante extends JFrame {
 		lblExp = new JLabel("New label");
 		lblExp.setForeground(new Color(0, 0, 51));
 		lblExp.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblExp.setBounds(739, 213, 119, 20);
+		lblExp.setBounds(708, 213, 139, 20);
 		contentPane.add(lblExp);
 
 		JLabel lblDisponibilidadParaMudarse = new JLabel("Disponibilidad para Mudarse:");
@@ -350,7 +346,7 @@ public class VerPostulante extends JFrame {
 		lblDispMud = new JLabel("New label");
 		lblDispMud.setForeground(new Color(0, 0, 51));
 		lblDispMud.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblDispMud.setBounds(739, 252, 119, 20);
+		lblDispMud.setBounds(708, 252, 119, 20);
 		contentPane.add(lblDispMud);
 
 		JLabel lblLicenciaDeConducir = new JLabel("Licencia de Conducir:");
@@ -362,7 +358,7 @@ public class VerPostulante extends JFrame {
 		lblLicencia = new JLabel("New label");
 		lblLicencia.setForeground(new Color(0, 0, 51));
 		lblLicencia.setFont(new Font("Calibri", Font.PLAIN, 18));
-		lblLicencia.setBounds(739, 291, 119, 20);
+		lblLicencia.setBounds(708, 291, 119, 20);
 		contentPane.add(lblLicencia);
 
 		JSeparator separator_1 = new JSeparator();
@@ -494,18 +490,9 @@ public class VerPostulante extends JFrame {
 
 		btnRechazar = new BotonRedond("Rechazar",30);
 		btnRechazar.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				int select = JOptionPane.showConfirmDialog(null, "¿Está seguro de rechazar la solicitud?", "Advertencia", JOptionPane.YES_NO_OPTION);
-				if(select == JOptionPane.YES_OPTION) {
-					if(solicitud != null) {
-						oferta.guardarDecision(solicitud.getCandidato(), EstadoDecision.RECHAZADO);
-						BolsaEmpleo.getInstancia().guardarDatos();
-						dispose();
-					}
-					else {
-						dispose();
-					}
-				}
+				rechazarConHilo(oferta, solicitud);
 			}
 		});
 		btnRechazar.setBackground(new Color(255, 102, 102));
@@ -516,22 +503,9 @@ public class VerPostulante extends JFrame {
 
 		btnContratar = new BotonRedond("Contratar",30);
 		btnContratar.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(solicitud != null) {
-					oferta.guardarDecision(solicitud.getCandidato(), EstadoDecision.CONTRATADO);
-					solicitud.getCandidato().setEstadoEmpleo(true);
-					solicitud.setEstado(EstadoSolicitud.CERRADA);
-					oferta.setCantPuestos(oferta.getCantPuestos()-1);
-					if(oferta.getCantPuestos() == 0) {
-						oferta.setEstado(EstadoOferta.COMPLETADA);
-					}
-					BolsaEmpleo.getInstancia().guardarDatos();
-					dispose();
-				}
-				else {
-					dispose();
-				}
-				
+				contratarConHilo(oferta, solicitud);
 			}
 		});
 		btnContratar.setForeground(new Color(255, 255, 255));
@@ -540,154 +514,330 @@ public class VerPostulante extends JFrame {
 		btnContratar.setBounds(486, 748, 192, 40);
 		contentPane.add(btnContratar);
 		CardLayout cardLayout = (CardLayout) panel_TiposSolicitantes.getLayout();
-
-		if(solicitante != null) {
-			String rutaFotoPerfil = solicitante.getUser().getFotoPerfil();
-			colocarImagen(lblFotoPerfil, rutaFotoPerfil);
-			lblNombre.setText(solicitante.getNombre() + " " + solicitante.getApellido());
-			if(solicitante instanceof Universitario) {
-				Universitario aux = (Universitario) solicitante;
-				if(solicitante.getSexo() == Sexo.FEMENINO) {
-					txtTipoSolicitante.setText("Universitaria");
-				}
-				else {
-					txtTipoSolicitante.setText("Universitario");
-				}
-				lblCarr.setText(aux.getCarrera());
-				cardLayout.show(panel_TiposSolicitantes, "Universitario");
-			}
-			if(solicitante instanceof Tecnico) {
-				Tecnico aux = (Tecnico) solicitante;
-
-				if(solicitante.getSexo() == Sexo.FEMENINO) {
-					txtTipoSolicitante.setText("Técnica");
-				}
-				else {
-					txtTipoSolicitante.setText("Técnico");
-				}
-				lblTecnico.setText(aux.getTecnico());
-				cardLayout.show(panel_TiposSolicitantes, "Tecnico");
-
-			}
-			if(solicitante instanceof Obrero) {
-				Obrero aux = (Obrero) solicitante;
-
-				if(solicitante.getSexo() == Sexo.FEMENINO) {
-					txtTipoSolicitante.setText("Obrera");
-				}
-				else {
-					txtTipoSolicitante.setText("Obrero");
-				}
-				lblHabilid.setText(aux.getHabilidades());
-				cardLayout.show(panel_TiposSolicitantes, "Tecnico");
-			}
-			float Porcentaje = BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud);
-			lblPorcent.setText(Porcentaje + "%");
-			if(Porcentaje >= 75) {
-				lblTectCoincidencia.setForeground(new Color(0, 102, 0));
-				lblPorcent.setForeground(new Color(0, 102, 0));
-				panelCoincidencia.setBackground(new Color(153, 204, 153));
-			}
-			if( Porcentaje >=50 && Porcentaje <75) {
-				lblTectCoincidencia.setForeground(new Color(184, 134, 11));
-				lblPorcent.setForeground(new Color(184, 134, 11));
-				panelCoincidencia.setBackground(new Color(238, 232, 170));
-			}
-			if(Porcentaje >=25 &&Porcentaje <50) {
-				lblTectCoincidencia.setForeground(new Color(160, 82, 45));
-				lblPorcent.setForeground(new Color(160, 82, 45));
-				panelCoincidencia.setBackground(new Color(233, 150, 122));
-			}
-			if( Porcentaje >=0 && Porcentaje <25) {
-				lblTectCoincidencia.setForeground(new Color(153, 0, 0));
-				lblPorcent.setForeground(new Color(153, 0, 0));
-				panelCoincidencia.setBackground(new Color(255, 153, 153));
-			}
-			lblTelefono.setText(solicitante.getTelefono());
-			lblSolCiudad.setText(solicitante.getCiudad());
-			lblSolSexo.setText(solicitante.getSexo().toString());
-			if(solicitante.isDispParaMudarse()) {
-				lblDispMud.setText("Sí");
-			}
-			else {
-				lblDispMud.setText("No");
-			}
-
-			if(solicitante.isLicenciaConducir()) {
-				lblLicencia.setText("Sí");
-			}
-			else {
-				lblLicencia.setText("No");
-			}
-			if(solicitante.getYearsExp() > 1) {
-				lblExp.setText(solicitante.getYearsExp() + "años");
-			}
-			if(solicitante.getYearsExp() == 1) {
-				lblExp.setText(" 1 año");
-			}
-			if(solicitante.getYearsExp() == 0) {
-				lblExp.setText("No tiene Experiencia.");
-			}
-			lblEmail.setText(solicitante.getUser().getCorreo());
-			lbluser.setText(solicitante.getUser().getUsername());
-
-		}
-		else {
-			colocarImagen(lblFotoPerfil, "/img/User Icon.png");
-			txtTipoSolicitante.setText("Universitaria");
-			lblTectCoincidencia.setForeground(new Color(0, 102, 0));
-			lblPorcent.setForeground(new Color(0, 102, 0));
-			lblPorcent.setText("100%");
-			panelCoincidencia.setBackground(new Color(153, 204, 153));
-			lblDispMud.setText("No");
-			lblLicencia.setText("Sí");
-			lblExp.setText("No Tiene.");
-			lblEmail.setText("marielsl0125@gmail.com");
-			lblTelefono.setText("849-868-9698");
-			lblSolCiudad.setText("Santiago de los Caballeros");
-			lblSolSexo.setText("Femenino");
-			lblCarr.setText("Ing. Ciencias de la Computación");
-			cardLayout.show(panel_TiposSolicitantes, "Universitario");
-			lbluser.setText("marielsl_0125");
-		}
+		cargarDatosConHilo(solicitante, oferta, solicitud, panel_TiposSolicitantes, cardLayout);
 
 	}
 
-	private void colocarImagen(JLabel label, String ruta) {
+	private void cargarDatosConHilo(Persona solicitante, Oferta oferta, SolicitudEmpleo solicitud, JPanel panelTiposSolicitantes, CardLayout cardLayout) {
+		btnRechazar.setEnabled(false);
+		btnContratar.setEnabled(false);
+		lblPorcent.setText("...");
 
-		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		SwingWorker<Float, Void> hilo = new SwingWorker<Float, Void>() {
+			@Override
+			protected Float doInBackground() throws Exception {
+				if (solicitante == null || oferta == null || solicitud == null) {
+					return null;
+				}
+
+				/*
+				  Cuando el socket esté listo, aquí se reemplaza el cálculo local
+				  por una petición al servidor y se devuelve el porcentaje recibido.
+				 */
+				return BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud);
+			}
+
+			@Override
+			protected void done() {
+				try {
+					Float porcentaje = get();
+					mostrarDatosSolicitante(solicitante, porcentaje, panelTiposSolicitantes, cardLayout);
+					boolean datosValidos = solicitante != null && oferta != null && solicitud != null;
+					btnRechazar.setEnabled(datosValidos);
+					btnContratar.setEnabled(datosValidos && oferta.getCantPuestos() > 0);
+				} catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+					e.printStackTrace();
+					mostrarDatosVacios(panelTiposSolicitantes, cardLayout);
+					JOptionPane.showMessageDialog(VerPostulante.this, mensaje != null ? mensaje : "No se pudieron cargar los datos del postulante.", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		};
+
+		hilo.execute();
+	}
+
+	private void mostrarDatosSolicitante(Persona solicitante, Float porcentaje, JPanel panelTiposSolicitantes, CardLayout cardLayout) {
+		if (solicitante == null) {
+			mostrarDatosVacios(panelTiposSolicitantes, cardLayout);
+			return;
+		}
+
+		String rutaFotoPerfil = solicitante.getUser() != null ? solicitante.getUser().getFotoPerfil() : null;
+		colocarImagen(lblFotoPerfil, rutaFotoPerfil);
+		lblNombre.setText(textoSeguro(solicitante.getNombre()) + " " + textoSeguro(solicitante.getApellido()));
+
+		if (solicitante instanceof Universitario) {
+			Universitario universitario = (Universitario) solicitante;
+			txtTipoSolicitante.setText(solicitante.getSexo() == Sexo.FEMENINO ? "Universitaria" : "Universitario");
+			lblCarr.setText(textoSeguro(universitario.getCarrera()));
+			cardLayout.show(panelTiposSolicitantes, "Universitario");
+		} else if (solicitante instanceof Tecnico) {
+			Tecnico tecnico = (Tecnico) solicitante;
+			txtTipoSolicitante.setText(solicitante.getSexo() == Sexo.FEMENINO ? "Técnica" : "Técnico");
+			lblTecnico.setText(textoSeguro(tecnico.getTecnico()));
+			cardLayout.show(panelTiposSolicitantes, "Tecnico");
+		} else if (solicitante instanceof Obrero) {
+			Obrero obrero = (Obrero) solicitante;
+			txtTipoSolicitante.setText(solicitante.getSexo() == Sexo.FEMENINO ? "Obrera" : "Obrero");
+			lblHabilid.setText(textoSeguro(obrero.getHabilidades()));
+			cardLayout.show(panelTiposSolicitantes, "Obrero");
+		} else {
+			txtTipoSolicitante.setText("No especificado");
+		}
+
+		aplicarEstiloCoincidencia(porcentaje != null ? porcentaje.floatValue() : 0f);
+
+		if (solicitante.getFechNacim() != null) {
+			DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			lblFechaNacim.setText(solicitante.getFechNacim().format(formato));
+		} else {
+			lblFechaNacim.setText("No especificada");
+		}
+
+		lblTelefono.setText(textoSeguro(solicitante.getTelefono()));
+		lblSolCiudad.setText(textoSeguro(solicitante.getCiudad()));
+		lblSolSexo.setText(solicitante.getSexo() != null ? solicitante.getSexo().toString() : "No especificado");
+		lblDispMud.setText(solicitante.isDispParaMudarse() ? "Sí" : "No");
+		lblLicencia.setText(solicitante.isLicenciaConducir() ? "Sí" : "No");
+
+		if (solicitante.getYearsExp() > 1) {
+			lblExp.setText(solicitante.getYearsExp() + " años");
+		} else if (solicitante.getYearsExp() == 1) {
+			lblExp.setText("1 año");
+		} else {
+			lblExp.setText("No tiene experiencia");
+		}
+
+		if (solicitante.getUser() != null) {
+			lblEmail.setText(textoSeguro(solicitante.getUser().getCorreo()));
+			lbluser.setText(textoSeguro(solicitante.getUser().getUsername()));
+		} else {
+			lblEmail.setText("No disponible");
+			lbluser.setText("No disponible");
+		}
+	}
+
+	private void mostrarDatosVacios(JPanel panelTiposSolicitantes, CardLayout cardLayout) {
+		colocarImagen(lblFotoPerfil, "/img/User Icon.png");
+		lblNombre.setText("Sin candidato");
+		txtTipoSolicitante.setText("No especificado");
+		lblFechaNacim.setText("No especificada");
+		lblTelefono.setText("No disponible");
+		lblSolCiudad.setText("No disponible");
+		lblSolSexo.setText("No especificado");
+		lblDispMud.setText("No");
+		lblLicencia.setText("No");
+		lblExp.setText("No disponible");
+		lblEmail.setText("No disponible");
+		lbluser.setText("No disponible");
+		lblCarr.setText("");
+		lblTecnico.setText("");
+		lblHabilid.setText("");
+		aplicarEstiloCoincidencia(0f);
+		cardLayout.show(panelTiposSolicitantes, "Universitario");
+		btnRechazar.setEnabled(false);
+		btnContratar.setEnabled(false);
+	}
+
+	private void aplicarEstiloCoincidencia(float porcentaje) {
+		lblPorcent.setText(String.format("%.1f%%", porcentaje));
+
+		if (porcentaje >= 75) {
+			lblTectCoincidencia.setForeground(new Color(0, 102, 0));
+			lblPorcent.setForeground(new Color(0, 102, 0));
+			panelCoincidencia.setBackground(new Color(153, 204, 153));
+		} else if (porcentaje >= 50) {
+			lblTectCoincidencia.setForeground(new Color(184, 134, 11));
+			lblPorcent.setForeground(new Color(184, 134, 11));
+			panelCoincidencia.setBackground(new Color(238, 232, 170));
+		} else if (porcentaje >= 25) {
+			lblTectCoincidencia.setForeground(new Color(160, 82, 45));
+			lblPorcent.setForeground(new Color(160, 82, 45));
+			panelCoincidencia.setBackground(new Color(233, 150, 122));
+		} else {
+			lblTectCoincidencia.setForeground(new Color(153, 0, 0));
+			lblPorcent.setForeground(new Color(153, 0, 0));
+			panelCoincidencia.setBackground(new Color(255, 153, 153));
+		}
+	}
+
+	private void rechazarConHilo(Oferta oferta, SolicitudEmpleo solicitud) {
+		if (oferta == null || solicitud == null || solicitud.getCandidato() == null) {
+			JOptionPane.showMessageDialog(VerPostulante.this, "No se pudo identificar la solicitud.", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		int seleccion = JOptionPane.showConfirmDialog(VerPostulante.this, "¿Está seguro de rechazar la solicitud?", "Advertencia", JOptionPane.YES_NO_OPTION);
+
+		if (seleccion != JOptionPane.YES_OPTION) {
+			return;
+		}
+
+		ejecutarDecisionConHilo(oferta, solicitud, EstadoDecision.RECHAZADO);
+	}
+
+	private void contratarConHilo(Oferta oferta, SolicitudEmpleo solicitud) {
+		if (oferta == null || solicitud == null || solicitud.getCandidato() == null) {
+			JOptionPane.showMessageDialog(VerPostulante.this, "No se pudo identificar la solicitud.", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		if (oferta.getCantPuestos() <= 0) {
+			JOptionPane.showMessageDialog(VerPostulante.this, "La oferta ya no tiene puestos disponibles.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		int seleccion = JOptionPane.showConfirmDialog(VerPostulante.this, "¿Está seguro de contratar al candidato?", "Confirmación", JOptionPane.YES_NO_OPTION);
+
+		if (seleccion != JOptionPane.YES_OPTION) {
+			return;
+		}
+
+		ejecutarDecisionConHilo(oferta, solicitud, EstadoDecision.CONTRATADO);
+	}
+
+	private void ejecutarDecisionConHilo(Oferta oferta, SolicitudEmpleo solicitud, EstadoDecision decision) {
+		btnRechazar.setEnabled(false);
+		btnContratar.setEnabled(false);
+		btnRechazar.setText("Procesando...");
+		btnContratar.setText("Procesando...");
+
+		SwingWorker<Void, Void> hilo = new SwingWorker<Void, Void>() {
+			@Override
+			protected Void doInBackground() throws Exception {
+				/*
+				  Cuando el socket esté listo, este bloque se reemplaza por
+				  una petición al servidor para guardar la decisión.
+				 */
+				oferta.guardarDecision(solicitud.getCandidato(), decision);
+
+				if (decision == EstadoDecision.CONTRATADO) {
+					solicitud.getCandidato().setEstadoEmpleo(true);
+					solicitud.setEstado(EstadoSolicitud.CERRADA);
+					oferta.setCantPuestos(Math.max(0, oferta.getCantPuestos() - 1));
+
+					if (oferta.getCantPuestos() == 0) {
+						oferta.setEstado(EstadoOferta.COMPLETADA);
+					}
+				}
+
+				BolsaEmpleo.getInstancia().guardarDatos();
+				return null;
+			}
+
+			@Override
+			protected void done() {
+				try {
+					get();
+					String mensaje = decision == EstadoDecision.CONTRATADO ? "El candidato fue contratado correctamente." : "La solicitud fue rechazada correctamente.";
+					JOptionPane.showMessageDialog(VerPostulante.this, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE);
+					dispose();
+				} catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(VerPostulante.this, mensaje != null ? mensaje : "No se pudo guardar la decisión.", "Error", JOptionPane.ERROR_MESSAGE);
+					btnRechazar.setEnabled(true);
+					btnContratar.setEnabled(true);
+					btnRechazar.setText("Rechazar");
+					btnContratar.setText("Contratar");
+				}
+			}
+		};
+
+		hilo.execute();
+	}
+
+	private String textoSeguro(String texto) {
+		return texto == null || texto.trim().isEmpty() ? "No disponible" : texto.trim();
+	}
+
+	private void colocarImagen(JLabel label, String ruta) {
+		if (label == null) {
+			return;
+		}
+
+		ImageIcon icono = cargarIcono(ruta);
+
+		if (icono == null) {
+			label.setIcon(null);
+			label.setText("Sin foto");
+			label.setHorizontalAlignment(JLabel.CENTER);
+			label.setVerticalAlignment(JLabel.CENTER);
+			return;
+		}
 
 		int anchoLabel = label.getWidth();
 		int altoLabel = label.getHeight();
-
 		int anchoImagen = icono.getIconWidth();
 		int altoImagen = icono.getIconHeight();
 
+		if (anchoLabel <= 0 || altoLabel <= 0 || anchoImagen <= 0 || altoImagen <= 0) {
+			return;
+		}
+
 		double escalaAncho = (double) anchoLabel / anchoImagen;
 		double escalaAlto = (double) altoLabel / altoImagen;
-
 		double escala = Math.max(escalaAncho, escalaAlto);
 
 		int nuevoAncho = (int) (anchoImagen * escala);
 		int nuevoAlto = (int) (altoImagen * escala);
 
-		Image imagenEscalada = icono.getImage().getScaledInstance(
-				nuevoAncho,
-				nuevoAlto,
-				Image.SCALE_SMOOTH
-				);
+		Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
 
-		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-
-		label.setIcon(iconoEscalado);
+		label.setIcon(new ImageIcon(imagenEscalada));
 		label.setText("");
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
-	
+
+	private ImageIcon cargarIcono(String ruta) {
+		String rutaFinal = ruta;
+
+		if (rutaFinal == null || rutaFinal.trim().isEmpty()) {
+			rutaFinal = "/img/User Icon.png";
+		}
+
+		java.net.URL recurso = getClass().getResource(rutaFinal);
+
+		if (recurso != null) {
+			return new ImageIcon(recurso);
+		}
+
+		java.io.File archivo = new java.io.File(rutaFinal);
+
+		if (archivo.exists() && archivo.isFile()) {
+			ImageIcon iconoArchivo = new ImageIcon(archivo.getAbsolutePath());
+
+			if (iconoArchivo.getIconWidth() > 0) {
+				return iconoArchivo;
+			}
+		}
+
+		java.net.URL recursoPredeterminado = getClass().getResource("/img/User Icon.png");
+
+		if (recursoPredeterminado != null) {
+			return new ImageIcon(recursoPredeterminado);
+		}
+
+		System.err.println("No se encontró la imagen: " + rutaFinal);
+		return null;
+	}
+
 	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
-	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-	    boton.setIcon(new ImageIcon(imagenEscalada));
+		if (boton == null) {
+			return;
+		}
+
+		ImageIcon icono = cargarIcono(ruta);
+
+		if (icono == null) {
+			return;
+		}
+
+		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }

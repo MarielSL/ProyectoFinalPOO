@@ -45,6 +45,8 @@ public class VerOfertasEmpresa extends JFrame {
 	private JTable table;
 	private DefaultTableModel modeloTabla;
 	private ArrayList<Oferta> lasOfertasMostradas = new ArrayList<Oferta>();
+	private JLabel lblTotalOfertasNum;
+	private JLabel lblOfertasActivasNum;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -165,12 +167,12 @@ public class VerOfertasEmpresa extends JFrame {
 		lblTotalOfertas.setBounds(64, 12, anchoTarjeta - 84, 20);
 		panelTotalOfertas.add(lblTotalOfertas);
 
-		JLabel lblTotalOfertasNum = new JLabel(String.valueOf(contarTotalOfertas()));
+		lblTotalOfertasNum = new JLabel(String.valueOf(contarTotalOfertas()));
 		lblTotalOfertasNum.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblTotalOfertasNum.setForeground(new Color(204, 102, 0));
 		lblTotalOfertasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
 		panelTotalOfertas.add(lblTotalOfertasNum);
-		
+
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setBounds(-3, 3, 78,78);
 		panelTotalOfertas.add(lblNewLabel);
@@ -192,12 +194,12 @@ public class VerOfertasEmpresa extends JFrame {
 		lblOfertasActivas.setBounds(64, 12, anchoTarjeta - 84, 20);
 		panelOfertasActivas.add(lblOfertasActivas);
 
-		JLabel lblOfertasActivasNum = new JLabel(String.valueOf(contarOfertasActivas()));
+		lblOfertasActivasNum = new JLabel(String.valueOf(contarOfertasActivas()));
 		lblOfertasActivasNum.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblOfertasActivasNum.setForeground(new Color(46, 125, 50));
 		lblOfertasActivasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
 		panelOfertasActivas.add(lblOfertasActivasNum);
-		
+
 		JLabel lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setBounds(12, 20, 42, 42);
 		panelOfertasActivas.add(lblNewLabel_2);
@@ -345,17 +347,21 @@ public class VerOfertasEmpresa extends JFrame {
 	}
 
 	private void cargarDatos() {
+		modeloTabla.setRowCount(0);
+		lasOfertasMostradas.clear();
+
 		ArrayList<Oferta> lasOfertas = new ArrayList<Oferta>();
+		
 		if (empresa != null) {
 			lasOfertas = empresa.getLasOfertas();
 		}
 
-	    if (lasOfertas.isEmpty()) {
-	        btnPublicarOferta.setText("Publicar nueva oferta");
-	        pnlVacio.setVisible(true);
-	        pnlTabla.setVisible(false);
-	        return;
-	    }
+		if (lasOfertas.isEmpty()) {
+			btnPublicarOferta.setText("Publicar nueva oferta");
+			pnlVacio.setVisible(true);
+			pnlTabla.setVisible(false);
+			return;
+		}
 
 		btnPublicarOferta.setText("A\u00F1adir oferta");
 		pnlVacio.setVisible(false);
@@ -410,10 +416,22 @@ public class VerOfertasEmpresa extends JFrame {
 	}
 
 	private void abrirRegistrarOferta() {
-		if (empresa != null) {
-			RegistrarOferta registrarOferta = new RegistrarOferta(empresa);
-			registrarOferta.setVisible(true);
+		if (empresa == null) {
+			return;
 		}
+
+		RegistrarOferta registrarOferta =
+				new RegistrarOferta(empresa);
+
+		registrarOferta.setModal(true);
+		registrarOferta.setVisible(true);
+		cargarDatos();
+		actualizarContadores();
+	}
+
+	private void actualizarContadores() {
+		lblTotalOfertasNum.setText(String.valueOf(contarTotalOfertas()));
+		lblOfertasActivasNum.setText(String.valueOf(contarOfertasActivas()));
 	}
 
 	private void colocarImagen(JLabel label, String ruta) {
