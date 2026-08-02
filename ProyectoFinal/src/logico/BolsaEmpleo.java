@@ -577,4 +577,12 @@ public class BolsaEmpleo implements Serializable {
 		
 		return mayor;
 	}
+	
+	public Oferta buscarOfertaPorId(String id) {
+	    return buscarOferta(id);
+	}
+
+	public Persona buscarPersonaPorId(String id) {
+	    return buscarPersona(id);
+	}
 }

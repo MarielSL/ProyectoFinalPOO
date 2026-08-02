@@ -19,6 +19,10 @@ import logico.ResultMatch;
 import logico.SolicitudEmpleo;
 import logico.Tecnico;
 import logico.Universitario;
+import red.ConexionCliente;
+import red.DatosObtenerMatch;
+import red.Peticion;
+import red.Respuesta;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -58,7 +62,7 @@ public class VerTodosPostulantesOferta extends JFrame {
 	private ComboBoxRedond cbxFiltrFecha;
 	private ComboBoxRedond cbxFiltCoincidencia;
 	private Oferta oferta;
-	private ArrayList<Persona> postulantesMostrados =  new ArrayList<>();
+	private ArrayList<ResultMatch> postulantesMostrados = new ArrayList<>();
 
 	/**
 	 * Launch the application.
@@ -199,22 +203,21 @@ public class VerTodosPostulantesOferta extends JFrame {
 		table.setFillsViewportHeight(true);
 		
 		table.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				int index = table.getSelectedRow();
-				if(index>=0) {
-					if(oferta == null) {
-						VerPostulante verPostulante = new VerPostulante(null,null,null);
-						setVisible(true);
-					}
-					else {
-						String IdSolicitud = BolsaEmpleo.getInstancia().idSolicitud(postulantesMostrados.get(index));
-						SolicitudEmpleo solicitud = postulantesMostrados.get(index).getSolicitud();
-						VerPostulante verPostulante = new VerPostulante(postulantesMostrados.get(index),oferta,solicitud);
-						setVisible(true);
-					}
-				}
-			}
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        int index = table.getSelectedRow();
+		        if (index >= 0) {
+		            if (oferta == null) {
+		                VerPostulante verPostulante = new VerPostulante(null, null, null, 0f);
+		                verPostulante.setVisible(true);
+		            } else {
+		                ResultMatch resultado = postulantesMostrados.get(index);
+		                SolicitudEmpleo solicitud = resultado.getSolicitud();
+		                VerPostulante verPostulante = new VerPostulante(solicitud.getCandidato(), oferta, solicitud, resultado.getPorcentaje());
+		                verPostulante.setVisible(true);
+		            }
+		        }
+		    }
 		});
 		table.setModel(model);
 		table.getColumnModel().getColumn(0).setPreferredWidth(5); 
@@ -270,7 +273,19 @@ public class VerTodosPostulantesOferta extends JFrame {
 
 			@Override
 			protected ArrayList<ResultMatch> doInBackground() throws Exception {
-				return BolsaEmpleo.getInstancia().calcularMatch(oferta);
+			    if (oferta == null) {
+			        return new ArrayList<ResultMatch>();
+			    }
+
+			    DatosObtenerMatch datos = new DatosObtenerMatch(oferta.getId());
+			    Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_MATCH, datos);
+			    Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
+
+			    if (!respuesta.isExito()) {
+			        throw new IllegalArgumentException(respuesta.getDatos().toString());
+			    }
+
+			    return (ArrayList<ResultMatch>) respuesta.getDatos();
 			}
 
 			protected void done() {
@@ -278,7 +293,7 @@ public class VerTodosPostulantesOferta extends JFrame {
 				try {
 					ArrayList<ResultMatch> matcheo = get();
 					ArrayList<ResultMatch> solicitudesFiltradas = new ArrayList<ResultMatch>();
-					ArrayList<Persona> mostrados =  new ArrayList<>();
+					ArrayList<ResultMatch> mostrados = new ArrayList<>(); 
 					LocalDate hoy = LocalDate.now();
 
 					for (ResultMatch resultado : matcheo) {
@@ -320,7 +335,7 @@ public class VerTodosPostulantesOferta extends JFrame {
 						fila[4] = match.getSolicitud().getFechaSolicitud();
 
 						model.addRow(fila);
-						mostrados.add(match.getSolicitud().getCandidato());
+						mostrados.add(match); 
 						numero++;
 					}
 

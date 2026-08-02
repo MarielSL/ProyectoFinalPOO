@@ -39,6 +39,10 @@ import logico.Sexo;
 import logico.SolicitudEmpleo;
 import logico.Tecnico;
 import logico.Universitario;
+import red.ConexionCliente;
+import red.DatosObtenerMatch;
+import red.Peticion;
+import red.Respuesta;
 
 public class VerPostulantesOferta extends JDialog {
 
@@ -528,11 +532,19 @@ public class VerPostulantesOferta extends JDialog {
 		SwingWorker<ArrayList<ResultMatch>, Void> hilo = new SwingWorker<ArrayList<ResultMatch>, Void>() {
 			@Override
 			protected ArrayList<ResultMatch> doInBackground() throws Exception {
-				if (oferta == null) {
-					return new ArrayList<ResultMatch>();
-				}
+			    if (oferta == null) {
+			        return new ArrayList<ResultMatch>();
+			    }
 
-				return BolsaEmpleo.getInstancia().calcularMatch(oferta);
+			    DatosObtenerMatch datos = new DatosObtenerMatch(oferta.getId());
+			    Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_MATCH, datos);
+			    Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
+
+			    if (!respuesta.isExito()) {
+			        throw new IllegalArgumentException(respuesta.getDatos().toString());
+			    }
+
+			    return (ArrayList<ResultMatch>) respuesta.getDatos();
 			}
 
 			@Override
@@ -711,52 +723,46 @@ public class VerPostulantesOferta extends JDialog {
 	}
 
 	private void abrirPerfilTop(int posicion) {
-		if (oferta == null || posicion < 0 || posicion >= resultadosMatch.size()) {
-			return;
-		}
+	    if (oferta == null || posicion < 0 || posicion >= resultadosMatch.size()) {
+	        return;
+	    }
 
-		ResultMatch resultado = resultadosMatch.get(posicion);
+	    ResultMatch resultado = resultadosMatch.get(posicion);
 
-		if (resultado == null || resultado.getSolicitud() == null || resultado.getSolicitud().getCandidato() == null) {
-			JOptionPane.showMessageDialog(
-					VerPostulantesOferta.this,
-					"No se pudo identificar al candidato.",
-					"Error",
-					JOptionPane.ERROR_MESSAGE
-					);
+	    if (resultado == null || resultado.getSolicitud() == null || resultado.getSolicitud().getCandidato() == null) {
+	        JOptionPane.showMessageDialog(VerPostulantesOferta.this, "No se pudo identificar al candidato.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
 
-			return;
-		}
+	    SolicitudEmpleo solicitud = resultado.getSolicitud();
 
-		SolicitudEmpleo solicitud = resultado.getSolicitud();
-
-		VerPostulante ventana = new VerPostulante(solicitud.getCandidato(), oferta, solicitud);
-		ventana.setVisible(true);
+	    VerPostulante ventana = new VerPostulante(solicitud.getCandidato(), oferta, solicitud, resultado.getPorcentaje());
+	    ventana.setVisible(true);
 	}
 
 	private void abrirPerfilTabla() {
-		int filaVista = table.getSelectedRow();
+	    int filaVista = table.getSelectedRow();
 
-		if (filaVista < 0 || oferta == null) {
-			return;
-		}
+	    if (filaVista < 0 || oferta == null) {
+	        return;
+	    }
 
-		int filaModelo = table.convertRowIndexToModel(filaVista);
+	    int filaModelo = table.convertRowIndexToModel(filaVista);
 
-		if (filaModelo < 0 || filaModelo >= candidatosMostrados.size()) {
-			return;
-		}
+	    if (filaModelo < 0 || filaModelo >= candidatosMostrados.size()) {
+	        return;
+	    }
 
-		ResultMatch resultado = candidatosMostrados.get(filaModelo);
+	    ResultMatch resultado = candidatosMostrados.get(filaModelo);
 
-		if (resultado == null || resultado.getSolicitud() == null || resultado.getSolicitud().getCandidato() == null) {
-			return;
-		}
+	    if (resultado == null || resultado.getSolicitud() == null || resultado.getSolicitud().getCandidato() == null) {
+	        return;
+	    }
 
-		SolicitudEmpleo solicitud = resultado.getSolicitud();
+	    SolicitudEmpleo solicitud = resultado.getSolicitud();
 
-		VerPostulante ventana = new VerPostulante(solicitud.getCandidato(), oferta, solicitud);
-		ventana.setVisible(true);
+	    VerPostulante ventana = new VerPostulante(solicitud.getCandidato(), oferta, solicitud, resultado.getPorcentaje());
+	    ventana.setVisible(true);
 	}
 
 	private void mostrarEstadoSinResultados() {

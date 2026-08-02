@@ -7,21 +7,26 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import logico.BolsaEmpleo;
 import logico.Empresa;
+import logico.EstadoDecision;
 import logico.EstadoOferta;
 import logico.EstadoSolicitud;
 import logico.Obrero;
 import logico.Oferta;
 import logico.Persona;
+import logico.ResultMatch;
 import logico.SolicitudEmpleo;
 import logico.Tecnico;
 import logico.TipoPersona;
 import logico.TipoUser;
 import logico.Universitario;
 import logico.Usuario;
+import red.DatosDecidirCandidato;
 import red.DatosLogin;
+import red.DatosObtenerMatch;
 import red.DatosPublicarOferta;
 import red.DatosRegistrarSolicitud;
 import red.DatosRegistroEmpresa;
@@ -95,6 +100,13 @@ public class ServidorBolsaEmpleo {
 
             case REGISTRAR_SOLICITUD:
                 return procesarRegistrarSolicitud(bolsa, (DatosRegistrarSolicitud) peticion.getDatos());
+            
+            case OBTENER_MATCH:
+                return procesarObtenerMatch(bolsa, (DatosObtenerMatch) peticion.getDatos());
+
+            case DECIDIR_CANDIDATO:
+                return procesarDecidirCandidato(bolsa, (DatosDecidirCandidato) peticion.getDatos());
+                
             default:
                 return new Respuesta(false, "Operación no reconocida");
         }
@@ -209,5 +221,47 @@ public class ServidorBolsaEmpleo {
         bolsa.regSolicitud(solicitud, loginUser.getPersona());
 
         return new Respuesta(true, solicitud);
+    }
+    
+    private static Respuesta procesarObtenerMatch(BolsaEmpleo bolsa, DatosObtenerMatch datos) {
+        Oferta oferta = bolsa.buscarOfertaPorId(datos.getOfertaId());
+        if (oferta == null) {
+            return new Respuesta(false, "No se encontró la oferta.");
+        }
+
+        ArrayList<ResultMatch> resultados = bolsa.calcularMatch(oferta);
+        return new Respuesta(true, resultados);
+    }
+
+    private static Respuesta procesarDecidirCandidato(BolsaEmpleo bolsa, DatosDecidirCandidato datos) {
+        Oferta oferta = bolsa.buscarOfertaPorId(datos.getOfertaId());
+        if (oferta == null) {
+            return new Respuesta(false, "No se encontró la oferta.");
+        }
+
+        Persona candidato = bolsa.buscarPersonaPorId(datos.getCandidatoId());
+        if (candidato == null) {
+            return new Respuesta(false, "No se encontró el candidato.");
+        }
+
+        if (datos.getDecision() == EstadoDecision.CONTRATADO && oferta.getCantPuestos() <= 0) {
+            return new Respuesta(false, "La oferta ya no tiene puestos disponibles.");
+        }
+
+        oferta.guardarDecision(candidato, datos.getDecision());
+
+        if (datos.getDecision() == EstadoDecision.CONTRATADO) {
+            candidato.setEstadoEmpleo(true);
+            if (candidato.getSolicitud() != null) {
+                candidato.getSolicitud().setEstado(EstadoSolicitud.CERRADA);
+            }
+            oferta.setCantPuestos(Math.max(0, oferta.getCantPuestos() - 1));
+            if (oferta.getCantPuestos() == 0) {
+                oferta.setEstado(EstadoOferta.COMPLETADA);
+            }
+        }
+
+        bolsa.guardarDatos();
+        return new Respuesta(true, null);
     }
 }

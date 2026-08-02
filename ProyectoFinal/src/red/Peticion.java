@@ -9,7 +9,9 @@ public class Peticion implements Serializable {
         REGISTRAR_EMPRESA,
         REGISTRAR_SOLICITANTE,
         PUBLICAR_OFERTA,
-        REGISTRAR_SOLICITUD
+        REGISTRAR_SOLICITUD,
+        OBTENER_MATCH,       
+        DECIDIR_CANDIDATO 
     }
 
     private Tipo tipo;

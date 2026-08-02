@@ -19,6 +19,10 @@ import logico.Sexo;
 import logico.SolicitudEmpleo;
 import logico.Tecnico;
 import logico.Universitario;
+import red.ConexionCliente;
+import red.DatosDecidirCandidato;
+import red.Peticion;
+import red.Respuesta;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -85,7 +89,7 @@ public class VerPostulante extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					VerPostulante frame = new VerPostulante(null, null,null);
+					VerPostulante frame = new VerPostulante(null, null, null, 0f);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -97,7 +101,7 @@ public class VerPostulante extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public VerPostulante(Persona solicitante, Oferta oferta,SolicitudEmpleo solicitud) {
+	public VerPostulante(Persona solicitante, Oferta oferta, SolicitudEmpleo solicitud, float porcentaje) { 
 		if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
 			empresa = BolsaEmpleo.getInstancia().getLoginUser().getEmpresa();
 		}
@@ -514,51 +518,21 @@ public class VerPostulante extends JFrame {
 		btnContratar.setBounds(486, 748, 192, 40);
 		contentPane.add(btnContratar);
 		CardLayout cardLayout = (CardLayout) panel_TiposSolicitantes.getLayout();
-		cargarDatosConHilo(solicitante, oferta, solicitud, panel_TiposSolicitantes, cardLayout);
+		cargarDatosConHilo(solicitante, oferta, solicitud, porcentaje, panel_TiposSolicitantes, cardLayout);
 
 	}
+	
+	//le quite el socket y el hilo como ya venia cargado el porcentaje 
 
-	private void cargarDatosConHilo(Persona solicitante, Oferta oferta, SolicitudEmpleo solicitud, JPanel panelTiposSolicitantes, CardLayout cardLayout) {
-		btnRechazar.setEnabled(false);
-		btnContratar.setEnabled(false);
-		lblPorcent.setText("...");
+	private void cargarDatosConHilo(Persona solicitante, Oferta oferta, SolicitudEmpleo solicitud, float porcentaje, JPanel panelTiposSolicitantes, CardLayout cardLayout) {
+	    mostrarDatosSolicitante(solicitante, porcentaje, panelTiposSolicitantes, cardLayout);
 
-		SwingWorker<Float, Void> hilo = new SwingWorker<Float, Void>() {
-			@Override
-			protected Float doInBackground() throws Exception {
-				if (solicitante == null || oferta == null || solicitud == null) {
-					return null;
-				}
-
-				/*
-				  Cuando el socket esté listo, aquí se reemplaza el cálculo local
-				  por una petición al servidor y se devuelve el porcentaje recibido.
-				 */
-				return BolsaEmpleo.getInstancia().calcCoincidencia(oferta, solicitud);
-			}
-
-			@Override
-			protected void done() {
-				try {
-					Float porcentaje = get();
-					mostrarDatosSolicitante(solicitante, porcentaje, panelTiposSolicitantes, cardLayout);
-					boolean datosValidos = solicitante != null && oferta != null && solicitud != null;
-					btnRechazar.setEnabled(datosValidos);
-					btnContratar.setEnabled(datosValidos && oferta.getCantPuestos() > 0);
-				} catch (Exception e) {
-					Throwable causa = e.getCause();
-					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
-					e.printStackTrace();
-					mostrarDatosVacios(panelTiposSolicitantes, cardLayout);
-					JOptionPane.showMessageDialog(VerPostulante.this, mensaje != null ? mensaje : "No se pudieron cargar los datos del postulante.", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		};
-
-		hilo.execute();
+	    boolean datosValidos = solicitante != null && oferta != null && solicitud != null;
+	    btnRechazar.setEnabled(datosValidos);
+	    btnContratar.setEnabled(datosValidos && oferta.getCantPuestos() > 0);
 	}
 
-	private void mostrarDatosSolicitante(Persona solicitante, Float porcentaje, JPanel panelTiposSolicitantes, CardLayout cardLayout) {
+	private void mostrarDatosSolicitante(Persona solicitante, float porcentaje, JPanel panelTiposSolicitantes, CardLayout cardLayout) {
 		if (solicitante == null) {
 			mostrarDatosVacios(panelTiposSolicitantes, cardLayout);
 			return;
@@ -587,7 +561,7 @@ public class VerPostulante extends JFrame {
 			txtTipoSolicitante.setText("No especificado");
 		}
 
-		aplicarEstiloCoincidencia(porcentaje != null ? porcentaje.floatValue() : 0f);
+		aplicarEstiloCoincidencia(porcentaje);
 
 		if (solicitante.getFechNacim() != null) {
 			DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -699,55 +673,48 @@ public class VerPostulante extends JFrame {
 	}
 
 	private void ejecutarDecisionConHilo(Oferta oferta, SolicitudEmpleo solicitud, EstadoDecision decision) {
-		btnRechazar.setEnabled(false);
-		btnContratar.setEnabled(false);
-		btnRechazar.setText("Procesando...");
-		btnContratar.setText("Procesando...");
+	    btnRechazar.setEnabled(false);
+	    btnContratar.setEnabled(false);
+	    btnRechazar.setText("Procesando...");
+	    btnContratar.setText("Procesando...");
 
-		SwingWorker<Void, Void> hilo = new SwingWorker<Void, Void>() {
-			@Override
-			protected Void doInBackground() throws Exception {
-				/*
-				  Cuando el socket esté listo, este bloque se reemplaza por
-				  una petición al servidor para guardar la decisión.
-				 */
-				oferta.guardarDecision(solicitud.getCandidato(), decision);
+	    SwingWorker<Void, Void> hilo = new SwingWorker<Void, Void>() {
+	        @Override
+	        protected Void doInBackground() throws Exception {
+	            DatosDecidirCandidato datos = new DatosDecidirCandidato(
+	                    oferta.getId(), solicitud.getCandidato().getId(), decision);
 
-				if (decision == EstadoDecision.CONTRATADO) {
-					solicitud.getCandidato().setEstadoEmpleo(true);
-					solicitud.setEstado(EstadoSolicitud.CERRADA);
-					oferta.setCantPuestos(Math.max(0, oferta.getCantPuestos() - 1));
+	            Peticion peticion = new Peticion(Peticion.Tipo.DECIDIR_CANDIDATO, datos);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-					if (oferta.getCantPuestos() == 0) {
-						oferta.setEstado(EstadoOferta.COMPLETADA);
-					}
-				}
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-				BolsaEmpleo.getInstancia().guardarDatos();
-				return null;
-			}
+	            return null;
+	        }
 
-			@Override
-			protected void done() {
-				try {
-					get();
-					String mensaje = decision == EstadoDecision.CONTRATADO ? "El candidato fue contratado correctamente." : "La solicitud fue rechazada correctamente.";
-					JOptionPane.showMessageDialog(VerPostulante.this, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE);
-					dispose();
-				} catch (Exception e) {
-					Throwable causa = e.getCause();
-					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(VerPostulante.this, mensaje != null ? mensaje : "No se pudo guardar la decisión.", "Error", JOptionPane.ERROR_MESSAGE);
-					btnRechazar.setEnabled(true);
-					btnContratar.setEnabled(true);
-					btnRechazar.setText("Rechazar");
-					btnContratar.setText("Contratar");
-				}
-			}
-		};
+	        @Override
+	        protected void done() {
+	            try {
+	                get();
+	                String mensaje = decision == EstadoDecision.CONTRATADO? "El candidato fue contratado correctamente.": "La solicitud fue rechazada correctamente.";
+	                JOptionPane.showMessageDialog(VerPostulante.this, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE);
+	                dispose();
+	            } catch (Exception e) {
+	                Throwable causa = e.getCause();
+	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+	                e.printStackTrace();
+	                JOptionPane.showMessageDialog(VerPostulante.this, mensaje != null ? mensaje : "No se pudo guardar la decisión.", "Error", JOptionPane.ERROR_MESSAGE);
+	                btnRechazar.setEnabled(true);
+	                btnContratar.setEnabled(true);
+	                btnRechazar.setText("Rechazar");
+	                btnContratar.setText("Contratar");
+	            }
+	        }
+	    };
 
-		hilo.execute();
+	    hilo.execute();
 	}
 
 	private String textoSeguro(String texto) {
