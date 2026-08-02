@@ -172,6 +172,11 @@ public class VerOfertasAdmin extends JFrame {
 		lblTotalOfertasNum.setForeground(new Color(204, 102, 0));
 		lblTotalOfertasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
 		panelTotalOfertas.add(lblTotalOfertasNum);
+		
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setBounds(-3, 3, 78,78);
+		panelTotalOfertas.add(lblNewLabel);
+		colocarImagen(lblNewLabel, "/img/empresa_edificio.png");
 
 		PanelConSombra panelOfertasActivas = new PanelConSombra(18);
 		panelOfertasActivas.setBackground(new Color(198, 239, 206));
@@ -194,6 +199,11 @@ public class VerOfertasAdmin extends JFrame {
 		lblOfertasActivasNum.setForeground(new Color(46, 125, 50));
 		lblOfertasActivasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
 		panelOfertasActivas.add(lblOfertasActivasNum);
+		
+		JLabel lblNewLabel_2 = new JLabel("");
+		lblNewLabel_2.setBounds(12, 20, 42, 42);
+		panelOfertasActivas.add(lblNewLabel_2);
+		colocarImagen(lblNewLabel_2, "/img/check.png");
 	}
 
 	private void construirBusqueda(JPanel panel, int margen, int anchoContenido) {
