@@ -21,27 +21,26 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableRowSorter;
 
 import logico.BolsaEmpleo;
 import logico.TipoUser;
 import logico.Usuario;
-import visual.BotonRedond;
-import visual.ComboBoxRedond;
-import visual.HomeAdministrador;
-import visual.PanelConSombra;
-import visual.TextFieldRedond;
-import visual.Utilidades;
 
 public class VerUsuariosAdmin extends JFrame {
+
+	private static final long serialVersionUID = 1L;
 
 	private JPanel contentPane;
 	private Dimension dim;
@@ -50,10 +49,16 @@ public class VerUsuariosAdmin extends JFrame {
 	private JPanel pnlTabla;
 	private JLabel lblIlustracion;
 	private JTable table;
-	private javax.swing.table.TableRowSorter<DefaultTableModel> sorterUsuarios; 
+	private TableRowSorter<DefaultTableModel> sorterUsuarios;
+	private DefaultTableModel modeloUsuarios;
+	private JLabel lblTotalUsuariosNum;
+	private JLabel lblEmpresasNum;
+	private JLabel lblCandidatosNum;
+	private BotonRedond btnAtras;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					VerUsuariosAdmin frame = new VerUsuariosAdmin();
@@ -97,30 +102,7 @@ public class VerUsuariosAdmin extends JFrame {
 		construirBusqueda(panel, margen, anchoContenido);
 		construirContenido(panel, margen, anchoContenido);
 
-		PanelConSombra panelConSombra = new PanelConSombra(18);
-		panelConSombra.setLayout(null);
-		panelConSombra.setBackground(new Color(255, 224, 178));
-		panelConSombra.setBounds(1301, 110, 477, 90);
-		panel.add(panelConSombra);
-
-		JLabel label = new JLabel();
-		label.setBounds(12, 23, 40, 40);
-		colocarImagen(label,"/img/candidatos_naranja.png");
-		panelConSombra.add(label);
-
-		JLabel lblCandidatos = new JLabel("Candidatos");
-		lblCandidatos.setForeground(new Color(204, 102, 0));
-		lblCandidatos.setFont(new Font("Calibri", Font.BOLD, 17));
-		lblCandidatos.setBounds(64, 12, 674, 20);
-		panelConSombra.add(lblCandidatos);
-
-		JLabel label_2 = new JLabel(String.valueOf(contarCandidatos()));
-		label_2.setForeground(new Color(204, 102, 0));
-		label_2.setFont(new Font("Calibri", Font.BOLD, 35));
-		label_2.setBounds(64, 34, 674, 36);
-		panelConSombra.add(label_2);
-
-		cargarDatos();
+		cargarUsuariosConHilo();
 	}
 
 	private void construirHeader(JPanel panel, int margen, int anchoContenido) {
@@ -130,22 +112,24 @@ public class VerUsuariosAdmin extends JFrame {
 		panel.add(panelHeader);
 		panelHeader.setLayout(null);
 
-		BotonRedond btnAtras = new BotonRedond("", 18);
+		btnAtras = new BotonRedond("", 18);
 		btnAtras.setBackground(new Color(0, 0, 51));
 		btnAtras.setBounds(12, 20, 46, 46);
 		btnAtras.setBorderPainted(false);
 		btnAtras.setContentAreaFilled(false);
 		btnAtras.setFocusPainted(false);
 		btnAtras.setOpaque(false);
-		colocarIconoBoton(btnAtras,"/img/menu-dots-vertical(White).png",25,25);
+		colocarIconoBoton(btnAtras, "/img/menu-dots-vertical(White).png", 25, 25);
+
 		btnAtras.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				BarraAdmin home = new BarraAdmin();
 				home.setVisible(true);
 				dispose();
-
 			}
 		});
+
 		panelHeader.add(btnAtras);
 
 		JLabel lblTitulo = new JLabel("Usuarios");
@@ -154,13 +138,10 @@ public class VerUsuariosAdmin extends JFrame {
 		lblTitulo.setBounds(77, 28, 400, 30);
 		panelHeader.add(lblTitulo);
 
-
-		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setBounds(1805, 0, 86, 90);
-		colocarImagen(lblNewLabel,"/img/iconoLogo_FondoOscuro.png");
-		panelHeader.add(lblNewLabel);
-
-
+		JLabel lblLogo = new JLabel("");
+		lblLogo.setBounds(1805, 0, 86, 90);
+		colocarImagen(lblLogo, "/img/iconoLogo_FondoOscuro.png");
+		panelHeader.add(lblLogo);
 	}
 
 	private void construirTarjetas(JPanel panel, int margen, int anchoContenido) {
@@ -185,39 +166,57 @@ public class VerUsuariosAdmin extends JFrame {
 		lblTotalUsuarios.setBounds(64, 12, anchoTarjeta - 84, 20);
 		panelTotalUsuarios.add(lblTotalUsuarios);
 
-		JLabel lblTotalUsuariosNum = new JLabel(String.valueOf(contarTotalUsuarios()));
+		lblTotalUsuariosNum = new JLabel("...");
 		lblTotalUsuariosNum.setFont(new Font("Calibri", Font.BOLD, 35));
 		lblTotalUsuariosNum.setForeground(new Color(65, 95, 170));
 		lblTotalUsuariosNum.setBounds(64, 34, 72, 36);
 		panelTotalUsuarios.add(lblTotalUsuariosNum);
 
-		PanelConSombra panelAdministradores = new PanelConSombra(18);
-		panelAdministradores.setBackground(new Color(198, 239, 206));
-		panelAdministradores.setBounds(711, 110, 477, 90);
-		panel.add(panelAdministradores);
-		panelAdministradores.setLayout(null);
+		PanelConSombra panelEmpresas = new PanelConSombra(18);
+		panelEmpresas.setBackground(new Color(198, 239, 206));
+		panelEmpresas.setBounds(711, 110, 477, 90);
+		panel.add(panelEmpresas);
+		panelEmpresas.setLayout(null);
 
-		JLabel lblIconoAdmins = new JLabel();
-		lblIconoAdmins.setBounds(12, 23, 40, 40);
-		colocarImagen(lblIconoAdmins, "/img/maletin_verde.png");
-		panelAdministradores.add(lblIconoAdmins);
+		JLabel lblIconoEmpresas = new JLabel();
+		lblIconoEmpresas.setBounds(12, 23, 40, 40);
+		colocarImagen(lblIconoEmpresas, "/img/maletin_verde.png");
+		panelEmpresas.add(lblIconoEmpresas);
 
-		JLabel lblAdministradores = new JLabel("Empresas");
-		lblAdministradores.setFont(new Font("Calibri", Font.BOLD, 17));
-		lblAdministradores.setForeground(new Color(46, 125, 50));
-		lblAdministradores.setBounds(64, 12, anchoTarjeta - 84, 20);
-		panelAdministradores.add(lblAdministradores);
+		JLabel lblEmpresas = new JLabel("Empresas");
+		lblEmpresas.setFont(new Font("Calibri", Font.BOLD, 17));
+		lblEmpresas.setForeground(new Color(46, 125, 50));
+		lblEmpresas.setBounds(64, 12, anchoTarjeta - 84, 20);
+		panelEmpresas.add(lblEmpresas);
 
-		JLabel lblAdministradoresNum = new JLabel(String.valueOf(contarEmpresas()));
-		lblAdministradoresNum.setFont(new Font("Calibri", Font.BOLD, 35));
-		lblAdministradoresNum.setForeground(new Color(46, 125, 50));
-		lblAdministradoresNum.setBounds(64, 34, anchoTarjeta - 84, 36);
-		panelAdministradores.add(lblAdministradoresNum);
+		lblEmpresasNum = new JLabel("...");
+		lblEmpresasNum.setFont(new Font("Calibri", Font.BOLD, 35));
+		lblEmpresasNum.setForeground(new Color(46, 125, 50));
+		lblEmpresasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
+		panelEmpresas.add(lblEmpresasNum);
 
-		JLabel icono = new JLabel("");
-		icono.setBounds(1784, 0, 114, 88);
-		colocarImagen(icono, "/img/iconoLogo_FondoOscuro.png");
-		panelAdministradores.add(icono);
+		PanelConSombra panelCandidatos = new PanelConSombra(18);
+		panelCandidatos.setLayout(null);
+		panelCandidatos.setBackground(new Color(255, 224, 178));
+		panelCandidatos.setBounds(1301, 110, 477, 90);
+		panel.add(panelCandidatos);
+
+		JLabel lblIconoCandidatos = new JLabel();
+		lblIconoCandidatos.setBounds(12, 23, 40, 40);
+		colocarImagen(lblIconoCandidatos, "/img/candidatos_naranja.png");
+		panelCandidatos.add(lblIconoCandidatos);
+
+		JLabel lblCandidatos = new JLabel("Candidatos");
+		lblCandidatos.setForeground(new Color(204, 102, 0));
+		lblCandidatos.setFont(new Font("Calibri", Font.BOLD, 17));
+		lblCandidatos.setBounds(64, 12, 674, 20);
+		panelCandidatos.add(lblCandidatos);
+
+		lblCandidatosNum = new JLabel("...");
+		lblCandidatosNum.setForeground(new Color(204, 102, 0));
+		lblCandidatosNum.setFont(new Font("Calibri", Font.BOLD, 35));
+		lblCandidatosNum.setBounds(64, 34, 674, 36);
+		panelCandidatos.add(lblCandidatosNum);
 	}
 
 	private void construirBusqueda(JPanel panel, int margen, int anchoContenido) {
@@ -237,11 +236,13 @@ public class VerUsuariosAdmin extends JFrame {
 		cbxRol.setFont(new Font("Calibri", Font.PLAIN, 15));
 		cbxRol.setForeground(Color.BLACK);
 		cbxRol.setBackground(Color.WHITE);
-		cbxRol.setModel(new DefaultComboBoxModel<String>(new String[] { "Todos", "Candidato", "Empresa"}));
+		cbxRol.setModel(new DefaultComboBoxModel<String>(new String[] {"Todos", "Candidato", "Empresa"}));
 		cbxRol.setSelectedIndex(0);
 		cbxRol.setBounds(anchoContenido - 220, 20, 190, 28);
-		panelBusqueda.add(cbxRol);	
-		cbxRol.addActionListener(new ActionListener() {  
+		panelBusqueda.add(cbxRol);
+
+		cbxRol.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				aplicarFiltroRol();
 			}
@@ -278,14 +279,14 @@ public class VerUsuariosAdmin extends JFrame {
 		lblIlustracion.setBounds(0, 40, 1, 1);
 		panelVacio.add(lblIlustracion);
 
-		JLabel lblTitulo = new JLabel("Aun no hay usuarios registrados");
+		JLabel lblTitulo = new JLabel("Aún no hay usuarios registrados");
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 20));
 		lblTitulo.setForeground(new Color(0, 0, 51));
 		lblTitulo.setBounds(0, 220, 1, 1);
 		panelVacio.add(lblTitulo);
 
-		JLabel lblSubtitulo = new JLabel("Cuando se registren usuarios en la plataforma apareceran aqui.");
+		JLabel lblSubtitulo = new JLabel("Cuando se registren usuarios en la plataforma aparecerán aquí.");
 		lblSubtitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSubtitulo.setFont(new Font("Calibri", Font.PLAIN, 14));
 		lblSubtitulo.setForeground(new Color(130, 130, 130));
@@ -293,10 +294,13 @@ public class VerUsuariosAdmin extends JFrame {
 		panelVacio.add(lblSubtitulo);
 
 		panelVacio.addComponentListener(new java.awt.event.ComponentAdapter() {
+			@Override
 			public void componentResized(java.awt.event.ComponentEvent e) {
 				int ancho = panelVacio.getWidth();
+
 				lblIlustracion.setBounds((ancho - 220) / 2, 30, 220, 180);
 				colocarImagen(lblIlustracion, "/img/ofertasvacias.png");
+
 				lblTitulo.setBounds(0, 226, ancho, 28);
 				lblSubtitulo.setBounds((ancho - 520) / 2, 258, 520, 40);
 			}
@@ -310,8 +314,10 @@ public class VerUsuariosAdmin extends JFrame {
 		panelTabla.setOpaque(false);
 		panelTabla.setLayout(null);
 
+		modeloUsuarios = crearModeloUsuariosVacio();
+
 		table = new JTable();
-		table.setModel(crearModeloUsuarios());
+		table.setModel(modeloUsuarios);
 		table.setFont(new Font("Calibri", Font.PLAIN, 16));
 		table.setRowHeight(38);
 		table.setForeground(new Color(50, 50, 50));
@@ -322,7 +328,7 @@ public class VerUsuariosAdmin extends JFrame {
 		table.setDefaultRenderer(Object.class, new RenderCentrado());
 		table.getColumnModel().getColumn(2).setCellRenderer(new RenderBadge());
 
-		sorterUsuarios = new javax.swing.table.TableRowSorter<DefaultTableModel>((DefaultTableModel) table.getModel()); 
+		sorterUsuarios = new TableRowSorter<DefaultTableModel>(modeloUsuarios);
 		table.setRowSorter(sorterUsuarios);
 
 		JScrollPane scrollTabla = new JScrollPane(table);
@@ -333,111 +339,246 @@ public class VerUsuariosAdmin extends JFrame {
 		return panelTabla;
 	}
 
-	private void cargarDatos() {
-		ArrayList<Usuario> losUsuarios = BolsaEmpleo.getInstancia().getUsuarios();
+	private void cargarUsuariosConHilo() {
+		lblTotalUsuariosNum.setText("...");
+		lblEmpresasNum.setText("...");
+		lblCandidatosNum.setText("...");
 
-		if (losUsuarios == null || losUsuarios.isEmpty()) {
-			pnlVacio.setVisible(true);
-			pnlTabla.setVisible(false);
-			return;
-		}
+		cbxRol.setEnabled(false);
+		table.setEnabled(false);
+		btnAtras.setEnabled(false);
+
+		modeloUsuarios.setRowCount(0);
 		pnlVacio.setVisible(false);
 		pnlTabla.setVisible(true);
-	}
 
-	private int contarTotalUsuarios() {
-		ArrayList<Usuario> losUsuarios = BolsaEmpleo.getInstancia().getUsuarios();
-		if (losUsuarios == null) {
-			return 0;
-		}
-		return losUsuarios.size();
-	}
+		SwingWorker<Object[], Void> hilo = new SwingWorker<Object[], Void>() {
 
-	private int contarCandidatos() {
-		ArrayList<Usuario> losUsuarios = BolsaEmpleo.getInstancia().getUsuarios();
-		if (losUsuarios == null) {
-			return 0;
-		}
-		int contador = 0;
-		for (Usuario usuario : losUsuarios) {
-			if (usuario.getTipoUser() == TipoUser.CANDIDATO) {
-				contador++;
+			@Override
+			protected Object[] doInBackground() throws Exception {
+				ArrayList<Usuario> usuariosOriginales = BolsaEmpleo.getInstancia().getUsuarios();
+				ArrayList<Usuario> usuarios = usuariosOriginales == null ? new ArrayList<Usuario>() : new ArrayList<Usuario>(usuariosOriginales);
+
+				int totalUsuarios = usuarios.size();
+				int totalEmpresas = 0;
+				int totalCandidatos = 0;
+
+				ArrayList<Object[]> filas = new ArrayList<Object[]>();
+				DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
+
+				for (Usuario usuario : usuarios) {
+					if (usuario == null) {
+						continue;
+					}
+
+					if (usuario.getTipoUser() == TipoUser.EMPRESA) {
+						totalEmpresas++;
+					}
+
+					if (usuario.getTipoUser() == TipoUser.CANDIDATO) {
+						totalCandidatos++;
+					}
+
+					String username = textoSeguro(usuario.getUsername());
+					String correo = textoSeguro(usuario.getCorreo());
+					String rol = formatearRol(usuario.getTipoUser());
+
+					String fechaRegistro = usuario.getFechaRegistro() != null
+							? usuario.getFechaRegistro().format(formato)
+									: "No disponible";
+
+							filas.add(new Object[] {
+									username,
+									correo,
+									rol,
+									fechaRegistro
+							});
+				}
+
+				
+
+				return new Object[] {
+						totalUsuarios,
+						totalEmpresas,
+						totalCandidatos,
+						filas
+				};
 			}
-		}
-		return contador;
+
+			@Override
+			protected void done() {
+				try {
+					Object[] datos = get();
+
+					int totalUsuarios = (Integer) datos[0];
+					int totalEmpresas = (Integer) datos[1];
+					int totalCandidatos = (Integer) datos[2];
+
+					@SuppressWarnings("unchecked")
+					ArrayList<Object[]> filas = (ArrayList<Object[]>) datos[3];
+
+					lblTotalUsuariosNum.setText(String.valueOf(totalUsuarios));
+					lblEmpresasNum.setText(String.valueOf(totalEmpresas));
+					lblCandidatosNum.setText(String.valueOf(totalCandidatos));
+
+					modeloUsuarios.setRowCount(0);
+
+					for (Object[] fila : filas) {
+						modeloUsuarios.addRow(fila);
+					}
+
+					boolean hayUsuarios = totalUsuarios > 0;
+
+					pnlVacio.setVisible(!hayUsuarios);
+					pnlTabla.setVisible(hayUsuarios);
+
+					table.revalidate();
+					table.repaint();
+
+					aplicarFiltroRol();
+
+				} catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+
+					e.printStackTrace();
+
+					mostrarDatosVacios();
+
+					JOptionPane.showMessageDialog(
+							VerUsuariosAdmin.this,
+							mensaje != null ? mensaje : "No se pudieron cargar los usuarios.",
+									"Error",
+									JOptionPane.ERROR_MESSAGE
+							);
+
+				} finally {
+					cbxRol.setEnabled(true);
+					table.setEnabled(true);
+					btnAtras.setEnabled(true);
+				}
+			}
+		};
+
+		hilo.execute();
 	}
 
-	private int contarEmpresas() {
-		ArrayList<Usuario> losUsuarios = BolsaEmpleo.getInstancia().getUsuarios();
-		if (losUsuarios == null) {
-			return 0;
-		}
-		int contador = 0;
-		for (Usuario usuario : losUsuarios) {
-			if (usuario.getTipoUser() == TipoUser.EMPRESA) {
-				contador++;
+	private void mostrarDatosVacios() {
+		lblTotalUsuariosNum.setText("0");
+		lblEmpresasNum.setText("0");
+		lblCandidatosNum.setText("0");
+
+		modeloUsuarios.setRowCount(0);
+
+		pnlVacio.setVisible(true);
+		pnlTabla.setVisible(false);
+	}
+
+	private DefaultTableModel crearModeloUsuariosVacio() {
+		return new DefaultTableModel(new Object[][] {}, new String[] {"Usuario", "Correo", "Rol", "Registro"}) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean isCellEditable(int fila, int columna) {
+				return false;
 			}
-		}
-		return contador;
+		};
 	}
 
 	private String formatearRol(TipoUser tipo) {
 		if (tipo == TipoUser.ADMINISTRADOR) {
 			return "Administrador";
 		}
+
 		if (tipo == TipoUser.EMPRESA) {
 			return "Empresa";
 		}
+
 		if (tipo == TipoUser.CANDIDATO) {
 			return "Candidato";
 		}
+
 		return "N/A";
 	}
 
+	private String textoSeguro(String texto) {
+		return texto == null || texto.trim().isEmpty() ? "No disponible" : texto.trim();
+	}
+
+	private void aplicarFiltroRol() {
+		if (sorterUsuarios == null) {
+			return;
+		}
+
+		String seleccionado = (String) cbxRol.getSelectedItem();
+
+		if (seleccionado == null || seleccionado.equals("Todos")) {
+			sorterUsuarios.setRowFilter(null);
+		} else {
+			sorterUsuarios.setRowFilter(RowFilter.regexFilter("(?i)^" + seleccionado + "$", 2));
+		}
+	}
+
 	private void colocarImagen(JLabel label, String ruta) {
-		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		if (label == null || ruta == null) {
+			return;
+		}
+
+		java.net.URL recurso = getClass().getResource(ruta);
+
+		if (recurso == null) {
+			System.err.println("No se encontró la imagen: " + ruta);
+			return;
+		}
+
+		ImageIcon icono = new ImageIcon(recurso);
 
 		int anchoLabel = label.getWidth();
 		int altoLabel = label.getHeight();
-
 		int anchoImagen = icono.getIconWidth();
 		int altoImagen = icono.getIconHeight();
 
+		if (anchoLabel <= 0 || altoLabel <= 0 || anchoImagen <= 0 || altoImagen <= 0) {
+			return;
+		}
+
 		double escalaAncho = (double) anchoLabel / anchoImagen;
 		double escalaAlto = (double) altoLabel / altoImagen;
-
 		double escala = Math.max(escalaAncho, escalaAlto);
 
 		int nuevoAncho = (int) (anchoImagen * escala);
 		int nuevoAlto = (int) (altoImagen * escala);
 
 		Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
-		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 
-		label.setIcon(iconoEscalado);
+		label.setIcon(new ImageIcon(imagenEscalada));
 		label.setText("");
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
 
-	private DefaultTableModel crearModeloUsuarios() {
-		DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Usuario", "Correo", "Rol", "Registro" }) {
-			public boolean isCellEditable(int fila, int columna) {
-				return false;
-			}
-		};
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
-		ArrayList<Usuario> losUsuarios = BolsaEmpleo.getInstancia().getUsuarios();
-		if (losUsuarios == null) {
-			return modelo;
+	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
+		if (boton == null || ruta == null) {
+			return;
 		}
-		for (Usuario usuario : losUsuarios) {
-			modelo.addRow(new Object[] { usuario.getUsername(), usuario.getCorreo(), formatearRol(usuario.getTipoUser()), usuario.getFechaRegistro().format(formato) });
+
+		java.net.URL recurso = getClass().getResource(ruta);
+
+		if (recurso == null) {
+			System.err.println("No se encontró el icono: " + ruta);
+			return;
 		}
-		return modelo;
+
+		ImageIcon icono = new ImageIcon(recurso);
+		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+
+		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 
 	public class RenderCentrado extends DefaultTableCellRenderer {
+
+		private static final long serialVersionUID = 1L;
+
 		public RenderCentrado() {
 			setHorizontalAlignment(SwingConstants.CENTER);
 		}
@@ -445,18 +586,22 @@ public class VerUsuariosAdmin extends JFrame {
 
 	private class RenderBadge extends JLabel implements TableCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+
 		public RenderBadge() {
 			setOpaque(false);
 			setHorizontalAlignment(SwingConstants.CENTER);
 			setFont(new Font("Calibri", Font.BOLD, 14));
 		}
 
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-				boolean hasFocus, int row, int column) {
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			String rol = "";
+
 			if (value != null) {
 				rol = value.toString();
 			}
+
 			setText(rol);
 
 			if (rol.equals("Administrador")) {
@@ -473,36 +618,22 @@ public class VerUsuariosAdmin extends JFrame {
 			return this;
 		}
 
+		@Override
 		protected void paintComponent(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g.create();
+
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.setColor(getBackground());
 
 			int margenVertical = 6;
 			int margenHorizontal = 10;
-			g2.fillRoundRect(margenHorizontal, margenVertical,
-					getWidth() - margenHorizontal * 2, getHeight() - margenVertical * 2, 16, 16);
+			int ancho = Math.max(0, getWidth() - margenHorizontal * 2);
+			int alto = Math.max(0, getHeight() - margenVertical * 2);
+
+			g2.fillRoundRect(margenHorizontal, margenVertical, ancho, alto, 16, 16);
 			g2.dispose();
 
 			super.paintComponent(g);
-		}
-	}
-
-	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
-		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-		boton.setIcon(new ImageIcon(imagenEscalada));
-	}
-
-	private void aplicarFiltroRol() {
-		if (sorterUsuarios == null) {
-			return;
-		}
-		String seleccionado = (String) cbxRol.getSelectedItem();
-		if (seleccionado == null || seleccionado.equals("Todos")) {
-			sorterUsuarios.setRowFilter(null);
-		} else {
-			sorterUsuarios.setRowFilter(RowFilter.regexFilter("(?i)^" + seleccionado + "$", 2));
 		}
 	}
 }
