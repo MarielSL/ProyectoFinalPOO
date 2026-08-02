@@ -29,13 +29,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.AbstractDocument;
 import logico.BolsaEmpleo;
+import logico.Empresa;
 import logico.Obrero;
 import logico.Persona;
 import logico.Sexo;
 import logico.Tecnico;
+import logico.TipoEmpresa;
 import logico.TipoPersona;
 import logico.TipoUser;
 import logico.Universitario;
@@ -424,94 +427,17 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	private void registrarSolicitante() {
-		Date fechaSeleccionada = (Date) spnFechaNacim.getValue();
-		LocalDate fechaNacim = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		TipoPersona tipo = (TipoPersona) cbxTipo.getSelectedItem();
-
 		if(mySolicitante == null) {
-			String contrasena = new String(passwordField.getPassword());
-			Usuario newUser = new Usuario("U-" + BolsaEmpleo.generadorIdUser, txtUser.getText(), contrasena, txtCorreo.getText(), null, null, TipoUser.CANDIDATO, null);
-			newUser.setFotoPerfil(fotoPerfil.getRutaFotoPerfil());
-			this.user = newUser;
-
-			String id = "P-" + BolsaEmpleo.generadorIdPersona;
-			Persona persona;
-			if (tipo == TipoPersona.UNIVERSITARIO) {
-				persona = new Universitario(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user,(int) spnExp.getValue(), txtCarrera.getText());
-
-			} else if (tipo == TipoPersona.TECNICO) {
-				persona = new Tecnico(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user, (int) spnExp.getValue(),txtTecnico.getText());
-
-			} else {
-				persona = new Obrero(id, txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNacim, txtTelefono.getText(), txtDireccion.getText(), (Sexo) cbxSexo.getSelectedItem(), txtCiudad.getText(), chkMudarse.isSelected(), chkLicencia.isSelected(), chkEmpleado.isSelected(), user,(int) spnExp.getValue(), txtHabilidades.getText());
-
-			}
-
-			newUser.setPersona(persona);
-			persona.setUser(newUser);
-
-			BolsaEmpleo.getInstancia().regPersona(persona);
-			BolsaEmpleo.getInstancia().regUser(newUser);
-			BolsaEmpleo.getInstancia().setLoginUser(newUser);
-
-			JOptionPane.showMessageDialog(null, "Se ha registrado el solicitante.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
-			clear();
-
-			HomeCandidato homeCandidato = new HomeCandidato();
-			homeCandidato.setVisible(true);
-			dispose();
+			
+			registrarSolicitanteConHilo();
 
 		}
 		else {
-			mySolicitante.setNombre(txtNombre.getText());
-			mySolicitante.setApellido(txtApellido.getText());
-			mySolicitante.setCedula(txtCedula.getText());
-			mySolicitante.setCiudad(txtCiudad.getText());
-			mySolicitante.setDireccion(txtDireccion.getText());
-			mySolicitante.setDispParaMudarse(chkMudarse.isSelected());
-			mySolicitante.setEstadoEmpleo(chkEmpleado.isSelected());
-			mySolicitante.setFechNacim(fechaNacim);
-			mySolicitante.setLicenciaConducir(chkLicencia.isSelected());
-			mySolicitante.setSexo((Sexo) cbxSexo.getSelectedItem());
-			mySolicitante.setTelefono(txtTelefono.getText());
-			mySolicitante.setYearsExp((int) spnExp.getValue());
-
-
-			Usuario user = mySolicitante.getUser();
-
-			user.setCorreo(txtCorreo.getText());
-			user.setUsername(txtUser.getText());
-			user.setPassword(new String (passwordField.getPassword()));
-			if (fotoPerfil.getRutaFotoPerfil() != null) {         
-			    user.setFotoPerfil(fotoPerfil.getRutaFotoPerfil()); 
-			}   
-
-			if(tipo == TipoPersona.UNIVERSITARIO) {
-				Universitario uni = (Universitario) mySolicitante;
-				uni.setCarrera(txtCarrera.getText());
-				BolsaEmpleo.getInstancia().modSolicitante(uni);
-			}
-
-			if(tipo == TipoPersona.TECNICO) {
-				Tecnico tecnico = (Tecnico) mySolicitante;
-				tecnico.setTecnico(txtTecnico.getText());
-				BolsaEmpleo.getInstancia().modSolicitante(tecnico);
-			}
-			if(tipo == TipoPersona.OBRERO) {
-				Obrero obrero = (Obrero) mySolicitante;
-				obrero.setHabilidades(txtHabilidades.getText());
-				BolsaEmpleo.getInstancia().modSolicitante(obrero);
-
-			}
-			BolsaEmpleo.getInstancia().modUsuario(BolsaEmpleo.getInstancia().getLoginUser());
-			BolsaEmpleo.getInstancia().modSolicitante(mySolicitante);
-
-			VerUserSolicitante verUser = new VerUserSolicitante();
-			verUser.setVisible(true);
-			dispose();
+			modificarSolcitanteConHilo();
 		}
 
 	}
+	
 	private void clear() {
 		txtCedula.setText("");
 		txtNombre.setText("");
@@ -995,5 +921,202 @@ public class RegistrarSolicitante extends JDialog {
 		paso.add(lblPasoDe_1);
 
 		return paso;
+	}
+	
+	private void registrarSolicitanteConHilo() {
+
+		String password = new String (passwordField.getPassword());
+		String name = txtNombre.getText().trim();
+		String apellido = txtApellido.getText().trim();
+		String cedula = txtCedula.getText().trim();
+		
+		Date fechaSeleccionada = (Date) spnFechaNacim.getValue();
+		LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();		String telefono = txtTelefono.getText().trim();
+		
+		String direccion = txtDireccion.getText().trim();
+		Sexo sexo = (Sexo) cbxSexo.getSelectedItem();
+		String ciudad = txtCiudad.getText().trim();
+		int yearsExp = (int) spnExp.getValue();
+		boolean licencia = chkLicencia.isSelected();
+		boolean mudarse = chkMudarse.isSelected();
+		boolean empleo = chkEmpleado.isSelected();
+		
+		String carrera = txtCarrera.getText().trim();
+		String habilidades = txtHabilidades.getText().trim();
+		String tecnico = txtTecnico.getText().trim();
+		
+		String correo = txtCorreo.getText().trim();
+		String username = txtUser.getText().trim();
+		String foto = fotoPerfil.getRutaFotoPerfil();
+
+		btnSiguiente.setEnabled(false);
+		btnSiguiente.setText("Registrando...");
+
+		SwingWorker<Usuario, Void> hilo = new SwingWorker<Usuario, Void>(){
+
+			@Override
+			protected Usuario doInBackground() throws Exception {
+
+				TipoPersona tipo = (TipoPersona) cbxTipo.getSelectedItem();
+				Persona persona;
+
+				if(tipo == TipoPersona.UNIVERSITARIO) {
+					persona = new Universitario("P-"+BolsaEmpleo.generadorIdPersona,cedula,name,apellido,fecha,telefono,direccion,sexo,ciudad,mudarse,licencia,empleo,null,yearsExp,carrera);
+				}
+				
+				else if(tipo == TipoPersona.TECNICO) {
+					persona = new Tecnico("P-"+BolsaEmpleo.generadorIdPersona, cedula, name, apellido, fecha, telefono, direccion, sexo, ciudad, mudarse, licencia, empleo, null, yearsExp, tecnico);
+				}
+				
+				else if (tipo == TipoPersona.OBRERO ){
+					persona = new Obrero("P-"+BolsaEmpleo.generadorIdPersona, cedula, name, apellido, fecha, telefono, direccion, sexo, ciudad, mudarse, licencia, empleo, null, yearsExp, habilidades);
+				}
+				else {
+	                throw new IllegalArgumentException( "Debe seleccionar el tipo de solicitante.");
+				}
+				
+				Usuario nuevoUser = new Usuario("U-"+BolsaEmpleo.generadorIdUser, username, password, correo, null, persona, TipoUser.CANDIDATO, foto);
+				persona.setUser(nuevoUser);
+				
+				BolsaEmpleo.getInstancia().regPersona(persona);
+				BolsaEmpleo.getInstancia().regUser(nuevoUser);
+				BolsaEmpleo.getInstancia().setLoginUser(nuevoUser);
+				
+				return nuevoUser;
+			}
+
+			protected void done() {
+
+				try {
+					get();
+
+					JOptionPane.showMessageDialog(null, "Se ha registrado con exito.", "Información", JOptionPane.INFORMATION_MESSAGE);
+					dispose();
+					HomeCandidato home = new HomeCandidato();
+					home.setVisible(true);
+					home.toFront();
+
+				}catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(RegistrarSolicitante.this, mensaje != null ? mensaje: "No se pudo registrar el solicitante.","Error",JOptionPane.ERROR_MESSAGE);
+
+				}finally {
+					btnSiguiente.setEnabled(true);
+					btnSiguiente.setText("Finalizar");
+				}
+			}
+
+		};
+		hilo.execute();
+	}
+
+	private void modificarSolcitanteConHilo() {
+
+		String password = new String (passwordField.getPassword());
+		String name = txtNombre.getText().trim();
+		String apellido = txtApellido.getText().trim();
+		String cedula = txtCedula.getText().trim();
+		
+		Date fechaSeleccionada = (Date) spnFechaNacim.getValue();
+		LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		String telefono = txtTelefono.getText().trim();
+		String direccion = txtDireccion.getText().trim();
+		Sexo sexo = (Sexo) cbxSexo.getSelectedItem();
+		String ciudad = txtCiudad.getText().trim();
+		int yearsExp = (int) spnExp.getValue();
+		boolean licencia = chkLicencia.isSelected();
+		boolean mudarse = chkMudarse.isSelected();
+		boolean empleo = chkEmpleado.isSelected();
+		
+		String carrera = txtCarrera.getText().trim();
+		String habilidades = txtHabilidades.getText().trim();
+		String areaTecnico = txtTecnico.getText().trim();
+		
+		String correo = txtCorreo.getText().trim();
+		String username = txtUser.getText().trim();
+		String foto = fotoPerfil.getRutaFotoPerfil();
+
+		btnSiguiente.setEnabled(false);
+		btnSiguiente.setText("Modificando...");
+
+		SwingWorker<Persona, Void> hilo = new SwingWorker<Persona, Void>(){
+
+			@Override
+			protected Persona doInBackground() throws Exception {
+
+				Usuario userActual = mySolicitante.getUser();
+
+				mySolicitante.setNombre(name);
+				mySolicitante.setDireccion(direccion);
+				mySolicitante.setTelefono(telefono);
+				mySolicitante.setApellido(apellido);
+				mySolicitante.setCedula(cedula);
+				mySolicitante.setCiudad(ciudad);
+				mySolicitante.setDispParaMudarse(mudarse);
+				mySolicitante.setLicenciaConducir(licencia);
+				mySolicitante.setEstadoEmpleo(empleo);
+				mySolicitante.setYearsExp(yearsExp);
+				mySolicitante.setFechNacim(fecha);
+				mySolicitante.setSexo(sexo);
+				
+				userActual.setCorreo(correo);
+				userActual.setFotoPerfil(foto);
+				userActual.setPassword(password);
+				userActual.setUsername(username);
+
+				mySolicitante.setUser(userActual);
+				if(mySolicitante instanceof Universitario) {
+					Universitario uni = (Universitario) mySolicitante;
+					uni.setCarrera(carrera);
+					BolsaEmpleo.getInstancia().modSolicitante(uni);
+				}
+
+				if(mySolicitante instanceof Tecnico) {
+					Tecnico tecnico = (Tecnico) mySolicitante;
+					tecnico.setTecnico(areaTecnico);
+					BolsaEmpleo.getInstancia().modSolicitante(tecnico);
+				}
+				if(mySolicitante instanceof Obrero) {
+					Obrero obrero = (Obrero) mySolicitante;
+					obrero.setHabilidades(habilidades);
+					BolsaEmpleo.getInstancia().modSolicitante(obrero);
+
+				}
+				
+				
+				return mySolicitante;
+			}
+
+			protected void done() {
+
+				try {
+					get();
+
+					JOptionPane.showMessageDialog(RegistrarSolicitante.this,"Los datos fueron modificados correctamente.","Información",JOptionPane.INFORMATION_MESSAGE);
+					
+					dispose();
+					VerUserSolicitante ventana = new VerUserSolicitante();
+					ventana.setVisible(true);
+					ventana.toFront();
+
+				}catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+					
+					e.printStackTrace();
+					
+					JOptionPane.showMessageDialog(RegistrarSolicitante.this, mensaje!= null ? mensaje : "No se pudieron modificar los datos", "Error", JOptionPane.ERROR_MESSAGE);
+				
+					btnSiguiente.setEnabled(true);
+					btnSiguiente.setText("Modificar");
+				}
+			}
+
+		};
+		
+		hilo.execute();
 	}
 }
