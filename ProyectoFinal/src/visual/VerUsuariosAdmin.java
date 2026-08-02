@@ -153,8 +153,8 @@ public class VerUsuariosAdmin extends JFrame {
 		lblTitulo.setForeground(new Color(255, 51, 51));
 		lblTitulo.setBounds(77, 28, 400, 30);
 		panelHeader.add(lblTitulo);
-		
-		
+
+
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setBounds(1805, 0, 86, 90);
 		colocarImagen(lblNewLabel,"/img/iconoLogo_FondoOscuro.png");
@@ -213,7 +213,7 @@ public class VerUsuariosAdmin extends JFrame {
 		lblAdministradoresNum.setForeground(new Color(46, 125, 50));
 		lblAdministradoresNum.setBounds(64, 34, anchoTarjeta - 84, 36);
 		panelAdministradores.add(lblAdministradoresNum);
-		
+
 		JLabel icono = new JLabel("");
 		icono.setBounds(1784, 0, 114, 88);
 		colocarImagen(icono, "/img/iconoLogo_FondoOscuro.png");
@@ -436,7 +436,7 @@ public class VerUsuariosAdmin extends JFrame {
 		}
 		return modelo;
 	}
-	
+
 	public class RenderCentrado extends DefaultTableCellRenderer {
 		public RenderCentrado() {
 			setHorizontalAlignment(SwingConstants.CENTER);

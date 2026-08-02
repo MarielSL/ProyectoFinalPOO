@@ -272,7 +272,7 @@ public class BolsaEmpleo implements Serializable {
 			porcentaje += 5;
 		}
 
-		if(oferta.getSexo() == solicitud.getCandidato().getSexo()) {
+		if( oferta.getSexo() == Sexo.CUALQUIERA ||oferta.getSexo() == solicitud.getCandidato().getSexo()) {
 			porcentaje += 5;
 		}
 
