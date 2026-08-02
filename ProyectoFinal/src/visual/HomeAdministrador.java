@@ -1,5 +1,6 @@
 package visual;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -28,12 +29,26 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.ui.RectangleInsets;
 
 import logico.BolsaEmpleo;
 import logico.EstadoOferta;
@@ -64,6 +79,10 @@ public class HomeAdministrador extends JFrame {
 	private JLabel lblEmpresasNum;
 	private JLabel lblContratadosNum;
 	private JLabel lblSolicitantesNum;
+
+	private JPanel panel_Grafica1;
+	private JPanel panel_Grafica2;
+	private JPanel panel_Grafica3;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -110,6 +129,7 @@ public class HomeAdministrador extends JFrame {
 		construirTablaOfertas(panel);
 
 		cargarDatosHomeConHilo();
+		cargarGraficasConHilo();
 	}
 
 	private void construirMenu(JPanel panel) {
@@ -310,6 +330,10 @@ public class HomeAdministrador extends JFrame {
 		lblGrafico1.setBounds(33, 23, 255, 25);
 		panelGrafico1.add(lblGrafico1);
 
+		panel_Grafica1 = new JPanel();
+		panel_Grafica1.setBounds(15, 55, 485, 230);
+		panelGrafico1.add(panel_Grafica1);
+
 		JPanel panelGrafico2 = new JPanel();
 		panelGrafico2.setBackground(Color.WHITE);
 		panelGrafico2.setBounds(687, 239, 515, 301);
@@ -321,6 +345,10 @@ public class HomeAdministrador extends JFrame {
 		lblGrafico2.setBounds(28, 13, 255, 25);
 		panelGrafico2.add(lblGrafico2);
 
+		panel_Grafica2 = new JPanel();
+		panel_Grafica2.setBounds(15, 45, 485, 240);
+		panelGrafico2.add(panel_Grafica2);
+
 		JPanel panelGrafico3 = new JPanel();
 		panelGrafico3.setBackground(Color.WHITE);
 		panelGrafico3.setBounds(1288, 239, 515, 301);
@@ -331,6 +359,10 @@ public class HomeAdministrador extends JFrame {
 		lblGrafico3.setFont(new Font("Calibri", Font.BOLD, 20));
 		lblGrafico3.setBounds(12, 13, 255, 25);
 		panelGrafico3.add(lblGrafico3);
+
+		panel_Grafica3 = new JPanel();
+		panel_Grafica3.setBounds(15, 45, 485, 240);
+		panelGrafico3.add(panel_Grafica3);
 	}
 
 	private void construirTablaSolicitantes(JPanel panel) {
@@ -388,15 +420,9 @@ public class HomeAdministrador extends JFrame {
 	private DefaultTableModel crearModeloSolicitantesVacio() {
 		return new DefaultTableModel(
 				new Object[][] {},
-				new String[] {
-						"Solicitante",
-						"Profesión",
-						"Registro",
-						"Estado"
-				}
+				new String[] { "Solicitante", "Profesión", "Registro", "Estado" }
 		) {
 			private static final long serialVersionUID = 1L;
-
 			@Override
 			public boolean isCellEditable(int fila, int columna) {
 				return false;
@@ -407,16 +433,9 @@ public class HomeAdministrador extends JFrame {
 	private DefaultTableModel crearModeloOfertasVacio() {
 		return new DefaultTableModel(
 				new Object[][] {},
-				new String[] {
-						"Puesto",
-						"Empresa",
-						"Fecha Publicación",
-						"Vacantes Disp.",
-						"Estado"
-				}
+				new String[] { "Puesto", "Empresa", "Fecha Publicación", "Vacantes Disp.", "Estado" }
 		) {
 			private static final long serialVersionUID = 1L;
-
 			@Override
 			public boolean isCellEditable(int fila, int columna) {
 				return false;
@@ -464,8 +483,7 @@ public class HomeAdministrador extends JFrame {
 		tableOfertas.getColumnModel().getColumn(3).setPreferredWidth(100);
 		tableOfertas.getColumnModel().getColumn(4).setPreferredWidth(120);
 	}
-	
-	//implementacion hilos
+
 	private void cargarDatosHomeConHilo() {
 		prepararPantallaParaCarga();
 
@@ -476,7 +494,7 @@ public class HomeAdministrador extends JFrame {
 				Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
 				if (!respuesta.isExito()) {
-				    throw new IllegalArgumentException(respuesta.getDatos().toString());
+					throw new IllegalArgumentException(respuesta.getDatos().toString());
 				}
 
 				DatosDashboardAdmin datosDashboard = (DatosDashboardAdmin) respuesta.getDatos();
@@ -487,7 +505,7 @@ public class HomeAdministrador extends JFrame {
 				int ofertasActivas = contarOfertasActivas(ofertas);
 				int empresas = datosDashboard.getTotalEmpresas();
 				int contratados = contarContratados(ofertas);
-				int solicitantes = personas.size();
+				int solicitantes = personas != null ? personas.size() : 0;
 
 				DefaultTableModel modeloSolicitantesCargado = crearModeloSolicitantesRecientes(personas);
 				DefaultTableModel modeloOfertasCargado = crearModeloOfertasRecientes(ofertas);
@@ -531,7 +549,6 @@ public class HomeAdministrador extends JFrame {
 
 					tableSolicitantes.revalidate();
 					tableSolicitantes.repaint();
-
 					tableOfertas.revalidate();
 					tableOfertas.repaint();
 
@@ -540,7 +557,6 @@ public class HomeAdministrador extends JFrame {
 					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
 
 					e.printStackTrace();
-
 					mostrarDatosVacios();
 
 					JOptionPane.showMessageDialog(
@@ -588,13 +604,11 @@ public class HomeAdministrador extends JFrame {
 		}
 
 		int contador = 0;
-
 		for (Oferta oferta : ofertas) {
 			if (oferta != null && oferta.getEstado() == EstadoOferta.PENDIENTE) {
 				contador++;
 			}
 		}
-
 		return contador;
 	}
 
@@ -604,13 +618,11 @@ public class HomeAdministrador extends JFrame {
 		}
 
 		int contador = 0;
-
 		for (Oferta oferta : ofertas) {
 			if (oferta != null) {
 				contador += oferta.cantContratados();
 			}
 		}
-
 		return contador;
 	}
 
@@ -623,9 +635,7 @@ public class HomeAdministrador extends JFrame {
 		}
 
 		for (Persona persona : personas) {
-			if (persona != null
-					&& persona.getUser() != null
-					&& persona.getUser().getFechaRegistro() != null) {
+			if (persona != null && persona.getUser() != null && persona.getUser().getFechaRegistro() != null) {
 				ordenadas.add(persona);
 			}
 		}
@@ -648,12 +658,7 @@ public class HomeAdministrador extends JFrame {
 			String fecha = persona.getUser().getFechaRegistro().format(formato);
 			String estado = persona.isEstadoEmpleo() ? "Empleado" : "Buscando empleo";
 
-			modelo.addRow(new Object[] {
-					nombre,
-					profesion,
-					fecha,
-					estado
-			});
+			modelo.addRow(new Object[] { nombre, profesion, fecha, estado });
 		}
 
 		return modelo;
@@ -692,13 +697,7 @@ public class HomeAdministrador extends JFrame {
 			int cantidadPuestos = oferta.getCantPuestos();
 			String estado = formatearEstadoOferta(oferta.getEstado());
 
-			modelo.addRow(new Object[] {
-					puesto,
-					empresa,
-					fecha,
-					cantidadPuestos,
-					estado
-			});
+			modelo.addRow(new Object[] { puesto, empresa, fecha, cantidadPuestos, estado });
 		}
 
 		return modelo;
@@ -737,7 +736,6 @@ public class HomeAdministrador extends JFrame {
 	}
 
 	private class RenderCentrado extends DefaultTableCellRenderer {
-
 		private static final long serialVersionUID = 1L;
 
 		public RenderCentrado() {
@@ -746,7 +744,6 @@ public class HomeAdministrador extends JFrame {
 	}
 
 	private class RenderEstado extends JLabel implements TableCellRenderer {
-
 		private static final long serialVersionUID = 1L;
 
 		public RenderEstado() {
@@ -796,7 +793,6 @@ public class HomeAdministrador extends JFrame {
 
 			int margenVertical = 6;
 			int margenHorizontal = 10;
-
 			int ancho = Math.max(0, getWidth() - margenHorizontal * 2);
 			int alto = Math.max(0, getHeight() - margenVertical * 2);
 
@@ -804,6 +800,192 @@ public class HomeAdministrador extends JFrame {
 			g2.dispose();
 
 			super.paintComponent(g);
+		}
+	}
+
+	private void cargarGraficasConHilo() {
+		SwingWorker<DatosDashboardAdmin, Void> hilo = new SwingWorker<DatosDashboardAdmin, Void>() {
+			@Override
+			protected DatosDashboardAdmin doInBackground() throws Exception {
+				Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_DASHBOARD_ADMIN, null);
+				Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
+
+				if (!respuesta.isExito()) {
+					throw new IllegalArgumentException(respuesta.getDatos().toString());
+				}
+
+				return (DatosDashboardAdmin) respuesta.getDatos();
+			}
+
+			@Override
+			protected void done() {
+				try {
+					DatosDashboardAdmin datos = get();
+					mostrarGraficaActividad(datos);
+					mostrarGraficaEstadoOfertas(datos);
+					mostrarGraficaAccionesPendientes(datos);
+				} catch (Exception e) {
+					e.printStackTrace();
+					mostrarGraficasVacias();
+				}
+			}
+		};
+
+		hilo.execute();
+	}
+
+	private void mostrarGraficasVacias() {
+		DefaultPieDataset pieVacio = new DefaultPieDataset();
+		pieVacio.setValue("Sin datos", 1);
+
+		DefaultCategoryDataset barVacio = new DefaultCategoryDataset();
+		barVacio.addValue(0, "Cantidad", "Sin datos");
+
+		mostrarGraficaCircular(panel_Grafica1, "Actividad en la Plataforma", pieVacio);
+		mostrarGraficaBarras(panel_Grafica2, "Estado de las Ofertas", barVacio);
+		mostrarGraficaCircular(panel_Grafica3, "Acciones pendientes", pieVacio);
+	}
+
+	private void mostrarGraficaActividad(DatosDashboardAdmin datos) {
+		DefaultPieDataset dataset = new DefaultPieDataset();
+		int actividad = datos != null ? datos.getActividadPlataforma() : 0;
+
+		dataset.setValue("Actividad", actividad);
+		dataset.setValue("Sin datos", actividad == 0 ? 1 : 0);
+
+		mostrarGraficaCircular(panel_Grafica1, "Actividad en la Plataforma", dataset);
+	}
+
+	private void mostrarGraficaEstadoOfertas(DatosDashboardAdmin datos) {
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+		int activas = datos != null ? datos.getOfertasActivas() : 0;
+		int inactivas = 0;
+
+		dataset.addValue(activas, "Ofertas", "Activas");
+		dataset.addValue(inactivas, "Ofertas", "Inactivas");
+
+		mostrarGraficaBarras(panel_Grafica2, "Estado de las Ofertas", dataset);
+	}
+
+	private void mostrarGraficaAccionesPendientes(DatosDashboardAdmin datos) {
+		DefaultPieDataset dataset = new DefaultPieDataset();
+		int acciones = datos != null ? datos.getAccionesPendientes() : 0;
+
+		dataset.setValue("Pendientes", acciones);
+		dataset.setValue("Sin datos", acciones == 0 ? 1 : 0);
+
+		mostrarGraficaCircular(panel_Grafica3, "Acciones pendientes", dataset);
+	}
+
+	private void mostrarGraficaCircular(JPanel panel, String titulo, DefaultPieDataset dataset) {
+		panel.removeAll();
+
+		JFreeChart grafica = ChartFactory.createPieChart(titulo, dataset, true, true, false);
+		personalizarGraficaCircular(grafica);
+
+		ChartPanel chartPanel = new ChartPanel(grafica);
+		chartPanel.setMouseWheelEnabled(true);
+		chartPanel.setDomainZoomable(false);
+		chartPanel.setRangeZoomable(false);
+		chartPanel.setPopupMenu(null);
+
+		panel.setLayout(new BorderLayout());
+		panel.add(chartPanel, BorderLayout.CENTER);
+		panel.revalidate();
+		panel.repaint();
+	}
+
+	private void mostrarGraficaBarras(JPanel panel, String titulo, DefaultCategoryDataset dataset) {
+		panel.removeAll();
+
+		JFreeChart grafica = ChartFactory.createBarChart(
+				titulo,
+				"Estado",
+				"Cantidad",
+				dataset,
+				PlotOrientation.VERTICAL,
+				false,
+				true,
+				false
+		);
+
+		personalizarGraficaBarras(grafica);
+
+		ChartPanel chartPanel = new ChartPanel(grafica);
+		chartPanel.setMouseWheelEnabled(true);
+		chartPanel.setDomainZoomable(false);
+		chartPanel.setRangeZoomable(false);
+		chartPanel.setPopupMenu(null);
+
+		panel.setLayout(new BorderLayout());
+		panel.add(chartPanel, BorderLayout.CENTER);
+		panel.revalidate();
+		panel.repaint();
+	}
+
+	private void personalizarGraficaBarras(JFreeChart grafica) {
+		Color colorTexto = Color.decode("#06002c");
+
+		grafica.setBackgroundPaint(Color.WHITE);
+		grafica.setPadding(new RectangleInsets(10, 10, 10, 10));
+
+		grafica.getTitle().setFont(new Font("Calibri", Font.BOLD, 20));
+		grafica.getTitle().setPaint(colorTexto);
+
+		CategoryPlot plot = grafica.getCategoryPlot();
+		plot.setBackgroundPaint(Color.WHITE);
+		plot.setOutlineVisible(false);
+		plot.setRangeGridlinePaint(new Color(225, 225, 225));
+		plot.setRangeGridlineStroke(new BasicStroke(1f));
+
+		plot.getDomainAxis().setLabelFont(new Font("Calibri", Font.BOLD, 14));
+		plot.getDomainAxis().setTickLabelFont(new Font("Calibri", Font.PLAIN, 13));
+		plot.getDomainAxis().setTickLabelPaint(colorTexto);
+
+		plot.getRangeAxis().setLabelFont(new Font("Calibri", Font.BOLD, 14));
+		plot.getRangeAxis().setTickLabelFont(new Font("Calibri", Font.PLAIN, 13));
+		plot.getRangeAxis().setTickLabelPaint(colorTexto);
+
+		BarRenderer renderer = (BarRenderer) plot.getRenderer();
+		renderer.setSeriesPaint(0, new Color(65, 95, 170));
+		renderer.setDrawBarOutline(false);
+		renderer.setMaximumBarWidth(0.10);
+		renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+		renderer.setBaseItemLabelsVisible(true);
+		renderer.setBaseItemLabelFont(new Font("Calibri", Font.BOLD, 13));
+		renderer.setBaseItemLabelPaint(colorTexto);
+	}
+
+	private void personalizarGraficaCircular(JFreeChart grafica) {
+		Color colorTexto = Color.decode("#06002c");
+
+		grafica.setBackgroundPaint(Color.WHITE);
+		grafica.setPadding(new RectangleInsets(10, 10, 10, 10));
+
+		grafica.getTitle().setFont(new Font("Calibri", Font.BOLD, 20));
+		grafica.getTitle().setPaint(colorTexto);
+
+		PiePlot plot = (PiePlot) grafica.getPlot();
+		plot.setBackgroundPaint(Color.WHITE);
+		plot.setOutlineVisible(false);
+		plot.setShadowPaint(null);
+
+		plot.setSectionPaint("Actividad", Color.decode("#4769ba"));
+		plot.setSectionPaint("Pendientes", Color.decode("#fe9703"));
+		plot.setSectionPaint("Sin datos", Color.decode("#d9d9d9"));
+
+		plot.setLabelFont(new Font("Calibri", Font.BOLD, 14));
+		plot.setLabelPaint(colorTexto);
+		plot.setLabelBackgroundPaint(new Color(255, 255, 255, 220));
+		plot.setLabelOutlinePaint(null);
+		plot.setLabelShadowPaint(null);
+		plot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0}: {1} ({2})"));
+
+		if (grafica.getLegend() != null) {
+			grafica.getLegend().setItemFont(new Font("Calibri", Font.PLAIN, 14));
+			grafica.getLegend().setItemPaint(colorTexto);
+			grafica.getLegend().setBackgroundPaint(Color.WHITE);
 		}
 	}
 
@@ -840,7 +1022,6 @@ public class HomeAdministrador extends JFrame {
 
 		int anchoLabel = label.getWidth();
 		int altoLabel = label.getHeight();
-
 		int anchoImagen = icono.getIconWidth();
 		int altoImagen = icono.getIconHeight();
 

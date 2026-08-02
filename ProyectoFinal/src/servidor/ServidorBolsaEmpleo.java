@@ -570,8 +570,74 @@ public class ServidorBolsaEmpleo {
         ArrayList<Persona> personas = bolsa.getPersonas() != null ? bolsa.getPersonas() : new ArrayList<Persona>();
         int totalEmpresas = bolsa.getEmpresas() != null ? bolsa.getEmpresas().size() : 0;
 
-        DatosDashboardAdmin resultado = new DatosDashboardAdmin(ofertas, personas, totalEmpresas);
+        int actividadPlataforma = calcularActividadPlataforma(ofertas, personas, bolsa);
+        int ofertasActivas = contarOfertasActivas(ofertas);
+        int accionesPendientes = contarAccionesPendientes(ofertas, personas, bolsa);
+
+        DatosDashboardAdmin resultado = new DatosDashboardAdmin(
+                ofertas,
+                personas,
+                totalEmpresas,
+                actividadPlataforma,
+                ofertasActivas,
+                accionesPendientes
+        );
+
         return new Respuesta(true, resultado);
+    }
+    
+    private static int calcularActividadPlataforma(ArrayList<Oferta> ofertas, ArrayList<Persona> personas, BolsaEmpleo bolsa) {
+        int actividad = 0;
+
+        if (ofertas != null) {
+            actividad += ofertas.size();
+        }
+
+        if (personas != null) {
+            actividad += personas.size();
+        }
+
+        if (bolsa != null && bolsa.getEmpresas() != null) {
+            actividad += bolsa.getEmpresas().size();
+        }
+
+        return actividad;
+    }
+
+    private static int contarOfertasActivas(ArrayList<Oferta> ofertas) {
+        if (ofertas == null) {
+            return 0;
+        }
+
+        int contador = 0;
+        for (Oferta oferta : ofertas) {
+            if (oferta != null && oferta.getEstado() == logico.EstadoOferta.PENDIENTE) {
+                contador++;
+            }
+        }
+        return contador;
+    }
+
+    private static int contarAccionesPendientes(ArrayList<Oferta> ofertas, ArrayList<Persona> personas, BolsaEmpleo bolsa) {
+        int pendientes = 0;
+
+        if (ofertas != null) {
+            for (Oferta oferta : ofertas) {
+                if (oferta != null && oferta.getEstado() == logico.EstadoOferta.PENDIENTE) {
+                    pendientes += oferta.getCantPuestos();
+                }
+            }
+        }
+
+        if (personas != null) {
+            for (Persona persona : personas) {
+                if (persona != null && !persona.isEstadoEmpleo()) {
+                    pendientes++;
+                }
+            }
+        }
+
+        return pendientes;
     }
 
     // ==================== MODIFICAR ====================
