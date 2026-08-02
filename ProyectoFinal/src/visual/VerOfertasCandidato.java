@@ -19,6 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -35,6 +36,9 @@ import logico.Jornada;
 import logico.Oferta;
 import logico.Persona;
 import logico.TipoPersona;
+import red.ConexionCliente;
+import red.Peticion;
+import red.Respuesta;
 import logico.EstadoOferta;
 
 public class VerOfertasCandidato extends JFrame {
@@ -333,13 +337,19 @@ public class VerOfertasCandidato extends JFrame {
         return panelTabla;
     }
 
-	//implementacion de hilos
+	//implementacion de hilos y sockets
     private void cargarDatosConHilo() {
         SwingWorker<ArrayList<Oferta>, Void> worker = new SwingWorker<ArrayList<Oferta>, Void>() {
             @Override
-            protected ArrayList<Oferta> doInBackground() {
-                ArrayList<Oferta> ofertas = BolsaEmpleo.getInstancia().getOfertas();
-                return ofertas != null ? ofertas : new ArrayList<Oferta>();
+            protected ArrayList<Oferta> doInBackground() throws Exception {
+                Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_OFERTAS, null);
+                Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
+
+                if (!respuesta.isExito()) {
+                    throw new IllegalArgumentException(respuesta.getDatos().toString());
+                }
+
+                return (ArrayList<Oferta>) respuesta.getDatos();
             }
 
             @Override
@@ -360,6 +370,7 @@ public class VerOfertasCandidato extends JFrame {
                     aplicarFiltros();
                 } catch (Exception e) {
                     e.printStackTrace();
+                    JOptionPane.showMessageDialog(VerOfertasCandidato.this, "No se pudieron cargar las ofertas.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         };

@@ -34,6 +34,10 @@ import logico.Oferta;
 import logico.Persona;
 import logico.SolicitudEmpleo;
 import logico.Usuario;
+import red.ConexionCliente;
+import red.DatosEstadisticasCandidato;
+import red.Peticion;
+import red.Respuesta;
 
 public class HomeCandidato extends JFrame {
 
@@ -329,112 +333,48 @@ public class HomeCandidato extends JFrame {
 	}
 
 	private void cargarDatosHomeConHilo() {
-		lblEstadoBusquedaValor.setText("...");
-		lblOfertasDisponiblesValor.setText("...");
-		lblMayorCoincidenciaValor.setText("...");
+	    lblEstadoBusquedaValor.setText("...");
+	    lblOfertasDisponiblesValor.setText("...");
+	    lblMayorCoincidenciaValor.setText("...");
 
-		SwingWorker<Object[], Void> hilo = new SwingWorker<Object[], Void>() {
+	    SwingWorker<DatosEstadisticasCandidato, Void> hilo = new SwingWorker<DatosEstadisticasCandidato, Void>() {
 
-			@Override
-			protected Object[] doInBackground() throws Exception {
-				Usuario usuario = BolsaEmpleo.getInstancia().getLoginUser();
+	        @Override
+	        protected DatosEstadisticasCandidato doInBackground() throws Exception {
+	            Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_ESTADISTICAS_CANDIDATO, null);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-				String estadoBusqueda = "Por Crear";
-				int ofertasDisponibles = contarOfertasDisponibles();
-				float mayorCoincidencia = 0;
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-				if (usuario != null
-						&& usuario.getPersona() != null
-						&& usuario.getPersona().getSolicitud() != null) {
+	            return (DatosEstadisticasCandidato) respuesta.getDatos();
+	        }
 
-					SolicitudEmpleo solicitud =
-							usuario.getPersona().getSolicitud();
+	        @Override
+	        protected void done() {
+	            try {
+	                DatosEstadisticasCandidato datos = get();
 
-					if (solicitud.getEstado()
-							== EstadoSolicitud.ACTIVA) {
+	                lblEstadoBusquedaValor.setText(datos.getEstadoBusqueda());
+	                lblOfertasDisponiblesValor.setText(String.valueOf(datos.getOfertasDisponibles()));
+	                lblMayorCoincidenciaValor.setText(String.format("%.2f%%", datos.getMayorCoincidencia()));
 
-						estadoBusqueda = "Activa";
+	            } catch (Exception e) {
+	                Throwable causa = e.getCause();
+	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+	                e.printStackTrace();
 
-					} else {
-						estadoBusqueda = "Inactiva";
-					}
+	                lblEstadoBusquedaValor.setText("No disponible");
+	                lblOfertasDisponiblesValor.setText("0");
+	                lblMayorCoincidenciaValor.setText("0%");
 
-					mayorCoincidencia =
-							BolsaEmpleo.getInstancia()
-							.CalcMayorCoincidenciaSolicitud(
-									solicitud
-									);
-				}
+	                JOptionPane.showMessageDialog(HomeCandidato.this, mensaje != null ? mensaje : "No se pudieron cargar los datos del inicio.", "Error", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	    };
 
-				/*
-				 * Cuando el socket esté listo, este bloque se sustituye
-				 * por una petición al servidor.
-				 */
-
-				return new Object[] {
-						estadoBusqueda,
-						ofertasDisponibles,
-						mayorCoincidencia
-				};
-			}
-
-			@Override
-			protected void done() {
-				try {
-					Object[] datos = get();
-
-					String estadoBusqueda =
-							(String) datos[0];
-
-					int ofertasDisponibles =
-							(Integer) datos[1];
-
-					float mayorCoincidencia =
-							(Float) datos[2];
-
-					lblEstadoBusquedaValor.setText(
-							estadoBusqueda
-							);
-
-					lblOfertasDisponiblesValor.setText(
-							String.valueOf(ofertasDisponibles)
-							);
-
-					lblMayorCoincidenciaValor.setText(
-							String.format(
-									"%.2f%%",
-									mayorCoincidencia
-									)
-							);
-
-				} catch (Exception e) {
-					Throwable causa = e.getCause();
-					String mensaje = causa != null
-							? causa.getMessage()
-									: e.getMessage();
-
-							e.printStackTrace();
-
-							lblEstadoBusquedaValor.setText(
-									"No disponible"
-									);
-
-							lblOfertasDisponiblesValor.setText("0");
-							lblMayorCoincidenciaValor.setText("0%");
-
-							JOptionPane.showMessageDialog(
-									HomeCandidato.this,
-									mensaje != null
-									? mensaje
-											: "No se pudieron cargar los datos del inicio.",
-											"Error",
-											JOptionPane.ERROR_MESSAGE
-									);
-				}
-			}
-		};
-
-		hilo.execute();
+	    hilo.execute();
 	}
 	private int contarOfertasDisponibles() {
 		ArrayList<Oferta> ofertas = BolsaEmpleo.getInstancia().getOfertas();

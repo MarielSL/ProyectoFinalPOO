@@ -38,12 +38,14 @@ import logico.EstadoOferta;
 import logico.EstadoSolicitud;
 import logico.Oferta;
 import logico.SolicitudEmpleo;
+import red.ConexionCliente;
+import red.DatosEstadisticasEmpresa;
+import red.Peticion;
+import red.Respuesta;
 
 import java.awt.SystemColor;
 
 public class HomeEmpresa extends JFrame {
-
-	private static final long serialVersionUID = 1L;
 
 	private JPanel contentPane;
 	private Dimension dim;
@@ -330,72 +332,48 @@ public class HomeEmpresa extends JFrame {
 	}
 
 	private void cargarDatosHomeConHilo() {
-		lblOfertasActivasNum.setText("...");
-		lblCandidatosComp.setText("...");
-		lblContratadosNum.setText("...");
+	    lblOfertasActivasNum.setText("...");
+	    lblCandidatosComp.setText("...");
+	    lblContratadosNum.setText("...");
 
-		SwingWorker<int[], Void> hilo = new SwingWorker<int[], Void>() {
+	    SwingWorker<DatosEstadisticasEmpresa, Void> hilo = new SwingWorker<DatosEstadisticasEmpresa, Void>() {
 
-			@Override
-			protected int[] doInBackground() throws Exception {
-				int ofertasActivas = contarOfertasActivas();
-				int candidatosCompatibles = contarCandidatosCompatibles();
-				int contratadosEsteMes = contarContratadosEsteMes();
+	        @Override
+	        protected DatosEstadisticasEmpresa doInBackground() throws Exception {
+	            Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_ESTADISTICAS_EMPRESA, null);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-				/*
-				 * Cuando implementen el socket, aquí se sustituye
-				 * el acceso local por una petición al servidor.
-				 */
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-				return new int[] {
-						ofertasActivas,
-						candidatosCompatibles,
-						contratadosEsteMes
-				};
-			}
+	            return (DatosEstadisticasEmpresa) respuesta.getDatos();
+	        }
 
-			@Override
-			protected void done() {
-				try {
-					int[] datos = get();
+	        @Override
+	        protected void done() {
+	            try {
+	                DatosEstadisticasEmpresa datos = get();
 
-					lblOfertasActivasNum.setText(
-							String.valueOf(datos[0])
-							);
+	                lblOfertasActivasNum.setText(String.valueOf(datos.getOfertasActivas()));
+	                lblCandidatosComp.setText(String.valueOf(datos.getCandidatosCompatibles()));
+	                lblContratadosNum.setText(String.valueOf(datos.getContratadosEsteMes()));
 
-					lblCandidatosComp.setText(
-							String.valueOf(datos[1])
-							);
+	            } catch (Exception e) {
+	                Throwable causa = e.getCause();
+	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+	                e.printStackTrace();
 
-					lblContratadosNum.setText(
-							String.valueOf(datos[2])
-							);
+	                lblOfertasActivasNum.setText("0");
+	                lblCandidatosComp.setText("0");
+	                lblContratadosNum.setText("0");
 
-				} catch (Exception e) {
-					Throwable causa = e.getCause();
-					String mensaje = causa != null
-							? causa.getMessage()
-									: e.getMessage();
+	                JOptionPane.showMessageDialog(HomeEmpresa.this, mensaje != null ? mensaje : "No se pudieron cargar los datos de la empresa.", "Error", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	    };
 
-							e.printStackTrace();
-
-							lblOfertasActivasNum.setText("0");
-							lblCandidatosComp.setText("0");
-							lblContratadosNum.setText("0");
-
-							JOptionPane.showMessageDialog(
-									HomeEmpresa.this,
-									mensaje != null
-									? mensaje
-											: "No se pudieron cargar los datos de la empresa.",
-											"Error",
-											JOptionPane.ERROR_MESSAGE
-									);
-				}
-			}
-		};
-
-		hilo.execute();
+	    hilo.execute();
 	}
 
 	private int contarOfertasActivas() {
