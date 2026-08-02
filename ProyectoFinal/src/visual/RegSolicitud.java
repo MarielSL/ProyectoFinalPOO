@@ -11,6 +11,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
@@ -21,14 +23,24 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 
 import logico.AreaLaboral;
 import logico.BolsaEmpleo;
+import logico.Empresa;
 import logico.EstadoSolicitud;
 import logico.Jornada;
 import logico.Modalidad;
+import logico.Persona;
 import logico.SolicitudEmpleo;
+import logico.TipoEmpresa;
+import logico.Usuario;
+import red.ConexionCliente;
+import red.DatosRegistrarSolicitud;
+import red.DatosRegistroEmpresa;
+import red.Peticion;
+import red.Respuesta;
 
 import javax.swing.JSeparator;
 import java.awt.SystemColor;
@@ -67,6 +79,7 @@ public class RegSolicitud extends JDialog {
 	private ComboBoxRedond cbxModalidad;
 	private BotonRedond btnCancelar;
 	private BotonRedond btnVolver;
+	private SolicitudEmpleo mySolicitud;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -83,6 +96,7 @@ public class RegSolicitud extends JDialog {
 	}
 
 	public RegSolicitud(SolicitudEmpleo solicitud) {
+		this.mySolicitud = solicitud;
 		setResizable(false);
 		setModal(true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -276,34 +290,19 @@ public class RegSolicitud extends JDialog {
 		btnCrear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!Validaciones.camposLlenos(txtPuesto.getText()) || cbxAreaLaboral.getSelectedIndex() == -1 || cbxJornada.getSelectedIndex() == -1 || cbxModalidad.getSelectedIndex() == -1 || (int) spnSueldo_1.getValue() == 0) {
-					JOptionPane.showConfirmDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				if(!Validaciones.soloLetras(txtPuesto.getText())) {
-					JOptionPane.showConfirmDialog(null, "Puesto no debe de contener números.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Puesto no debe de contener números.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
-				if(solicitud == null) {
-					String id = "S-"+BolsaEmpleo.generadorIdSolicitud;
-					LocalDate fechaHoy = LocalDate.now();
-					SolicitudEmpleo solicitud = new SolicitudEmpleo(id, EstadoSolicitud.ACTIVA, BolsaEmpleo.getInstancia().getLoginUser().getPersona(), fechaHoy, (AreaLaboral) cbxAreaLaboral.getSelectedItem(), ((float) (Integer) spnSueldo_1.getValue()), (Modalidad) cbxModalidad.getSelectedItem(), txtPuesto.getText(), (Jornada) cbxJornada.getSelectedItem());
-					BolsaEmpleo.getInstancia().regSolicitud(solicitud,BolsaEmpleo.getInstancia().getLoginUser().getPersona());
 
-					VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral();
-					ver.setVisible(true);
-					dispose();
-				}
-				else {
-					solicitud.setPuesto(txtPuesto.getText());
-					solicitud.setAreaLaboral((AreaLaboral) cbxAreaLaboral.getSelectedItem());
-					solicitud.setJornada((Jornada) cbxJornada.getSelectedItem());
-					solicitud.setModalidad( (Modalidad) cbxModalidad.getSelectedItem());
-					solicitud.setSueldoEsperado((float)((Integer) spnSueldo_1.getValue()));
-					BolsaEmpleo.getInstancia().modSolicitud(solicitud);
 
-					VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral();
-					ver.setVisible(true);
-					dispose();
+				if (mySolicitud == null) {
+					registrarSolicitudConHilo();
+				} else {
+					modificarSolicitudConHilo();
 				}
 
 			}
@@ -316,25 +315,22 @@ public class RegSolicitud extends JDialog {
 
 		btnVolver = new BotonRedond(" \u2190  Volver", 30);
 		btnVolver.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(solicitud == null) {
-					HomeCandidato home = new HomeCandidato();
-					dispose();
-
-					home.setVisible(true);
-					home.toFront();
-					home.requestFocus();
-					dispose();
-				}
-				else {
-					VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral();
-					dispose();
-					ver.setVisible(true);
-					ver.toFront();
-					ver.requestFocus();
-				}
-
-			}
+		    public void actionPerformed(ActionEvent e) {
+		        if(mySolicitud == null) {  
+		            HomeCandidato home = new HomeCandidato();
+		            dispose();
+		            home.setVisible(true);
+		            home.toFront();
+		            home.requestFocus();
+		        }
+		        else {
+		            VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral();
+		            dispose();
+		            ver.setVisible(true);
+		            ver.toFront();
+		            ver.requestFocus();
+		        }
+		    }
 		});
 		btnVolver.setForeground(new Color(0, 0, 51));
 		btnVolver.setFont(new Font("Calibri", Font.PLAIN, 20));
@@ -406,4 +402,132 @@ public class RegSolicitud extends JDialog {
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
+
+	private void registrarSolicitudConHilo() {
+
+	    String puesto = txtPuesto.getText().trim();
+	    AreaLaboral areaLaboral = (AreaLaboral) cbxAreaLaboral.getSelectedItem();
+	    Modalidad modalidad = (Modalidad) cbxModalidad.getSelectedItem();
+	    Jornada jornada = (Jornada) cbxJornada.getSelectedItem();
+	    float sueldoEsperado = ((Number) spnSueldo_1.getValue()).floatValue();
+
+	    btnCrear.setEnabled(false);
+	    btnVolver.setEnabled(false);
+	    btnCrear.setText("Registrando...");
+
+	    SwingWorker<SolicitudEmpleo, Void> hilo = new SwingWorker<SolicitudEmpleo, Void>() {
+
+	        @Override
+	        protected SolicitudEmpleo doInBackground() throws Exception {
+
+	            DatosRegistrarSolicitud datos = new DatosRegistrarSolicitud(
+	                    puesto, areaLaboral, sueldoEsperado, modalidad, jornada);
+
+	            Peticion peticion = new Peticion(Peticion.Tipo.REGISTRAR_SOLICITUD, datos);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
+
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
+
+	            return (SolicitudEmpleo) respuesta.getDatos();
+	        }
+
+	        @Override
+	        protected void done() {
+
+	            try {
+	                mySolicitud = get();
+
+	                JOptionPane.showMessageDialog(RegSolicitud.this, "La búsqueda laboral fue creada correctamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
+	                dispose();
+
+	                VerMiSolicitudLaboral ventana = new VerMiSolicitudLaboral();
+	                ventana.setVisible(true);
+	                ventana.toFront();
+
+	            } catch (Exception e) {
+
+	                Throwable causa = e.getCause();
+	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+	                e.printStackTrace();
+
+	                JOptionPane.showMessageDialog(RegSolicitud.this, mensaje != null ? mensaje : "No se pudo registrar la búsqueda laboral.", "Error", JOptionPane.ERROR_MESSAGE);
+
+	                btnCrear.setEnabled(true);
+	                btnVolver.setEnabled(true);
+	                btnCrear.setText("Crear");
+	            }
+	        }
+	    };
+
+	    hilo.execute();
+	}
+
+	private void modificarSolicitudConHilo() {
+
+		if (mySolicitud == null) {
+
+			JOptionPane.showMessageDialog( RegSolicitud.this,"No se pudo identificar la búsqueda laboral.", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		String puesto = txtPuesto.getText().trim();
+		AreaLaboral areaLaboral =(AreaLaboral) cbxAreaLaboral.getSelectedItem();
+		Modalidad modalidad =(Modalidad) cbxModalidad.getSelectedItem();
+		Jornada jornada =(Jornada) cbxJornada.getSelectedItem();
+		float sueldoEsperado = ((Number) spnSueldo_1.getValue()).floatValue();
+
+		btnCrear.setEnabled(false);
+		btnVolver.setEnabled(false);
+		btnCrear.setText("Modificando...");
+
+		SwingWorker<SolicitudEmpleo, Void> hilo = new SwingWorker<SolicitudEmpleo, Void>() {
+
+			@Override
+			protected SolicitudEmpleo doInBackground() throws Exception {
+
+				mySolicitud.setPuesto(puesto);
+				mySolicitud.setAreaLaboral(areaLaboral);
+				mySolicitud.setModalidad(modalidad);
+				mySolicitud.setJornada(jornada);
+				mySolicitud.setSueldoEsperado(sueldoEsperado );
+
+				BolsaEmpleo.getInstancia().modSolicitud(mySolicitud);
+				return mySolicitud;
+			}
+
+			@Override
+			protected void done() {
+
+				try {
+					mySolicitud = get();
+
+					JOptionPane.showMessageDialog(RegSolicitud.this,"La Solicitud fue modificada correctamente.","Información",JOptionPane.INFORMATION_MESSAGE);
+					dispose();
+
+					VerMiSolicitudLaboral ventana = new VerMiSolicitudLaboral();
+					ventana.setVisible(true);
+					ventana.toFront();
+
+				} catch (Exception e) {
+
+					Throwable causa = e.getCause();
+
+					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+
+					e.printStackTrace();
+
+					JOptionPane.showMessageDialog( RegSolicitud.this,mensaje != null? mensaje : "No se pudo modificar la búsqueda laboral.","Error",JOptionPane.ERROR_MESSAGE);
+
+					btnCrear.setEnabled(true);
+					btnVolver.setEnabled(true);
+					btnCrear.setText("Modificar");
+				}
+			}
+		};
+
+		hilo.execute();
+	}
+
 }

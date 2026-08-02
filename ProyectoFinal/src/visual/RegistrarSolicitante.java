@@ -43,6 +43,11 @@ import logico.TipoPersona;
 import logico.TipoUser;
 import logico.Universitario;
 import logico.Usuario;
+import red.ConexionCliente;
+import red.DatosRegistroSolicitante;
+import red.Peticion;
+import red.Respuesta;
+
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
@@ -412,18 +417,11 @@ public class RegistrarSolicitante extends JDialog {
 	}
 
 	private boolean validarPaso4() {
-		if (!Validaciones.camposLlenos(txtUser.getText()) || passwordField.getPassword().length == 0) {
-			JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
-		if (mySolicitante == null) {
-			String contrasena = new String(passwordField.getPassword());
-			if (BolsaEmpleo.getInstancia().verifUsuario(txtUser.getText(), contrasena)) {
-				JOptionPane.showMessageDialog(null, "Usuario en uso.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-				return false;
-			}
-		}
-		return true;
+	    if (!Validaciones.camposLlenos(txtUser.getText()) || passwordField.getPassword().length == 0) {
+	        JOptionPane.showMessageDialog(null, "Debe de llenar los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+	        return false;
+	    }
+	    return true;
 	}
 
 	private void registrarSolicitante() {
@@ -925,91 +923,95 @@ public class RegistrarSolicitante extends JDialog {
 	
 	private void registrarSolicitanteConHilo() {
 
-		String password = new String (passwordField.getPassword());
-		String name = txtNombre.getText().trim();
-		String apellido = txtApellido.getText().trim();
-		String cedula = txtCedula.getText().trim();
-		
-		Date fechaSeleccionada = (Date) spnFechaNacim.getValue();
-		LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();		String telefono = txtTelefono.getText().trim();
-		
-		String direccion = txtDireccion.getText().trim();
-		Sexo sexo = (Sexo) cbxSexo.getSelectedItem();
-		String ciudad = txtCiudad.getText().trim();
-		int yearsExp = (int) spnExp.getValue();
-		boolean licencia = chkLicencia.isSelected();
-		boolean mudarse = chkMudarse.isSelected();
-		boolean empleo = chkEmpleado.isSelected();
-		
-		String carrera = txtCarrera.getText().trim();
-		String habilidades = txtHabilidades.getText().trim();
-		String tecnico = txtTecnico.getText().trim();
-		
-		String correo = txtCorreo.getText().trim();
-		String username = txtUser.getText().trim();
-		String foto = fotoPerfil.getRutaFotoPerfil();
+	    String password = new String(passwordField.getPassword());
+	    String name = txtNombre.getText().trim();
+	    String apellido = txtApellido.getText().trim();
+	    String cedula = txtCedula.getText().trim();
 
-		btnSiguiente.setEnabled(false);
-		btnSiguiente.setText("Registrando...");
+	    Date fechaSeleccionada = (Date) spnFechaNacim.getValue();
+	    LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	    String telefono = txtTelefono.getText().trim();
 
-		SwingWorker<Usuario, Void> hilo = new SwingWorker<Usuario, Void>(){
+	    String direccion = txtDireccion.getText().trim();
+	    Sexo sexo = (Sexo) cbxSexo.getSelectedItem();
+	    String ciudad = txtCiudad.getText().trim();
+	    int yearsExp = (int) spnExp.getValue();
+	    boolean licencia = chkLicencia.isSelected();
+	    boolean mudarse = chkMudarse.isSelected();
+	    boolean empleo = chkEmpleado.isSelected();
 
-			@Override
-			protected Usuario doInBackground() throws Exception {
+	    TipoPersona tipo = (TipoPersona) cbxTipo.getSelectedItem();
+	    String carrera = txtCarrera.getText().trim();
+	    String habilidades = txtHabilidades.getText().trim();
+	    String tecnico = txtTecnico.getText().trim();
 
-				TipoPersona tipo = (TipoPersona) cbxTipo.getSelectedItem();
-				Persona persona;
+	    String correo = txtCorreo.getText().trim();
+	    String username = txtUser.getText().trim();
+	    String foto = fotoPerfil.getRutaFotoPerfil();
 
-				if(tipo == TipoPersona.UNIVERSITARIO) {
-					persona = new Universitario("P-"+BolsaEmpleo.generadorIdPersona,cedula,name,apellido,fecha,telefono,direccion,sexo,ciudad,mudarse,licencia,empleo,null,yearsExp,carrera);
-				}
-				
-				else if(tipo == TipoPersona.TECNICO) {
-					persona = new Tecnico("P-"+BolsaEmpleo.generadorIdPersona, cedula, name, apellido, fecha, telefono, direccion, sexo, ciudad, mudarse, licencia, empleo, null, yearsExp, tecnico);
-				}
-				
-				else if (tipo == TipoPersona.OBRERO ){
-					persona = new Obrero("P-"+BolsaEmpleo.generadorIdPersona, cedula, name, apellido, fecha, telefono, direccion, sexo, ciudad, mudarse, licencia, empleo, null, yearsExp, habilidades);
-				}
-				else {
-	                throw new IllegalArgumentException( "Debe seleccionar el tipo de solicitante.");
-				}
-				
-				Usuario nuevoUser = new Usuario("U-"+BolsaEmpleo.generadorIdUser, username, password, correo, null, persona, TipoUser.CANDIDATO, foto);
-				persona.setUser(nuevoUser);
-				
-				BolsaEmpleo.getInstancia().regPersona(persona);
-				BolsaEmpleo.getInstancia().regUser(nuevoUser);
-				BolsaEmpleo.getInstancia().setLoginUser(nuevoUser);
-				
-				return nuevoUser;
-			}
+	    btnSiguiente.setEnabled(false);
+	    btnSiguiente.setText("Registrando...");
 
-			protected void done() {
+	    SwingWorker<Usuario, Void> hilo = new SwingWorker<Usuario, Void>() {
 
-				try {
-					get();
+	        @Override
+	        protected Usuario doInBackground() throws Exception {
 
-					JOptionPane.showMessageDialog(null, "Se ha registrado con exito.", "Información", JOptionPane.INFORMATION_MESSAGE);
-					dispose();
-					HomeCandidato home = new HomeCandidato();
-					home.setVisible(true);
-					home.toFront();
+	            if (tipo == null) {
+	                throw new IllegalArgumentException("Debe seleccionar el tipo de solicitante.");
+	            }
 
-				}catch (Exception e) {
-					Throwable causa = e.getCause();
-					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(RegistrarSolicitante.this, mensaje != null ? mensaje: "No se pudo registrar el solicitante.","Error",JOptionPane.ERROR_MESSAGE);
+	            String campoExtra;
+	            if (tipo == TipoPersona.UNIVERSITARIO) {
+	                campoExtra = carrera;
+	            } else if (tipo == TipoPersona.TECNICO) {
+	                campoExtra = tecnico;
+	            } else {
+	                campoExtra = habilidades;
+	            }
 
-				}finally {
-					btnSiguiente.setEnabled(true);
-					btnSiguiente.setText("Finalizar");
-				}
-			}
+	            DatosRegistroSolicitante datos = new DatosRegistroSolicitante(
+	                    cedula, name, apellido, fecha, telefono, direccion, sexo, ciudad,
+	                    mudarse, licencia, empleo, yearsExp, tipo, campoExtra,
+	                    username, password, correo, foto);
 
-		};
-		hilo.execute();
+	            Peticion peticion = new Peticion(Peticion.Tipo.REGISTRAR_SOLICITANTE, datos);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
+
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
+
+	            return (Usuario) respuesta.getDatos();
+	        }
+
+	        protected void done() {
+
+	            try {
+	                Usuario nuevoUser = get();
+
+	                BolsaEmpleo.getInstancia().setLoginUser(nuevoUser);
+
+	                JOptionPane.showMessageDialog(null, "Se ha registrado con exito.", "Información", JOptionPane.INFORMATION_MESSAGE);
+	                dispose();
+	                HomeCandidato home = new HomeCandidato();
+	                home.setVisible(true);
+	                home.toFront();
+
+	            } catch (Exception e) {
+	                Throwable causa = e.getCause();
+	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+	                e.printStackTrace();
+	                JOptionPane.showMessageDialog(RegistrarSolicitante.this, mensaje != null ? mensaje : "No se pudo registrar el solicitante.", "Error", JOptionPane.ERROR_MESSAGE);
+
+	            } finally {
+	                btnSiguiente.setEnabled(true);
+	                btnSiguiente.setText("Finalizar");
+	            }
+	        }
+
+	    };
+	    hilo.execute();
 	}
 
 	private void modificarSolcitanteConHilo() {

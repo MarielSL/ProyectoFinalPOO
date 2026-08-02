@@ -8,7 +8,8 @@ public class Peticion implements Serializable {
         LOGIN,
         REGISTRAR_EMPRESA,
         REGISTRAR_SOLICITANTE,
-        PUBLICAR_OFERTA
+        PUBLICAR_OFERTA,
+        REGISTRAR_SOLICITUD
     }
 
     private Tipo tipo;
