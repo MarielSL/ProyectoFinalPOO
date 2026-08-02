@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -30,6 +31,10 @@ import logico.BolsaEmpleo;
 import logico.Empresa;
 import logico.EstadoOferta;
 import logico.Oferta;
+import red.ConexionCliente;
+import red.DatosEstadisticasEmpresa;
+import red.Peticion;
+import red.Respuesta;
 
 public class VerOfertasEmpresa extends JFrame {
 
@@ -168,7 +173,7 @@ public class VerOfertasEmpresa extends JFrame {
 		lblTotalOfertas.setBounds(64, 12, anchoTarjeta - 84, 20);
 		panelTotalOfertas.add(lblTotalOfertas);
 
-		lblTotalOfertasNum = new JLabel(String.valueOf(contarTotalOfertas()));
+		lblTotalOfertasNum = new JLabel("...");
 		lblTotalOfertasNum.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblTotalOfertasNum.setForeground(new Color(204, 102, 0));
 		lblTotalOfertasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
@@ -195,7 +200,7 @@ public class VerOfertasEmpresa extends JFrame {
 		lblOfertasActivas.setBounds(64, 12, anchoTarjeta - 84, 20);
 		panelOfertasActivas.add(lblOfertasActivas);
 
-		lblOfertasActivasNum = new JLabel(String.valueOf(contarOfertasActivas()));
+		lblOfertasActivasNum = new JLabel("...");
 		lblOfertasActivasNum.setFont(new Font("Calibri", Font.BOLD, 30));
 		lblOfertasActivasNum.setForeground(new Color(46, 125, 50));
 		lblOfertasActivasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
@@ -347,57 +352,57 @@ public class VerOfertasEmpresa extends JFrame {
 		return panelTabla;
 	}
 	
-	//implementacion de hilos
+	//implementacion de hilos y sockets
 	private void cargarDatosConHilo() {
-		SwingWorker<ArrayList<Oferta>, Void> worker = new SwingWorker<ArrayList<Oferta>, Void>() {
-			@Override
-			protected ArrayList<Oferta> doInBackground() {
-				ArrayList<Oferta> ofertas = new ArrayList<Oferta>();
-				if (empresa != null) {
-					ofertas = empresa.getLasOfertas();
-				}
-				if (ofertas == null) {
-					ofertas = new ArrayList<Oferta>();
-				}
-				return ofertas;
-			}
+	    SwingWorker<ArrayList<Oferta>, Void> worker = new SwingWorker<ArrayList<Oferta>, Void>() {
+	        @Override
+	        protected ArrayList<Oferta> doInBackground() throws Exception {
+	            Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_OFERTAS_EMPRESA, null);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-			@Override
-			protected void done() {
-				try {
-					ArrayList<Oferta> lasOfertas = get();
-					modeloTabla.setRowCount(0);
-					lasOfertasMostradas.clear();
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-					if (lasOfertas.isEmpty()) {
-						btnPublicarOferta.setText("Publicar nueva oferta");
-						pnlVacio.setVisible(true);
-						pnlTabla.setVisible(false);
-					} else {
-						btnPublicarOferta.setText("Anadir oferta");
-						pnlVacio.setVisible(false);
-						pnlTabla.setVisible(true);
+	            return (ArrayList<Oferta>) respuesta.getDatos();
+	        }
 
-						for (Oferta oferta : lasOfertas) {
-							lasOfertasMostradas.add(oferta);
-							modeloTabla.addRow(new Object[] {
-									oferta.getPuesto(),
-									oferta.getCiudad(),
-									oferta.getJornada(),
-									formatearEstado(oferta.getEstado())
-							});
-						}
-					}
+	        @Override
+	        protected void done() {
+	            try {
+	                ArrayList<Oferta> lasOfertas = get();
+	                modeloTabla.setRowCount(0);
+	                lasOfertasMostradas.clear();
 
-					actualizarContadores();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		worker.execute();
+	                if (lasOfertas.isEmpty()) {
+	                    btnPublicarOferta.setText("Publicar nueva oferta");
+	                    pnlVacio.setVisible(true);
+	                    pnlTabla.setVisible(false);
+	                } else {
+	                    btnPublicarOferta.setText("Anadir oferta");
+	                    pnlVacio.setVisible(false);
+	                    pnlTabla.setVisible(true);
+
+	                    for (Oferta oferta : lasOfertas) {
+	                        lasOfertasMostradas.add(oferta);
+	                        modeloTabla.addRow(new Object[] {
+	                                oferta.getPuesto(),
+	                                oferta.getCiudad(),
+	                                oferta.getJornada(),
+	                                formatearEstado(oferta.getEstado())
+	                        });
+	                    }
+	                }
+
+	                actualizarContadoresConHilo();
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	                JOptionPane.showMessageDialog(VerOfertasEmpresa.this, "No se pudieron cargar las ofertas.", "Error", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	    };
+	    worker.execute();
 	}
-
 	private void abrirPostulantesDeLaFila(int fila) {
 		Oferta ofertaSeleccionada = null;
 		if (fila < lasOfertasMostradas.size()) {
@@ -448,9 +453,32 @@ public class VerOfertasEmpresa extends JFrame {
 		cargarDatosConHilo();
 	}
 
-	private void actualizarContadores() {
-		lblTotalOfertasNum.setText(String.valueOf(contarTotalOfertas()));
-		lblOfertasActivasNum.setText(String.valueOf(contarOfertasActivas()));
+	private void actualizarContadoresConHilo() {
+	    SwingWorker<DatosEstadisticasEmpresa, Void> hilo = new SwingWorker<DatosEstadisticasEmpresa, Void>() {
+	        @Override
+	        protected DatosEstadisticasEmpresa doInBackground() throws Exception {
+	            Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_ESTADISTICAS_EMPRESA, null);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
+
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
+
+	            return (DatosEstadisticasEmpresa) respuesta.getDatos();
+	        }
+
+	        @Override
+	        protected void done() {
+	            try {
+	                DatosEstadisticasEmpresa datos = get();
+	                lblTotalOfertasNum.setText(String.valueOf(lasOfertasMostradas.size()));
+	                lblOfertasActivasNum.setText(String.valueOf(datos.getOfertasActivas()));
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    };
+	    hilo.execute();
 	}
 
 	private void colocarImagen(JLabel label, String ruta) {

@@ -29,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -98,7 +99,7 @@ public class VerEmpresasAdmin extends JFrame {
 		construirBusqueda(panel, margen, anchoContenido);
 		construirContenido(panel, margen, anchoContenido);
 
-		cargarDatos();
+		cargarDatosConHilo();
 	}
 
 	private void construirHeader(JPanel panel, int margen, int anchoContenido) {
@@ -115,7 +116,7 @@ public class VerEmpresasAdmin extends JFrame {
 		btnAtras.setContentAreaFilled(false);
 		btnAtras.setFocusPainted(false);
 		btnAtras.setOpaque(false);
-		colocarIconoBoton(btnAtras,"/img/menu-dots-vertical(White).png",25,25);
+		colocarIconoBoton(btnAtras, "/img/menu-dots-vertical(White).png", 25, 25);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				BarraAdmin home = new BarraAdmin();
@@ -134,7 +135,7 @@ public class VerEmpresasAdmin extends JFrame {
 		JLabel lblChevron = new JLabel();
 		lblChevron.setBounds(dim.width - 40, 26, 18, 18);
 		panelHeader.add(lblChevron);
-		
+
 		JLabel lblNewLabel_1 = new JLabel("");
 		lblNewLabel_1.setBounds(1784, 0, 114, 88);
 		colocarImagen(lblNewLabel_1, "/img/iconoLogo_FondoOscuro.png");
@@ -153,7 +154,7 @@ public class VerEmpresasAdmin extends JFrame {
 		panelTotalEmpresas.setLayout(null);
 
 		JLabel lblIconoTotal = new JLabel();
-		lblIconoTotal.setBounds(-3, 3, 78,78);
+		lblIconoTotal.setBounds(-3, 3, 78, 78);
 		panelTotalEmpresas.add(lblIconoTotal);
 
 		JLabel lblTotalEmpresas = new JLabel("Total de empresas");
@@ -167,11 +168,11 @@ public class VerEmpresasAdmin extends JFrame {
 		lblTotalEmpresasNum.setForeground(new Color(204, 102, 0));
 		lblTotalEmpresasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
 		panelTotalEmpresas.add(lblTotalEmpresasNum);
-		
-				JLabel lblNewLabel = new JLabel("");
-				lblNewLabel.setBounds(-3, 3, 78,78);
-				panelTotalEmpresas.add(lblNewLabel);
-				colocarImagen(lblNewLabel, "/img/empresa_edificio.png");
+
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setBounds(-3, 3, 78, 78);
+		panelTotalEmpresas.add(lblNewLabel);
+		colocarImagen(lblNewLabel, "/img/empresa_edificio.png");
 
 		PanelConSombra panelEmpresasActivas = new PanelConSombra(18);
 		panelEmpresasActivas.setBackground(new Color(198, 239, 206));
@@ -194,7 +195,7 @@ public class VerEmpresasAdmin extends JFrame {
 		lblEmpresasActivasNum.setForeground(new Color(46, 125, 50));
 		lblEmpresasActivasNum.setBounds(64, 34, anchoTarjeta - 84, 36);
 		panelEmpresasActivas.add(lblEmpresasActivasNum);
-		
+
 		JLabel lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setBounds(12, 20, 42, 42);
 		panelEmpresasActivas.add(lblNewLabel_2);
@@ -342,16 +343,37 @@ public class VerEmpresasAdmin extends JFrame {
 		return panelTabla;
 	}
 
-	private void cargarDatos() {
-		ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
+	//implementacion hilos
+	private void cargarDatosConHilo() {
+		SwingWorker<ArrayList<Empresa>, Void> worker = new SwingWorker<ArrayList<Empresa>, Void>() {
+			@Override
+			protected ArrayList<Empresa> doInBackground() throws Exception {
+				ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
+				if (lasEmpresas == null) {
+					return new ArrayList<Empresa>();
+				}
+				return new ArrayList<Empresa>(lasEmpresas);
+			}
 
-		if (lasEmpresas == null || lasEmpresas.isEmpty()) {
-			pnlVacio.setVisible(true);
-			pnlTabla.setVisible(false);
-			return;
-		}
-		pnlVacio.setVisible(false);
-		pnlTabla.setVisible(true);
+			@Override
+			protected void done() {
+				try {
+					ArrayList<Empresa> lasEmpresas = get();
+					if (lasEmpresas.isEmpty()) {
+						pnlVacio.setVisible(true);
+						pnlTabla.setVisible(false);
+					} else {
+						pnlVacio.setVisible(false);
+						pnlTabla.setVisible(true);
+					}
+				} catch (Exception e) {
+					pnlVacio.setVisible(true);
+					pnlTabla.setVisible(false);
+				}
+			}
+		};
+
+		worker.execute();
 	}
 
 	private void aplicarFiltros() {
@@ -418,10 +440,10 @@ public class VerEmpresasAdmin extends JFrame {
 
 	private void colocarImagen(JLabel label, String ruta) {
 		java.net.URL url = getClass().getResource(ruta);
-	    if (url == null) {
-	        return; 
-	    }
-	    ImageIcon icono = new ImageIcon(url); 
+		if (url == null) {
+			return;
+		}
+		ImageIcon icono = new ImageIcon(url);
 
 		int anchoLabel = label.getWidth();
 		int altoLabel = label.getHeight();
@@ -447,25 +469,25 @@ public class VerEmpresasAdmin extends JFrame {
 	}
 
 	private DefaultTableModel crearModeloEmpresas() {
-	    DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Empresa", "Contacto", "Tipo", "Registro", "Estado" }) {
-	        public boolean isCellEditable(int fila, int columna) {
-	            return false;
-	        }
-	    };
-	    DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
-	    ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
-	    if (lasEmpresas == null) {
-	        return modelo;
-	    }
-	    for (Empresa empresa : lasEmpresas) {
-	        String tipo = capitalizar(empresa.getTipo().name());
-	        String estadoTexto = formatearEstadoEmpresa(empresa.isEstado());
-	        String fechaTexto = (empresa.getUser() != null && empresa.getUser().getFechaRegistro() != null)
-	                ? empresa.getUser().getFechaRegistro().format(formato)
-	                : "N/A";
-	        modelo.addRow(new Object[] { empresa.getNombre(), empresa.getTelefono(), tipo, fechaTexto, estadoTexto });
-	    }
-	    return modelo;
+		DefaultTableModel modelo = new DefaultTableModel(new Object[][] {}, new String[] { "Empresa", "Contacto", "Tipo", "Registro", "Estado" }) {
+			public boolean isCellEditable(int fila, int columna) {
+				return false;
+			}
+		};
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy");
+		ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
+		if (lasEmpresas == null) {
+			return modelo;
+		}
+		for (Empresa empresa : lasEmpresas) {
+			String tipo = capitalizar(empresa.getTipo().name());
+			String estadoTexto = formatearEstadoEmpresa(empresa.isEstado());
+			String fechaTexto = (empresa.getUser() != null && empresa.getUser().getFechaRegistro() != null)
+					? empresa.getUser().getFechaRegistro().format(formato)
+					: "N/A";
+			modelo.addRow(new Object[] { empresa.getNombre(), empresa.getTelefono(), tipo, fechaTexto, estadoTexto });
+		}
+		return modelo;
 	}
 
 	public class RenderCentrado extends DefaultTableCellRenderer {
@@ -509,18 +531,16 @@ public class VerEmpresasAdmin extends JFrame {
 			int margenVertical = 6;
 			int margenHorizontal = 10;
 			g2.fillRoundRect(margenHorizontal, margenVertical,
-				getWidth() - margenHorizontal * 2, getHeight() - margenVertical * 2, 16, 16);
+					getWidth() - margenHorizontal * 2, getHeight() - margenVertical * 2, 16, 16);
 			g2.dispose();
 
 			super.paintComponent(g);
-
-
 		}
 	}
 
 	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
-	    ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
-	    Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-	    boton.setIcon(new ImageIcon(imagenEscalada));
+		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
 }
