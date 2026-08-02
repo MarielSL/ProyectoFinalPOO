@@ -11,7 +11,8 @@ public class Peticion implements Serializable {
         PUBLICAR_OFERTA,
         REGISTRAR_SOLICITUD,
         OBTENER_MATCH,       
-        DECIDIR_CANDIDATO 
+        DECIDIR_CANDIDATO,
+        OBTENER_ESTADISTICAS
     }
 
     private Tipo tipo;
