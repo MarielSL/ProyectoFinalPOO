@@ -137,6 +137,7 @@ public class HomeEmpresa extends JFrame {
 					if (empresa != null) {
 						RegistrarOferta registrarOferta = new RegistrarOferta(empresa);
 						registrarOferta.setVisible(true);
+						dispose();
 					}
 				}
 			});

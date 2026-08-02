@@ -36,6 +36,10 @@ import logico.Modalidad;
 import logico.Oferta;
 import logico.Sexo;
 import logico.TipoPersona;
+import red.ConexionCliente;
+import red.DatosPublicarOferta;
+import red.Peticion;
+import red.Respuesta;
 
 public class RegistrarOferta extends JDialog {
 
@@ -330,67 +334,66 @@ public class RegistrarOferta extends JDialog {
 		return true;
 	}
 
-	//implementacion de hilos
+	//implementacion de hilos y socket
 	private void registrarOfertaConHilo() {
 
-		String puesto = txtPuesto.getText().trim();
-		String ciudad = txtCiudad.getText().trim();
-		String descripcion = txtDescripcion.getText().trim();
-		Sexo sexo = (Sexo) cbxSexo.getSelectedItem();
-		TipoPersona tipoCandidato = (TipoPersona) cbxTipoCandidato.getSelectedItem();
-		Jornada jornada = (Jornada) cbxJornada.getSelectedItem();
-		Modalidad modalidad = (Modalidad) cbxModalidad.getSelectedItem();
-		int cantPuestos = (Integer) spnCantPuestos.getValue();
-		int aniosExp = (Integer) spnAniosExp.getValue();
-		float salario = ((Number) spnSalario.getValue()).floatValue();
-		boolean licencia = chkLicencia.isSelected();
-		boolean mudarse = chkMudarse.isSelected();
+	    String puesto = txtPuesto.getText().trim();
+	    String ciudad = txtCiudad.getText().trim();
+	    String descripcion = txtDescripcion.getText().trim();
+	    Sexo sexo = (Sexo) cbxSexo.getSelectedItem();
+	    TipoPersona tipoCandidato = (TipoPersona) cbxTipoCandidato.getSelectedItem();
+	    Jornada jornada = (Jornada) cbxJornada.getSelectedItem();
+	    Modalidad modalidad = (Modalidad) cbxModalidad.getSelectedItem();
+	    int cantPuestos = (Integer) spnCantPuestos.getValue();
+	    int aniosExp = (Integer) spnAniosExp.getValue();
+	    float salario = ((Number) spnSalario.getValue()).floatValue();
+	    boolean licencia = chkLicencia.isSelected();
+	    boolean mudarse = chkMudarse.isSelected();
 
-		btnPublicar.setEnabled(false);
-		btnPublicar.setText("Publicando...");
+	    btnPublicar.setEnabled(false);
+	    btnPublicar.setText("Publicando...");
 
-		SwingWorker<Oferta, Void> hilo = new SwingWorker<Oferta, Void>() {
+	    SwingWorker<Oferta, Void> hilo = new SwingWorker<Oferta, Void>() {
 
-			@Override
-			protected Oferta doInBackground() throws Exception {
+	        @Override
+	        protected Oferta doInBackground() throws Exception {
 
-				String id = "O-" + BolsaEmpleo.generadorIdOferta;
+	            DatosPublicarOferta datos = new DatosPublicarOferta(sexo, tipoCandidato, puesto, cantPuestos,
+	                    licencia, mudarse, jornada, ciudad, salario, descripcion, aniosExp, modalidad,
+	                    AreaLaboral.INGENIERIA);
 
-				Oferta oferta = new Oferta(id, sexo, tipoCandidato, puesto, cantPuestos, licencia, mudarse,
-						EstadoOferta.PENDIENTE, jornada, ciudad, salario, descripcion, aniosExp, empresa, modalidad,
-						LocalDate.now(), AreaLaboral.INGENIERIA);
+	            Peticion peticion = new Peticion(Peticion.Tipo.PUBLICAR_OFERTA, datos);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-				BolsaEmpleo.getInstancia().refOferta(oferta);
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
 
-				if (empresa != null) {
-					empresa.agregarOferta(oferta);
-				}
+	            return (Oferta) respuesta.getDatos();
+	        }
 
-				return oferta;
-			}
+	        protected void done() {
 
-			protected void done() {
+	            try {
+	                get();
 
-				try {
-					get();
+	                JOptionPane.showMessageDialog(RegistrarOferta.this, "Se ha publicado la oferta.", "Información", JOptionPane.INFORMATION_MESSAGE);
+	                clear();
 
-					JOptionPane.showMessageDialog(RegistrarOferta.this, "Se ha publicado la oferta.", "Informaci\u00F3n", JOptionPane.INFORMATION_MESSAGE);
-					clear();
+	            } catch (Exception e) {
+	                Throwable causa = e.getCause();
+	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+	                e.printStackTrace();
+	                JOptionPane.showMessageDialog(RegistrarOferta.this, mensaje != null ? mensaje : "No se pudo publicar la oferta.", "Error", JOptionPane.ERROR_MESSAGE);
 
-				} catch (Exception e) {
-					Throwable causa = e.getCause();
-					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(RegistrarOferta.this, mensaje != null ? mensaje : "No se pudo publicar la oferta.", "Error", JOptionPane.ERROR_MESSAGE);
+	            } finally {
+	                btnPublicar.setEnabled(true);
+	                btnPublicar.setText("Publicar");
+	            }
+	        }
 
-				} finally {
-					btnPublicar.setEnabled(true);
-					btnPublicar.setText("Publicar");
-				}
-			}
-
-		};
-		hilo.execute();
+	    };
+	    hilo.execute();
 	}
 
 	private void clear() {
