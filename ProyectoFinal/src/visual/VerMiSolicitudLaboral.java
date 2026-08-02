@@ -58,7 +58,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 	private JPanel circulo1;
 	private JLabel lblEstado;
 	private JLabel lblCalendarIcon;
-	private JButton btnModificar;
+	private BotonRedond btnModificar;
 	private JLabel lblPuesto;
 	private JLabel lblAreaLaboral;
 	private JLabel lblSueldo;
@@ -413,7 +413,9 @@ public class VerMiSolicitudLaboral extends JFrame {
 		lblOpcionesParaTi.setBounds(1204, 785, 425, 26);
 		panelFondo.add(lblOpcionesParaTi);
 
-		BotonRedond btnModificar = new BotonRedond("Modificar", 30);
+		// === FIX: se asigna al campo de la clase (btnModificar) en vez de
+		// declarar una variable local con el mismo nombre que lo "tapaba". ===
+		btnModificar = new BotonRedond("Modificar", 30);
 		btnModificar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (user != null && user.getPersona() != null) {

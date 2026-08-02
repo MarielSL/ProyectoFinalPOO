@@ -84,13 +84,11 @@ public class BarraEmpresa extends JDialog {
 			
 			BotonRedond btnVerPerfil = new BotonRedond(nombreUser,25);
 			btnVerPerfil.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-					VerUserEmpresa perfil = new VerUserEmpresa();
-					setModal(true);
-					perfil.setVisible(true);
-					
-				}
+			    public void actionPerformed(ActionEvent e) {
+			        cerrarTodasLasVentanas();
+			        VerUserEmpresa perfil = new VerUserEmpresa();
+			        perfil.setVisible(true);
+			    }
 			});
 			btnVerPerfil.setBackground(new Color(255, 255, 255));
 			btnVerPerfil.setFont(new Font("Calibri", Font.PLAIN, 20));
@@ -125,16 +123,14 @@ public class BarraEmpresa extends JDialog {
 			panel.add(panelBotones);
 			panelBotones.setLayout(null);
 			
-			BotonConSombra btnDashboard = new BotonConSombra("Dashboard",25);
+			BotonConSombra btnDashboard = new BotonConSombra("Dashboard", 25);
 			btnDashboard.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-				HomeEmpresa ver = new HomeEmpresa();
-				setModal(true);
-				ver.setVisible(true);
-				
-		}
-	});
+			    public void actionPerformed(ActionEvent e) {
+			        cerrarTodasLasVentanas();
+			        HomeEmpresa ver = new HomeEmpresa();
+			        ver.setVisible(true);
+			    }
+			});
 			
 			btnDashboard.setHorizontalAlignment(SwingConstants.LEFT);
 			btnDashboard.setFont(new Font("Calibri", Font.PLAIN, 20));
@@ -145,12 +141,11 @@ public class BarraEmpresa extends JDialog {
 			
 			BotonConSombra btnMisOfertas = new BotonConSombra("Mis Solicitudes", 25);
 			btnMisOfertas.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-					VerOfertasEmpresa ver = new VerOfertasEmpresa();
-					setModal(true);
-					ver.setVisible(true);
-				}
+			    public void actionPerformed(ActionEvent e) {
+			        cerrarTodasLasVentanas();
+			        VerOfertasEmpresa ver = new VerOfertasEmpresa();
+			        ver.setVisible(true);
+			    }
 			});
 			btnMisOfertas.setText("Mis Ofertas");
 			btnMisOfertas.setHorizontalAlignment(SwingConstants.LEFT);
@@ -162,12 +157,11 @@ public class BarraEmpresa extends JDialog {
 			
 			BotonConSombra btnSolicitudes = new BotonConSombra("Dashboard", 25);
 			btnSolicitudes.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-					VerPostulantesOferta ver = new VerPostulantesOferta(null);
-					setModal(true);
-					ver.setVisible(true);
-				}
+			    public void actionPerformed(ActionEvent e) {
+			        cerrarTodasLasVentanas();
+			        VerPostulantesOferta ver = new VerPostulantesOferta(null);
+			        ver.setVisible(true);
+			    }
 			});
 			btnSolicitudes.setText("Candidatos");
 			btnSolicitudes.setHorizontalAlignment(SwingConstants.LEFT);
@@ -200,12 +194,11 @@ public class BarraEmpresa extends JDialog {
 			
 			BotonConSombra btncnsmbrCerrarSessin = new BotonConSombra("Dashboard", 25);
 			btncnsmbrCerrarSessin.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					LogIn ver = new LogIn();
-					setModal(true);
-					ver.setVisible(true);
-					dispose();
-				}
+			    public void actionPerformed(ActionEvent e) {
+			        cerrarTodasLasVentanas();
+			        LogIn ver = new LogIn();
+			        ver.setVisible(true);
+			    }
 			});
 			btncnsmbrCerrarSessin.setText("Cerrar Sessi\u00F3n");
 			btncnsmbrCerrarSessin.setHorizontalAlignment(SwingConstants.LEFT);
@@ -238,5 +231,11 @@ public class BarraEmpresa extends JDialog {
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 		label.setIcon(iconoEscalado);
 
+	}
+	
+	private void cerrarTodasLasVentanas() {
+	    for (java.awt.Window ventana : java.awt.Window.getWindows()) {
+	        ventana.dispose();
+	    }
 	}
 }

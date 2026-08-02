@@ -253,15 +253,26 @@ public class ServidorBolsaEmpleo {
     }
     
     private static Respuesta procesarObtenerMatch(BolsaEmpleo bolsa, DatosObtenerMatch datos) {
+        System.out.println("=== OBTENER_MATCH ===");
+        System.out.println("ID de oferta solicitado: " + datos.getOfertaId());
+
         Oferta oferta = bolsa.buscarOfertaPorId(datos.getOfertaId());
+        System.out.println("Oferta encontrada: " + (oferta != null));
+
         if (oferta == null) {
             return new Respuesta(false, "No se encontró la oferta.");
         }
 
+        System.out.println("Total de solicitudes en el sistema: " + bolsa.getSolicitudes().size());
+        for (SolicitudEmpleo s : bolsa.getSolicitudes()) {
+            System.out.println("  - Solicitud id=" + s.getId() + " candidato=" + (s.getCandidato() != null ? s.getCandidato().getNombre() : "null") + " estado=" + s.getEstado());
+        }
+
         ArrayList<ResultMatch> resultados = bolsa.calcularMatch(oferta);
+        System.out.println("Cantidad de resultados del match: " + resultados.size());
+
         return new Respuesta(true, resultados);
     }
-
     private static Respuesta procesarDecidirCandidato(BolsaEmpleo bolsa, DatosDecidirCandidato datos) {
         Oferta oferta = bolsa.buscarOfertaPorId(datos.getOfertaId());
         if (oferta == null) {
@@ -456,4 +467,6 @@ public class ServidorBolsaEmpleo {
         DatosDashboardAdmin resultado = new DatosDashboardAdmin(ofertas, personas, totalEmpresas);
         return new Respuesta(true, resultado);
     }
+    
+    
 }

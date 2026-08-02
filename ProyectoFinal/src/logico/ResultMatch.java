@@ -1,6 +1,10 @@
 package logico;
 
-public class ResultMatch {
+import java.io.Serializable;
+
+public class ResultMatch implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private SolicitudEmpleo solicitud;
 	private float porcentaje;
