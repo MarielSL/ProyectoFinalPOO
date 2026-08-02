@@ -460,7 +460,8 @@ public class HomeAdministrador extends JFrame {
 		tableOfertas.getColumnModel().getColumn(3).setPreferredWidth(100);
 		tableOfertas.getColumnModel().getColumn(4).setPreferredWidth(120);
 	}
-
+	
+	//implementacion hilos
 	private void cargarDatosHomeConHilo() {
 		prepararPantallaParaCarga();
 

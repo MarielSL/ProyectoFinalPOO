@@ -343,6 +343,7 @@ public class VerEmpresasAdmin extends JFrame {
 		return panelTabla;
 	}
 
+	//implementacion hilos
 	private void cargarDatosConHilo() {
 		SwingWorker<ArrayList<Empresa>, Void> worker = new SwingWorker<ArrayList<Empresa>, Void>() {
 			@Override

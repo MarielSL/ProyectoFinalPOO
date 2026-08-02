@@ -476,6 +476,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 		cargarSolicitudConHilo();
 	}
 
+	//implementacion hilos
 	private void cargarSolicitudConHilo() {
 		btnModificar.setEnabled(false);
 
