@@ -26,7 +26,8 @@ public class Peticion implements Serializable {
         MODIFICAR_SOLICITUD,
         CREAR_RESPALDO,
         OBTENER_GRAFICAS_EMPRESA,
-        OBTENER_GRAFICAS_ADMIN
+        OBTENER_GRAFICAS_ADMIN,
+        OBTENER_GRAFICAS_CANDIDATO
     }
 
     private Tipo tipo;
