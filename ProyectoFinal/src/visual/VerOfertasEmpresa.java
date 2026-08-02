@@ -53,6 +53,7 @@ public class VerOfertasEmpresa extends JFrame {
 	private ArrayList<Oferta> lasOfertasMostradas = new ArrayList<Oferta>();
 	private JLabel lblTotalOfertasNum;
 	private JLabel lblOfertasActivasNum;
+	private BotonRedond btnVolver;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -83,7 +84,7 @@ public class VerOfertasEmpresa extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		dim = getToolkit().getScreenSize();
-		setSize(dim.width, dim.height);
+		setSize(dim.width, dim.height-55);
 		setLocationRelativeTo(null);
 
 		JLayeredPane layeredPane = new JLayeredPane();
@@ -102,6 +103,22 @@ public class VerOfertasEmpresa extends JFrame {
 		construirTarjetas(panel, margen, anchoContenido);
 		construirBusqueda(panel, margen, anchoContenido);
 		construirContenido(panel, margen, anchoContenido);
+		
+		btnVolver = new BotonRedond("Volver", 30);
+		btnVolver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				HomeEmpresa volver = new HomeEmpresa();
+				volver.setVisible(true);
+				dispose();
+			}
+		});
+		btnVolver.setText("Volver");
+		btnVolver.setForeground(new Color(0, 0, 51));
+		btnVolver.setFont(new Font("Calibri", Font.BOLD, 22));
+		btnVolver.setColorHover(new Color(255, 220, 183));
+		btnVolver.setBackground(new Color(255, 235, 215));
+		btnVolver.setBounds(40, 911, 163, 45);
+		panel.add(btnVolver);
 
 		cargarDatosConHilo();
 	}
@@ -114,8 +131,10 @@ public class VerOfertasEmpresa extends JFrame {
 		panelHeader.setLayout(null);
 
 		BotonRedond btnAtras = new BotonRedond("", 18);
+		btnAtras.setForeground(Color.WHITE);
+		btnAtras.setFont(new Font("Calibri", Font.BOLD, 18));
 		btnAtras.setBackground(new Color(0, 0, 51));
-		btnAtras.setBounds(20, 12, 46, 46);
+		btnAtras.setBounds(12, 12, 53, 46);
 		btnAtras.setBorderPainted(false);
 		btnAtras.setContentAreaFilled(false);
 		btnAtras.setFocusPainted(false);
@@ -130,9 +149,9 @@ public class VerOfertasEmpresa extends JFrame {
 		panelHeader.add(btnAtras);
 
 		JLabel lblTitulo = new JLabel("Mis Ofertas Publicadas");
-		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblTitulo.setFont(new Font("Calibri", Font.BOLD, 28));
 		lblTitulo.setForeground(new Color(100, 149, 237));
-		lblTitulo.setBounds(74, 22, 400, 30);
+		lblTitulo.setBounds(65, 20, 400, 30);
 		panelHeader.add(lblTitulo);
 
 		String nombreEmpresa = "Mi Empresa";
@@ -272,7 +291,7 @@ public class VerOfertasEmpresa extends JFrame {
 
 		PanelConSombra panelContenedor = new PanelConSombra(20);
 		panelContenedor.setBackground(Color.WHITE);
-		panelContenedor.setBounds(margen, yContenido, anchoContenido, altoContenido);
+		panelContenedor.setBounds(40, 296, 1840, 602);
 		panel.add(panelContenedor);
 		panelContenedor.setLayout(new CardLayout(0, 0));
 

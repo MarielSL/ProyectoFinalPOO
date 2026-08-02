@@ -325,7 +325,7 @@ public class RegSolicitud extends JDialog {
 		            home.requestFocus();
 		        }
 		        else {
-		            VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral();
+		            VerMiSolicitudLaboral ver = new VerMiSolicitudLaboral(mySolicitud);
 		            dispose();
 		            ver.setVisible(true);
 		            ver.toFront();
@@ -443,7 +443,7 @@ public class RegSolicitud extends JDialog {
 	                JOptionPane.showMessageDialog(RegSolicitud.this, "La búsqueda laboral fue creada correctamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
 	                dispose();
 
-	                VerMiSolicitudLaboral ventana = new VerMiSolicitudLaboral();
+	                VerMiSolicitudLaboral ventana = new VerMiSolicitudLaboral(mySolicitud);
 	                ventana.setVisible(true);
 	                ventana.toFront();
 
@@ -504,7 +504,7 @@ public class RegSolicitud extends JDialog {
 	                mySolicitud = get();
 	                JOptionPane.showMessageDialog(RegSolicitud.this, "La Solicitud fue modificada correctamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
 	                dispose();
-	                VerMiSolicitudLaboral ventana = new VerMiSolicitudLaboral();
+	                VerMiSolicitudLaboral ventana = new VerMiSolicitudLaboral(mySolicitud);
 	                ventana.setVisible(true);
 	                ventana.toFront();
 	            } catch (Exception e) {

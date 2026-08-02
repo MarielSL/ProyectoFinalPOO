@@ -207,7 +207,7 @@ public class RegistrarSolicitante extends JDialog {
 					dispose();
 				}
 				else {
-					VerUserSolicitante volver = new VerUserSolicitante();
+					VerUserSolicitante volver = new VerUserSolicitante(mySolicitante);
 					volver.setVisible(true);
 					dispose();
 				}
@@ -1079,13 +1079,29 @@ public class RegistrarSolicitante extends JDialog {
 
 	        protected void done() {
 	            try {
-	                get();
+	                Persona actualizado = get();
+	                
+	                if(actualizado == null) {
+	                	throw new IllegalStateException("El servidor no devolvió los datos actualizados del solicitante.");
+	                }
+	                
+	                mySolicitante = actualizado;
+	                Usuario loginUser = BolsaEmpleo.getInstancia().getLoginUser();
+	                
+	                if(loginUser != null) {
+	                	loginUser.setPersona(actualizado);
+	                	
+	                	if(actualizado.getUser() == null) {
+	                		actualizado.setUser(loginUser);
+	                	}
+	                }
 	                JOptionPane.showMessageDialog(RegistrarSolicitante.this, "Los datos fueron modificados correctamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
 
 	                dispose();
-	                VerUserSolicitante ventana = new VerUserSolicitante();
+	                VerUserSolicitante ventana = new VerUserSolicitante(mySolicitante);
 	                ventana.setVisible(true);
 	                ventana.toFront();
+	                
 	            } catch (Exception e) {
 	                Throwable causa = e.getCause();
 	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();

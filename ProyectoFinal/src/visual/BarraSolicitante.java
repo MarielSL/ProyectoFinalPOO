@@ -76,16 +76,21 @@ public class BarraSolicitante extends JDialog {
 		contentPanel.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
+		
 		BotonRedond btnPerfil = new BotonRedond(nombreUser,25);
 		btnPerfil.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				VerUserSolicitante ver = new VerUserSolicitante();
+				VerUserSolicitante ver = new VerUserSolicitante(user.getPersona());
 				setModal(true);
 				ver.setVisible(true);
 				
 			}
 		});
+		if(user.getPersona() != null) {
+			String nombre = user.getPersona().getNombre() + " " + user.getPersona().getApellido();
+			btnPerfil.setText(nombre);
+		}
 		
 		JLabel lblNewLabel_2 = new JLabel(correoUser);
 		lblNewLabel_2.setForeground(new Color(105, 105, 105));
@@ -146,7 +151,7 @@ public class BarraSolicitante extends JDialog {
 		btnSolicitudes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				VerMiSolicitudLaboral soli = new VerMiSolicitudLaboral();
+				VerMiSolicitudLaboral soli = new VerMiSolicitudLaboral(user.getPersona().getSolicitud());
 				soli.setVisible(true);
 				
 			}

@@ -52,13 +52,14 @@ public class VerUserSolicitante extends JFrame {
 	private TextFieldRedond txtTipo;
 	private BotonRedond btnVolver;
 	private BotonRedond btnMenu;
+	private Persona myCandidato;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					VerUserSolicitante frame = new VerUserSolicitante();
+					VerUserSolicitante frame = new VerUserSolicitante(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -67,7 +68,8 @@ public class VerUserSolicitante extends JFrame {
 		});
 	}
 
-	public VerUserSolicitante() {
+	public VerUserSolicitante(Persona candidato) {
+		this.myCandidato = candidato;
 		setIconImage(Toolkit.getDefaultToolkit().getImage(VerUserSolicitante.class.getResource("/img/AppIconoFull.png")));
 		setForeground(new Color(0, 0, 51));
 		setTitle("Ver Usuario");
@@ -326,7 +328,7 @@ public class VerUserSolicitante extends JFrame {
 					throw new IllegalStateException("No hay ningún usuario con la sesión iniciada.");
 				}
 
-				Persona candidato = usuario.getPersona();
+				Persona candidato = myCandidato;
 
 				if (candidato == null) {
 					throw new IllegalStateException("El usuario actual no tiene un solicitante asociado.");

@@ -68,12 +68,13 @@ public class VerMiSolicitudLaboral extends JFrame {
 	private JLabel lblFechaSolicitud;
 	private Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
 	private BotonRedond btnVolver;
+	private SolicitudEmpleo solicitudActual;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					VerMiSolicitudLaboral frame = new VerMiSolicitudLaboral();
+					VerMiSolicitudLaboral frame = new VerMiSolicitudLaboral(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -82,7 +83,8 @@ public class VerMiSolicitudLaboral extends JFrame {
 		});
 	}
 
-	public VerMiSolicitudLaboral() {
+	public VerMiSolicitudLaboral(SolicitudEmpleo solicitud) {
+		this.solicitudActual = solicitud;
 		Utilidades.aplicarIcono(this);
 		setTitle("Mi Solicitud Laboral");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -488,7 +490,7 @@ public class VerMiSolicitudLaboral extends JFrame {
 			@Override
 			protected Void doInBackground() throws Exception {
 				if (user != null && user.getPersona() != null) {
-					solicitud = user.getPersona().getSolicitud();
+					solicitud = solicitudActual;
 				}
 				return null;
 			}

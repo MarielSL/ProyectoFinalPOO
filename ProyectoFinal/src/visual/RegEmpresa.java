@@ -555,13 +555,30 @@ public class RegEmpresa extends JDialog {
 
 	        protected void done() {
 	            try {
-	                get();
+	                Empresa actualizada = get();
+	                
+	                if(actualizada == null) {
+	                	throw new IllegalStateException("El servidor no devolvió los datos actualizados de la empresa.");
+	                }
+	                
+	                myEmpresa = actualizada;
+	                Usuario loginUser = BolsaEmpleo.getInstancia().getLoginUser();
+	                
+	                if(loginUser != null) {
+	                	loginUser.setEmpresa(actualizada);
+	                	
+	                	if(actualizada.getUser() == null) {
+	                		actualizada.setUser(loginUser);
+	                	}
+	                }
+	                
 	                JOptionPane.showMessageDialog(RegEmpresa.this, "Los datos fueron modificados correctamente.", "Información", JOptionPane.INFORMATION_MESSAGE);
 
 	                dispose();
 	                VerUserEmpresa ventana = new VerUserEmpresa();
 	                ventana.setVisible(true);
 	                ventana.toFront();
+	                
 	            } catch (Exception e) {
 	                Throwable causa = e.getCause();
 	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();

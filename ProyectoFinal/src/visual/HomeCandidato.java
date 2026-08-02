@@ -357,7 +357,12 @@ public class HomeCandidato extends JFrame {
 					DatosEstadisticasCandidato datos = get();
 					lblEstadoBusquedaValor.setText(datos.getEstadoBusqueda());
 					lblOfertasDisponiblesValor.setText(String.valueOf(datos.getOfertasDisponibles()));
-					lblMayorCoincidenciaValor.setText(String.format("%.2f%%", datos.getMayorCoincidencia()));
+					if(candidato.isEstadoEmpleo()) {
+						lblMayorCoincidenciaValor.setText("Contratado");
+					}
+					else {
+						lblMayorCoincidenciaValor.setText(String.format("%.2f%%", datos.getMayorCoincidencia()));
+					}
 				} catch (Exception e) {
 					Throwable causa = e.getCause();
 					String mensaje = causa != null ? causa.getMessage() : e.getMessage();
@@ -558,13 +563,13 @@ public class HomeCandidato extends JFrame {
 	}
 
 	private void abrirMiSolicitudLaboral() {
-		VerMiSolicitudLaboral frame = new VerMiSolicitudLaboral();
+		VerMiSolicitudLaboral frame = new VerMiSolicitudLaboral(candidato.getSolicitud());
 		frame.setVisible(true);
 		dispose();
 	}
 
 	private void abrirVerPerfil() {
-		VerUserSolicitante frame = new VerUserSolicitante();
+		VerUserSolicitante frame = new VerUserSolicitante(candidato);
 		frame.setVisible(true);
 		dispose();
 	}
