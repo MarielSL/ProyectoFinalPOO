@@ -23,7 +23,8 @@ public class Peticion implements Serializable {
         OBTENER_MEJOR_MATCH_EMPRESA,
         MODIFICAR_EMPRESA,     
         MODIFICAR_SOLICITANTE,  
-        MODIFICAR_SOLICITUD 
+        MODIFICAR_SOLICITUD,
+        CREAR_RESPALDO
     }
 
     private Tipo tipo;

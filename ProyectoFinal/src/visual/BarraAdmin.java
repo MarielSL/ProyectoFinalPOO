@@ -10,15 +10,22 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import logico.Usuario;
+import red.ConexionCliente;
+import red.Peticion;
+import red.Respuesta;
 
 import javax.swing.JSeparator;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -193,6 +200,8 @@ public class BarraAdmin extends JDialog {
 			BotonConSombra btnRespaldo = new BotonConSombra("Dashboard", 25);
 			btnRespaldo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					crearRespaldoConHilo();
+					
 				}
 			});
 			btnRespaldo.setText("Respaldo");
@@ -280,5 +289,35 @@ public class BarraAdmin extends JDialog {
 		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
 		label.setIcon(iconoEscalado);
 
+	}
+	
+	private void crearRespaldoConHilo() {
+	    SwingWorker<String, Void> hilo = new SwingWorker<String, Void>() {
+	        @Override
+	        protected String doInBackground() throws Exception {
+	            Peticion peticion = new Peticion(Peticion.Tipo.CREAR_RESPALDO, null);
+	            Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
+
+	            if (!respuesta.isExito()) {
+	                throw new IllegalArgumentException(respuesta.getDatos().toString());
+	            }
+
+	            return (String) respuesta.getDatos();
+	        }
+
+	        @Override
+	        protected void done() {
+	            try {
+	                String nombreArchivo = get();
+	                JOptionPane.showMessageDialog(BarraAdmin.this, "Respaldo creado correctamente: " + nombreArchivo, "Información", JOptionPane.INFORMATION_MESSAGE);
+	            } catch (Exception e) {
+	                Throwable causa = e.getCause();
+	                String mensaje = causa != null ? causa.getMessage() : e.getMessage();
+	                e.printStackTrace();
+	                JOptionPane.showMessageDialog(BarraAdmin.this, mensaje != null ? mensaje : "No se pudo crear el respaldo.", "Error", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	    };
+	    hilo.execute();
 	}
 }

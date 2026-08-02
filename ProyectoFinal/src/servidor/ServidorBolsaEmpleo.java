@@ -1,12 +1,17 @@
 package servidor;
 
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import logico.BolsaEmpleo;
@@ -151,6 +156,9 @@ public class ServidorBolsaEmpleo {
 
             case MODIFICAR_SOLICITUD:
                 return procesarModificarSolicitud(bolsa, (DatosModificarSolicitud) peticion.getDatos());
+            
+            case CREAR_RESPALDO:
+                return procesarCrearRespaldo();
             
             default:
                 return new Respuesta(false, "Operación no reconocida");
@@ -615,6 +623,31 @@ public class ServidorBolsaEmpleo {
         bolsa.modSolicitud(solicitud);
 
         return new Respuesta(true, solicitud);
+    }
+    
+    private static Respuesta procesarCrearRespaldo() {
+        try {
+            File carpetaBackups = new File("backups");
+            if (!carpetaBackups.exists()) {
+                carpetaBackups.mkdirs();
+            }
+
+            File origen = new File("BolsaEmpleo.dat");
+            if (!origen.exists()) {
+                return new Respuesta(false, "No hay datos guardados todavía para respaldar.");
+            }
+
+            String marcaTiempo = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            File destino = new File(carpetaBackups, "BolsaEmpleo_" + marcaTiempo + ".dat");
+
+            Files.copy(origen.toPath(), destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            return new Respuesta(true, destino.getName());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Respuesta(false, "No se pudo crear el respaldo: " + e.getMessage());
+        }
     }
     
     
