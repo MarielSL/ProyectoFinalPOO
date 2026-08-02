@@ -20,10 +20,12 @@ import javax.swing.border.EmptyBorder;
 
 import logico.BolsaEmpleo;
 import logico.Empresa;
+import red.ConexionCliente;
+import red.DatosEstadisticas;
+import red.Peticion;
+import red.Respuesta;
 
 public class ReporteEmpresas extends JDialog {
-
-	private static final long serialVersionUID = 1L;
 
 	private JLabel lblTotalEmpresas;
 	private JLabel lblEmpresasActivas;
@@ -98,20 +100,15 @@ public class ReporteEmpresas extends JDialog {
 
 			@Override
 			protected int[] doInBackground() throws Exception {
-				ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
+			    Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_ESTADISTICAS, null);
+			    Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-				int total = lasEmpresas == null ? 0 : lasEmpresas.size();
-				int activas = 0;
+			    if (!respuesta.isExito()) {
+			        throw new IllegalArgumentException(respuesta.getDatos().toString());
+			    }
 
-				if (lasEmpresas != null) {
-					for (Empresa empresa : lasEmpresas) {
-						if (empresa != null && empresa.isEstado()) {
-							activas++;
-						}
-					}
-				}
-
-				return new int[] {total, activas};
+			    DatosEstadisticas datos = (DatosEstadisticas) respuesta.getDatos();
+			    return new int[] { datos.getTotalEmpresas(), datos.getEmpresasActivas() };
 			}
 
 			@Override

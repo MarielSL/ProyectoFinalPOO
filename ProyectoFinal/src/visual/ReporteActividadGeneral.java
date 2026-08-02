@@ -23,6 +23,10 @@ import logico.Empresa;
 import logico.Oferta;
 import logico.Persona;
 import logico.SolicitudEmpleo;
+import red.ConexionCliente;
+import red.DatosEstadisticas;
+import red.Peticion;
+import red.Respuesta;
 
 public class ReporteActividadGeneral extends JDialog {
 
@@ -101,17 +105,20 @@ public class ReporteActividadGeneral extends JDialog {
 
 			@Override
 			protected int[] doInBackground() throws Exception {
-				ArrayList<Oferta> lasOfertas = BolsaEmpleo.getInstancia().getOfertas();
-				ArrayList<Persona> lasPersonas = BolsaEmpleo.getInstancia().getPersonas();
-				ArrayList<SolicitudEmpleo> lasSolicitudes = BolsaEmpleo.getInstancia().getSolicitudes();
-				ArrayList<Empresa> lasEmpresas = BolsaEmpleo.getInstancia().getEmpresas();
+			    Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_ESTADISTICAS, null);
+			    Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
 
-				int totalOfertas = lasOfertas == null ? 0 : lasOfertas.size();
-				int totalSolicitantes = lasPersonas == null ? 0 : lasPersonas.size();
-				int totalPostulaciones = lasSolicitudes == null ? 0 : lasSolicitudes.size();
-				int totalEmpresas = lasEmpresas == null ? 0 : lasEmpresas.size();
+			    if (!respuesta.isExito()) {
+			        throw new IllegalArgumentException(respuesta.getDatos().toString());
+			    }
 
-				return new int[] {totalOfertas, totalSolicitantes, totalPostulaciones, totalEmpresas};
+			    DatosEstadisticas datos = (DatosEstadisticas) respuesta.getDatos();
+			    return new int[] {
+			            datos.getTotalOfertas(),
+			            datos.getTotalSolicitantes(),
+			            datos.getTotalPostulaciones(),
+			            datos.getTotalEmpresas()
+			    };
 			}
 
 			@Override

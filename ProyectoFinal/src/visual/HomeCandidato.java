@@ -8,19 +8,25 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
+
 import logico.BolsaEmpleo;
 import logico.EstadoOferta;
 import logico.EstadoSolicitud;
@@ -29,18 +35,20 @@ import logico.Persona;
 import logico.SolicitudEmpleo;
 import logico.Usuario;
 
-import java.awt.SystemColor;
-
 public class HomeCandidato extends JFrame {
+
+	private static final long serialVersionUID = 1L;
 
 	private JPanel contentPane;
 	private Dimension dim;
 	private Persona candidato;
 	private JLabel lblEstadoBusquedaValor;
+	private JLabel lblOfertasDisponiblesValor;
 	private JLabel lblMayorCoincidenciaValor;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					HomeCandidato frame = new HomeCandidato();
@@ -53,22 +61,27 @@ public class HomeCandidato extends JFrame {
 	}
 
 	public HomeCandidato() {
-		if (BolsaEmpleo.getInstancia().getLoginUser() != null) {
-			candidato = BolsaEmpleo.getInstancia().getLoginUser().getPersona();
+		Usuario usuarioLogin = BolsaEmpleo.getInstancia().getLoginUser();
+
+		if (usuarioLogin != null) {
+			candidato = usuarioLogin.getPersona();
 		}
+
 		setTitle("Home Candidato");
 		Utilidades.aplicarIcono(this);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		dim = getToolkit().getScreenSize();
-		setSize(dim.width, dim.height);
+
+		setSize(dim.width, dim.height-55);
 		setLocationRelativeTo(null);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
 
 		JLayeredPane layeredPane = new JLayeredPane();
 		contentPane.add(layeredPane);
@@ -82,176 +95,202 @@ public class HomeCandidato extends JFrame {
 		int margen = 40;
 		int anchoContenido = dim.width - (margen * 2);
 
-		{
-			PanelRedond panelMenu = new PanelRedond(25);
-			panelMenu.setBackground(new Color(0, 0, 51));
-			panelMenu.setBounds(26, 20, anchoContenido, 70);
-			panel.add(panelMenu);
-			panelMenu.setLayout(null);
-			
-			String nombreCondidato = "Nombre";
-			if (candidato != null) {
-				nombreCondidato = candidato.getNombre();
-			}
-			int anchoNombre = 14 * nombreCondidato.length() + 20;
-
-			JLabel lblNombreEmpresa = new JLabel(nombreCondidato);
-			lblNombreEmpresa.setFont(new Font("Calibri", Font.BOLD, 24));
-			lblNombreEmpresa.setForeground(Color.WHITE);
-			lblNombreEmpresa.setBounds(1668, 25, anchoNombre, 20);
-			panelMenu.add(lblNombreEmpresa);
-			
-			JLabel lblNewLabel = new JLabel("");
-			lblNewLabel.setBounds(1741, -9, 114, 88);
-			colocarImagen(lblNewLabel, "/img/iconoLogo_FondoOscuro.png");
-			panelMenu.add(lblNewLabel);
-
-			JLabel lblInicio = new JLabel("Inicio");
-			lblInicio.setHorizontalAlignment(SwingConstants.CENTER);
-			lblInicio.setFont(new Font("Calibri", Font.PLAIN, 18));
-			lblInicio.setForeground(Color.WHITE);
-			lblInicio.setBounds(680, 26, 70, 20);
-			panelMenu.add(lblInicio);
-
-			JLabel lblVerOfertas = new JLabel("Ver ofertas");
-			lblVerOfertas.setFont(new Font("Calibri", Font.PLAIN, 18));
-			lblVerOfertas.setForeground(Color.WHITE);
-			lblVerOfertas.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			lblVerOfertas.setBounds(804, 26, 82, 20);
-			lblVerOfertas.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					abrirVerOfertas();
-				}
-			});
-			panelMenu.add(lblVerOfertas);
-
-			JLabel lblMiSolicitud = new JLabel("Mi Solicitud Laboral");
-			lblMiSolicitud.setFont(new Font("Calibri", Font.PLAIN, 18));
-			lblMiSolicitud.setForeground(Color.WHITE);
-			lblMiSolicitud.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			lblMiSolicitud.setBounds(938, 26, 170, 20);
-			lblMiSolicitud.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
-					if(user ==null || user.getPersona() == null || user.getPersona().getSolicitud() == null) {
-						SolicitudVacia nueva = new SolicitudVacia();
-						nueva.setVisible(true);
-						dispose();
-					}
-					else {
-						abrirMiSolicitudLaboral();
-					}
-				}
-			});
-			panelMenu.add(lblMiSolicitud);
-
-			JLabel lblVerPerfil = new JLabel("Ver perfil");
-			lblVerPerfil.setFont(new Font("Calibri", Font.PLAIN, 18));
-			lblVerPerfil.setForeground(Color.WHITE);
-			lblVerPerfil.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			lblVerPerfil.setBounds(1130, 26, 90, 20); 
-			lblVerPerfil.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					abrirVerPerfil();
-				}
-			});
-			panelMenu.add(lblVerPerfil);
-
-			BotonRedond btnMenu = new BotonRedond("", 25);
-			btnMenu.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					BarraSolicitante menu = new BarraSolicitante();
-					menu.setVisible(true);
-					dispose();
-				}
-			});
-			btnMenu.setBackground(new Color(0, 0, 51));
-			btnMenu.setColorHover(new Color(0, 51, 102));
-			btnMenu.setBounds(12, 4, 60, 60);
-			colocarIconoBoton(btnMenu, "/img/menu-dots-vertical(White).png", 25, 25);
-			btnMenu.setMargin(new Insets(0, 0, 0, 0));
-			btnMenu.setBorderPainted(false);
-			btnMenu.setContentAreaFilled(false);
-			btnMenu.setFocusPainted(false);
-			btnMenu.setOpaque(false);
-			panelMenu.add(btnMenu);
-		}
+		construirMenu(panel, anchoContenido);
 
 		int anchoTarjeta = (anchoContenido - 48) / 3;
 
-		{
-			PanelConSombra panelEstadoBusqueda = new PanelConSombra(18);
-			panelEstadoBusqueda.setBackground(new Color(255, 224, 178));
-			panelEstadoBusqueda.setBounds(margen, 110, anchoTarjeta, 90);
-			panel.add(panelEstadoBusqueda);
-			panelEstadoBusqueda.setLayout(null);
+		construirTarjetaEstadoBusqueda(panel, margen, anchoTarjeta);
+		construirTarjetaOfertasDisponibles(panel, margen, anchoTarjeta);
+		construirTarjetaMayorCoincidencia(panel, margen, anchoTarjeta);
+		construirPanelGraficos(panel, margen, anchoContenido);
 
-			JLabel lblEstadoBusqueda = new JLabel("Estado de b\u00FAsqueda");
-			lblEstadoBusqueda.setFont(new Font("Calibri", Font.PLAIN, 18));
-			lblEstadoBusqueda.setForeground(new Color(204, 102, 0));
-			lblEstadoBusqueda.setBounds(20, 14, anchoTarjeta - 40, 20);
-			panelEstadoBusqueda.add(lblEstadoBusqueda);
+		cargarDatosHomeConHilo();
+	}
 
-			lblEstadoBusquedaValor = new JLabel("Estado");
-			Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
-			if((user == null || user.getPersona() == null) || user.getPersona().getSolicitud() == null) {
-				lblEstadoBusquedaValor.setText("Por Crear");
-				lblEstadoBusquedaValor.setCursor(new Cursor(Cursor.HAND_CURSOR));
-				lblEstadoBusquedaValor.addMouseListener(new MouseAdapter() {
-					public void mouseClicked(MouseEvent e) {
-						RegSolicitud registrar = new RegSolicitud(null);
-						registrar.setVisible(true);
-						dispose();
-					}
-				});
+	private void construirMenu(JPanel panel, int anchoContenido) {
+		PanelRedond panelMenu = new PanelRedond(25);
+		panelMenu.setBackground(new Color(0, 0, 51));
+		panelMenu.setBounds(26, 20, anchoContenido, 70);
+		panel.add(panelMenu);
+		panelMenu.setLayout(null);
+
+		String nombreCandidato = "Nombre";
+
+		if (candidato != null && candidato.getNombre() != null) {
+			nombreCandidato = candidato.getNombre();
+		}
+
+		int anchoNombre = 14 * nombreCandidato.length() + 20;
+
+		JLabel lblNombreCandidato = new JLabel(nombreCandidato);
+		lblNombreCandidato.setFont(new Font("Calibri", Font.BOLD, 24));
+		lblNombreCandidato.setForeground(Color.WHITE);
+		lblNombreCandidato.setBounds(anchoContenido - anchoNombre - 120, 25, anchoNombre, 25);
+		panelMenu.add(lblNombreCandidato);
+
+		JLabel lblLogo = new JLabel("");
+		lblLogo.setBounds(anchoContenido - 100, -9, 114, 88);
+		colocarImagen(lblLogo, "/img/iconoLogo_FondoOscuro.png");
+		panelMenu.add(lblLogo);
+
+		JLabel lblInicio = new JLabel("Inicio");
+		lblInicio.setHorizontalAlignment(SwingConstants.CENTER);
+		lblInicio.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblInicio.setForeground(Color.WHITE);
+		lblInicio.setBounds(680, 26, 70, 20);
+		panelMenu.add(lblInicio);
+
+		JLabel lblVerOfertas = new JLabel("Ver ofertas");
+		lblVerOfertas.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblVerOfertas.setForeground(Color.WHITE);
+		lblVerOfertas.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		lblVerOfertas.setBounds(804, 26, 82, 20);
+
+		lblVerOfertas.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				abrirVerOfertas();
 			}
+		});
 
-			lblEstadoBusquedaValor.setFont(new Font("Calibri", Font.BOLD, 26));
-			lblEstadoBusquedaValor.setForeground(new Color(204, 102, 0));
-			lblEstadoBusquedaValor.setBounds(20, 38, 189, 36);
-			panelEstadoBusqueda.add(lblEstadoBusquedaValor);
-		}
+		panelMenu.add(lblVerOfertas);
 
-		{
-			PanelConSombra panelOfertasDisponibles = new PanelConSombra(18);
-			panelOfertasDisponibles.setBackground(new Color(195, 220, 255));
-			panelOfertasDisponibles.setBounds(margen + anchoTarjeta + 24, 110, anchoTarjeta, 90);
-			panel.add(panelOfertasDisponibles);
-			panelOfertasDisponibles.setLayout(null);
+		JLabel lblMiSolicitud = new JLabel("Mi Solicitud Laboral");
+		lblMiSolicitud.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblMiSolicitud.setForeground(Color.WHITE);
+		lblMiSolicitud.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		lblMiSolicitud.setBounds(938, 26, 170, 20);
 
-			JLabel lblOfertasDisponibles = new JLabel("Ofertas Disponibles");
-			lblOfertasDisponibles.setFont(new Font("Calibri", Font.PLAIN, 18));
-			lblOfertasDisponibles.setForeground(new Color(65, 95, 170));
-			lblOfertasDisponibles.setBounds(20, 14, anchoTarjeta - 40, 20);
-			panelOfertasDisponibles.add(lblOfertasDisponibles);
+		lblMiSolicitud.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Usuario usuario = BolsaEmpleo.getInstancia().getLoginUser();
 
-			JLabel lblOfertasDisponiblesValor = new JLabel(String.valueOf(contarOfertasDisponibles()));
-			lblOfertasDisponiblesValor.setFont(new Font("Calibri", Font.BOLD, 30));
-			lblOfertasDisponiblesValor.setForeground(new Color(65, 95, 170));
-			lblOfertasDisponiblesValor.setBounds(20, 38, anchoTarjeta - 40, 36);
-			panelOfertasDisponibles.add(lblOfertasDisponiblesValor);
-		}
+				if (usuario == null || usuario.getPersona() == null || usuario.getPersona().getSolicitud() == null) {
+					SolicitudVacia ventana = new SolicitudVacia();
+					ventana.setVisible(true);
+					dispose();
+				} else {
+					abrirMiSolicitudLaboral();
+				}
+			}
+		});
 
-		{
-			PanelConSombra panelMayorCoincidencia = new PanelConSombra(18);
-			panelMayorCoincidencia.setBackground(new Color(198, 239, 206));
-			panelMayorCoincidencia.setBounds(margen + (anchoTarjeta + 24) * 2, 110, anchoTarjeta, 90);
-			panel.add(panelMayorCoincidencia);
-			panelMayorCoincidencia.setLayout(null);
+		panelMenu.add(lblMiSolicitud);
 
-			JLabel lblMayorCoincidencia = new JLabel("Mayor Coincidencia");
-			lblMayorCoincidencia.setFont(new Font("Calibri", Font.PLAIN, 18));
-			lblMayorCoincidencia.setForeground(new Color(46, 125, 50));
-			lblMayorCoincidencia.setBounds(20, 14, anchoTarjeta - 40, 20);
-			panelMayorCoincidencia.add(lblMayorCoincidencia);
+		JLabel lblVerPerfil = new JLabel("Ver perfil");
+		lblVerPerfil.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblVerPerfil.setForeground(Color.WHITE);
+		lblVerPerfil.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		lblVerPerfil.setBounds(1130, 26, 90, 20);
 
-			lblMayorCoincidenciaValor = new JLabel("0%");
-			lblMayorCoincidenciaValor.setFont(new Font("Calibri", Font.BOLD, 30));
-			lblMayorCoincidenciaValor.setForeground(new Color(46, 125, 50));
-			lblMayorCoincidenciaValor.setBounds(20, 38, anchoTarjeta - 40, 36);
-			panelMayorCoincidencia.add(lblMayorCoincidenciaValor);
-		}
+		lblVerPerfil.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				abrirVerPerfil();
+			}
+		});
 
+		panelMenu.add(lblVerPerfil);
+
+		BotonRedond btnMenu = new BotonRedond("", 25);
+		btnMenu.setBackground(new Color(0, 0, 51));
+		btnMenu.setColorHover(new Color(0, 51, 102));
+		btnMenu.setBounds(12, 4, 60, 60);
+		btnMenu.setMargin(new Insets(0, 0, 0, 0));
+		btnMenu.setBorderPainted(false);
+		btnMenu.setContentAreaFilled(false);
+		btnMenu.setFocusPainted(false);
+		btnMenu.setOpaque(false);
+
+		colocarIconoBoton(btnMenu, "/img/menu-dots-vertical(White).png", 25, 25);
+
+		btnMenu.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				BarraSolicitante menu = new BarraSolicitante();
+				menu.setVisible(true);
+				dispose();
+			}
+		});
+
+		panelMenu.add(btnMenu);
+	}
+
+	private void construirTarjetaEstadoBusqueda(JPanel panel, int margen, int anchoTarjeta) {
+		PanelConSombra panelEstadoBusqueda = new PanelConSombra(18);
+		panelEstadoBusqueda.setBackground(new Color(255, 224, 178));
+		panelEstadoBusqueda.setBounds(margen, 110, anchoTarjeta, 90);
+		panelEstadoBusqueda.setLayout(null);
+		panel.add(panelEstadoBusqueda);
+
+		JLabel lblEstadoBusqueda = new JLabel("Estado de Búsqueda");
+		lblEstadoBusqueda.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblEstadoBusqueda.setForeground(new Color(204, 102, 0));
+		lblEstadoBusqueda.setBounds(20, 14, anchoTarjeta - 40, 20);
+		panelEstadoBusqueda.add(lblEstadoBusqueda);
+
+		lblEstadoBusquedaValor = new JLabel("...");
+		lblEstadoBusquedaValor.setFont(new Font("Calibri", Font.BOLD, 26));
+		lblEstadoBusquedaValor.setForeground(new Color(204, 102, 0));
+		lblEstadoBusquedaValor.setBounds(20, 38, anchoTarjeta - 40, 36);
+		panelEstadoBusqueda.add(lblEstadoBusquedaValor);
+
+		lblEstadoBusquedaValor.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+		lblEstadoBusquedaValor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if ("Por Crear".equals(lblEstadoBusquedaValor.getText())) {
+					RegSolicitud registrar = new RegSolicitud(null);
+					registrar.setVisible(true);
+					dispose();
+				}
+			}
+		});
+	}
+
+	private void construirTarjetaOfertasDisponibles(JPanel panel, int margen, int anchoTarjeta) {
+		PanelConSombra panelOfertasDisponibles = new PanelConSombra(18);
+		panelOfertasDisponibles.setBackground(new Color(195, 220, 255));
+		panelOfertasDisponibles.setBounds(margen + anchoTarjeta + 24, 110, anchoTarjeta, 90);
+		panelOfertasDisponibles.setLayout(null);
+		panel.add(panelOfertasDisponibles);
+
+		JLabel lblOfertasDisponibles = new JLabel("Ofertas Disponibles");
+		lblOfertasDisponibles.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblOfertasDisponibles.setForeground(new Color(65, 95, 170));
+		lblOfertasDisponibles.setBounds(20, 14, anchoTarjeta - 40, 20);
+		panelOfertasDisponibles.add(lblOfertasDisponibles);
+
+		lblOfertasDisponiblesValor = new JLabel("...");
+		lblOfertasDisponiblesValor.setFont(new Font("Calibri", Font.BOLD, 30));
+		lblOfertasDisponiblesValor.setForeground(new Color(65, 95, 170));
+		lblOfertasDisponiblesValor.setBounds(20, 38, anchoTarjeta - 40, 36);
+		panelOfertasDisponibles.add(lblOfertasDisponiblesValor);
+	}
+
+	private void construirTarjetaMayorCoincidencia(JPanel panel, int margen, int anchoTarjeta) {
+		PanelConSombra panelMayorCoincidencia = new PanelConSombra(18);
+		panelMayorCoincidencia.setBackground(new Color(198, 239, 206));
+		panelMayorCoincidencia.setBounds(margen + (anchoTarjeta + 24) * 2, 110, anchoTarjeta, 90);
+		panelMayorCoincidencia.setLayout(null);
+		panel.add(panelMayorCoincidencia);
+
+		JLabel lblMayorCoincidencia = new JLabel("Mayor Coincidencia");
+		lblMayorCoincidencia.setFont(new Font("Calibri", Font.PLAIN, 18));
+		lblMayorCoincidencia.setForeground(new Color(46, 125, 50));
+		lblMayorCoincidencia.setBounds(20, 14, anchoTarjeta - 40, 20);
+		panelMayorCoincidencia.add(lblMayorCoincidencia);
+
+		lblMayorCoincidenciaValor = new JLabel("...");
+		lblMayorCoincidenciaValor.setFont(new Font("Calibri", Font.BOLD, 30));
+		lblMayorCoincidenciaValor.setForeground(new Color(46, 125, 50));
+		lblMayorCoincidenciaValor.setBounds(20, 38, anchoTarjeta - 40, 36);
+		panelMayorCoincidencia.add(lblMayorCoincidenciaValor);
+	}
+
+	private void construirPanelGraficos(JPanel panel, int margen, int anchoContenido) {
 		JLabel lblTituloGraficos = new JLabel("Oportunidades Destacadas");
 		lblTituloGraficos.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTituloGraficos.setForeground(new Color(0, 0, 51));
@@ -259,63 +298,159 @@ public class HomeCandidato extends JFrame {
 		lblTituloGraficos.setBounds(margen, 233, anchoContenido, 25);
 		panel.add(lblTituloGraficos);
 
-		{
-			PanelConSombra panelGraficos = new PanelConSombra(20);
-			panelGraficos.setBackground(Color.WHITE);
-			panelGraficos.setBounds(26, 262, 1840, 761);
-			panel.add(panelGraficos);
-			panelGraficos.setLayout(null);
+		PanelConSombra panelGraficos = new PanelConSombra(20);
+		panelGraficos.setBackground(Color.WHITE);
+		panelGraficos.setBounds(26, 262, anchoContenido, dim.height - 320);
+		panelGraficos.setLayout(null);
+		panel.add(panelGraficos);
 
-			JSeparator separator = new JSeparator();
-			separator.setOrientation(SwingConstants.VERTICAL);
-			separator.setForeground(SystemColor.controlShadow);
-			separator.setBackground(SystemColor.controlShadow);
-			separator.setBounds(919, 67, 1, 600);
-			panelGraficos.add(separator);
+		int mitad = anchoContenido / 2;
 
-			JLabel lblGrafico1 = new JLabel("[Espacio para gr\u00E1fico 1]");
-			lblGrafico1.setHorizontalAlignment(SwingConstants.CENTER);
-			lblGrafico1.setFont(new Font("Calibri", Font.PLAIN, 20));
-			lblGrafico1.setForeground(new Color(150, 150, 150));
-			lblGrafico1.setBounds(0, 0, 919, 761);
-			panelGraficos.add(lblGrafico1);
+		JSeparator separator = new JSeparator();
+		separator.setOrientation(SwingConstants.VERTICAL);
+		separator.setForeground(SystemColor.controlShadow);
+		separator.setBackground(SystemColor.controlShadow);
+		separator.setBounds(mitad, 67, 1, Math.max(300, dim.height - 450));
+		panelGraficos.add(separator);
 
-			JLabel lblGrafico2 = new JLabel("[Espacio para gr\u00E1fico 2]");
-			lblGrafico2.setHorizontalAlignment(SwingConstants.CENTER);
-			lblGrafico2.setFont(new Font("Calibri", Font.PLAIN, 20));
-			lblGrafico2.setForeground(new Color(150, 150, 150));
-			lblGrafico2.setBounds(920, 0, 920, 761);
-			panelGraficos.add(lblGrafico2);
-		}
+		JLabel lblGrafico1 = new JLabel("[Espacio para gráfico 1]");
+		lblGrafico1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblGrafico1.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblGrafico1.setForeground(new Color(150, 150, 150));
+		lblGrafico1.setBounds(0, 0, mitad, dim.height - 320);
+		panelGraficos.add(lblGrafico1);
 
-		Usuario user = BolsaEmpleo.getInstancia().getLoginUser();
-
-		if(user != null && user.getPersona() != null && user.getPersona().getSolicitud() != null) {
-			Persona candidato = user.getPersona();
-			SolicitudEmpleo solicitud = candidato.getSolicitud();
-
-			if(solicitud.getEstado() == EstadoSolicitud.ACTIVA) {
-				lblEstadoBusquedaValor.setText("Activa");
-			}
-			else
-			{
-				lblEstadoBusquedaValor.setText("Inactiva");
-			}
-			float porcentaje = BolsaEmpleo.getInstancia().CalcMayorCoincidenciaSolicitud(solicitud);
-			lblMayorCoincidenciaValor.setText(String.format("%.2f%%", porcentaje));
-			
-			
-		}
-
+		JLabel lblGrafico2 = new JLabel("[Espacio para gráfico 2]");
+		lblGrafico2.setHorizontalAlignment(SwingConstants.CENTER);
+		lblGrafico2.setFont(new Font("Calibri", Font.PLAIN, 20));
+		lblGrafico2.setForeground(new Color(150, 150, 150));
+		lblGrafico2.setBounds(mitad + 1, 0, mitad - 1, dim.height - 320);
+		panelGraficos.add(lblGrafico2);
 	}
 
+	private void cargarDatosHomeConHilo() {
+		lblEstadoBusquedaValor.setText("...");
+		lblOfertasDisponiblesValor.setText("...");
+		lblMayorCoincidenciaValor.setText("...");
+
+		SwingWorker<Object[], Void> hilo = new SwingWorker<Object[], Void>() {
+
+			@Override
+			protected Object[] doInBackground() throws Exception {
+				Usuario usuario = BolsaEmpleo.getInstancia().getLoginUser();
+
+				String estadoBusqueda = "Por Crear";
+				int ofertasDisponibles = contarOfertasDisponibles();
+				float mayorCoincidencia = 0;
+
+				if (usuario != null
+						&& usuario.getPersona() != null
+						&& usuario.getPersona().getSolicitud() != null) {
+
+					SolicitudEmpleo solicitud =
+							usuario.getPersona().getSolicitud();
+
+					if (solicitud.getEstado()
+							== EstadoSolicitud.ACTIVA) {
+
+						estadoBusqueda = "Activa";
+
+					} else {
+						estadoBusqueda = "Inactiva";
+					}
+
+					mayorCoincidencia =
+							BolsaEmpleo.getInstancia()
+							.CalcMayorCoincidenciaSolicitud(
+									solicitud
+									);
+				}
+
+				/*
+				 * Cuando el socket esté listo, este bloque se sustituye
+				 * por una petición al servidor.
+				 */
+
+				return new Object[] {
+						estadoBusqueda,
+						ofertasDisponibles,
+						mayorCoincidencia
+				};
+			}
+
+			@Override
+			protected void done() {
+				try {
+					Object[] datos = get();
+
+					String estadoBusqueda =
+							(String) datos[0];
+
+					int ofertasDisponibles =
+							(Integer) datos[1];
+
+					float mayorCoincidencia =
+							(Float) datos[2];
+
+					lblEstadoBusquedaValor.setText(
+							estadoBusqueda
+							);
+
+					lblOfertasDisponiblesValor.setText(
+							String.valueOf(ofertasDisponibles)
+							);
+
+					lblMayorCoincidenciaValor.setText(
+							String.format(
+									"%.2f%%",
+									mayorCoincidencia
+									)
+							);
+
+				} catch (Exception e) {
+					Throwable causa = e.getCause();
+					String mensaje = causa != null
+							? causa.getMessage()
+									: e.getMessage();
+
+							e.printStackTrace();
+
+							lblEstadoBusquedaValor.setText(
+									"No disponible"
+									);
+
+							lblOfertasDisponiblesValor.setText("0");
+							lblMayorCoincidenciaValor.setText("0%");
+
+							JOptionPane.showMessageDialog(
+									HomeCandidato.this,
+									mensaje != null
+									? mensaje
+											: "No se pudieron cargar los datos del inicio.",
+											"Error",
+											JOptionPane.ERROR_MESSAGE
+									);
+				}
+			}
+		};
+
+		hilo.execute();
+	}
 	private int contarOfertasDisponibles() {
+		ArrayList<Oferta> ofertas = BolsaEmpleo.getInstancia().getOfertas();
+
+		if (ofertas == null) {
+			return 0;
+		}
+
 		int contador = 0;
-		for (Oferta oferta : BolsaEmpleo.getInstancia().getOfertas()) {
-			if (oferta.getEstado() == EstadoOferta.PENDIENTE) {
+
+		for (Oferta oferta : ofertas) {
+			if (oferta != null && oferta.getEstado() == EstadoOferta.PENDIENTE) {
 				contador++;
 			}
 		}
+
 		return contador;
 	}
 
@@ -338,40 +473,60 @@ public class HomeCandidato extends JFrame {
 	}
 
 	private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
-		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+		if (boton == null || ruta == null) {
+			return;
+		}
+
+		java.net.URL recurso = getClass().getResource(ruta);
+
+		if (recurso == null) {
+			System.err.println("No se encontró la imagen: " + ruta);
+			return;
+		}
+
+		ImageIcon icono = new ImageIcon(recurso);
 		Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+
 		boton.setIcon(new ImageIcon(imagenEscalada));
 	}
-	
-	private void colocarImagen(JLabel label, String ruta) {
 
-		ImageIcon icono = new ImageIcon(getClass().getResource(ruta));
+	private void colocarImagen(JLabel label, String ruta) {
+		if (label == null || ruta == null) {
+			return;
+		}
+
+		java.net.URL recurso = getClass().getResource(ruta);
+
+		if (recurso == null) {
+			System.err.println("No se encontró la imagen: " + ruta);
+			return;
+		}
+
+		ImageIcon icono = new ImageIcon(recurso);
 
 		int anchoLabel = label.getWidth();
 		int altoLabel = label.getHeight();
-
 		int anchoImagen = icono.getIconWidth();
 		int altoImagen = icono.getIconHeight();
 
+		if (anchoLabel <= 0 || altoLabel <= 0 || anchoImagen <= 0 || altoImagen <= 0) {
+			return;
+		}
+
 		double escalaAncho = (double) anchoLabel / anchoImagen;
 		double escalaAlto = (double) altoLabel / altoImagen;
-
 		double escala = Math.max(escalaAncho, escalaAlto);
 
 		int nuevoAncho = (int) (anchoImagen * escala);
 		int nuevoAlto = (int) (altoImagen * escala);
 
-		Image imagenEscalada = icono.getImage().getScaledInstance(
-				nuevoAncho,
-				nuevoAlto,
-				Image.SCALE_SMOOTH
-				);
+		Image imagenEscalada = icono.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
 
-		ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
-
-		label.setIcon(iconoEscalado);
+		label.setIcon(new ImageIcon(imagenEscalada));
 		label.setText("");
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
+
+
 }

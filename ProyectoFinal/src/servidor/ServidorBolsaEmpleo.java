@@ -25,6 +25,7 @@ import logico.TipoUser;
 import logico.Universitario;
 import logico.Usuario;
 import red.DatosDecidirCandidato;
+import red.DatosEstadisticas;
 import red.DatosLogin;
 import red.DatosObtenerMatch;
 import red.DatosPublicarOferta;
@@ -106,6 +107,9 @@ public class ServidorBolsaEmpleo {
 
             case DECIDIR_CANDIDATO:
                 return procesarDecidirCandidato(bolsa, (DatosDecidirCandidato) peticion.getDatos());
+                
+            case OBTENER_ESTADISTICAS:
+                return procesarObtenerEstadisticas(bolsa);
                 
             default:
                 return new Respuesta(false, "Operación no reconocida");
@@ -263,5 +267,58 @@ public class ServidorBolsaEmpleo {
 
         bolsa.guardarDatos();
         return new Respuesta(true, null);
+    }
+    
+    private static Respuesta procesarObtenerEstadisticas(BolsaEmpleo bolsa) {
+        ArrayList<Oferta> lasOfertas = bolsa.getOfertas();
+        ArrayList<Persona> lasPersonas = bolsa.getPersonas();
+        ArrayList<SolicitudEmpleo> lasSolicitudes = bolsa.getSolicitudes();
+        ArrayList<Empresa> lasEmpresas = bolsa.getEmpresas();
+
+        int totalOfertas = lasOfertas == null ? 0 : lasOfertas.size();
+        int ofertasActivas = 0;
+        if (lasOfertas != null) {
+            for (Oferta oferta : lasOfertas) {
+                if (oferta != null && oferta.getEstado() == EstadoOferta.PENDIENTE) {
+                    ofertasActivas++;
+                }
+            }
+        }
+
+        int totalSolicitantes = lasPersonas == null ? 0 : lasPersonas.size();
+        int solicitantesDisponibles = 0;
+        if (lasPersonas != null) {
+            for (Persona persona : lasPersonas) {
+                if (persona != null && !persona.isEstadoEmpleo()) {
+                    solicitantesDisponibles++;
+                }
+            }
+        }
+
+        int totalPostulaciones = lasSolicitudes == null ? 0 : lasSolicitudes.size();
+        int postulacionesPendientes = 0;
+        if (lasSolicitudes != null) {
+            for (SolicitudEmpleo solicitud : lasSolicitudes) {
+                if (solicitud != null && solicitud.getEstado() == EstadoSolicitud.ACTIVA) {
+                    postulacionesPendientes++;
+                }
+            }
+        }
+
+        int totalEmpresas = lasEmpresas == null ? 0 : lasEmpresas.size();
+        int empresasActivas = 0;
+        if (lasEmpresas != null) {
+            for (Empresa empresa : lasEmpresas) {
+                if (empresa != null && empresa.isEstado()) {
+                    empresasActivas++;
+                }
+            }
+        }
+
+        DatosEstadisticas resultado = new DatosEstadisticas(totalOfertas, ofertasActivas,
+                totalSolicitantes, solicitantesDisponibles, totalPostulaciones, postulacionesPendientes,
+                totalEmpresas, empresasActivas);
+
+        return new Respuesta(true, resultado);
     }
 }
