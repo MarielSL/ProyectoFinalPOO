@@ -184,7 +184,7 @@ public class ServidorBolsaEmpleo {
                 return procesarModificarSolicitud(bolsa, usuarioSesion, (DatosModificarSolicitud) peticion.getDatos());
 
             case CREAR_RESPALDO:
-                return procesarCrearRespaldo();
+                return procesarCrearRespaldo(bolsa);
 
             case OBTENER_GRAFICAS_EMPRESA:
                 return procesarGraficasEmpresa(bolsa, usuarioSesion);
@@ -377,8 +377,8 @@ public class ServidorBolsaEmpleo {
         oferta.guardarDecision(candidato, datos.getDecision());
 
         if (datos.getDecision() == EstadoDecision.CONTRATADO) {
-            candidato.setEstadoEmpleo(true);
             if (candidato.getSolicitud() != null) {
+            	candidato.setEstadoEmpleo(true);
                 candidato.getSolicitud().setEstado(EstadoSolicitud.CERRADA);
             }
             oferta.setCantPuestos(Math.max(0, oferta.getCantPuestos() - 1));
@@ -852,31 +852,56 @@ public class ServidorBolsaEmpleo {
 
     // ==================== RESPALDO ====================
 
-    private static Respuesta procesarCrearRespaldo() {
-        try {
-            File carpetaBackups = new File("backups");
-            if (!carpetaBackups.exists()) {
-                carpetaBackups.mkdirs();
-            }
+    private static Respuesta procesarCrearRespaldo(BolsaEmpleo bolsa) {
+    	try {
+    		if(bolsa == null) {
+    			return new Respuesta(false, "No se pudo acceder a los datos de la plataforma.");
+    		}
 
-            File origen = new File("BolsaEmpleo.dat");
-            if (!origen.exists()) {
-                return new Respuesta(false, "No hay datos guardados todavía para respaldar.");
-            }
+    		bolsa.guardarDatos();
 
-            String marcaTiempo = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-            File destino = new File(carpetaBackups, "BolsaEmpleo_" + marcaTiempo + ".dat");
+    		File carpetaBackups = new File("backups");
 
-            Files.copy(origen.toPath(), destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    		if(!carpetaBackups.exists() && !carpetaBackups.mkdirs()) {
+    			return new Respuesta(false, "No se pudo crear la carpeta de respaldos.");
+    		}
 
-            return new Respuesta(true, destino.getName());
+    		File origen = new File("BolsaEmpleo.dat");
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new Respuesta(false, "No se pudo crear el respaldo: " + e.getMessage());
-        }
+    		System.out.println("Archivo original: " + origen.getAbsolutePath());
+    		System.out.println("Carpeta de respaldos: " + carpetaBackups.getAbsolutePath());
+
+    		if(!origen.exists()) {
+    			return new Respuesta(
+    				false,
+    				"No existe el archivo de datos en: " + origen.getAbsolutePath()
+    			);
+    		}
+
+    		String marcaTiempo = LocalDateTime.now().format(
+    			DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS")
+    		);
+
+    		File destino = new File(
+    			carpetaBackups,
+    			"BolsaEmpleo_" + marcaTiempo + ".dat"
+    		);
+
+    		Files.copy(origen.toPath(), destino.toPath());
+
+    		System.out.println("Respaldo creado: " + destino.getAbsolutePath());
+
+    		return new Respuesta(true, destino.getName());
+
+    	} catch(IOException e) {
+    		e.printStackTrace();
+
+    		return new Respuesta(
+    			false,
+    			"No se pudo crear el respaldo: " + e.getMessage()
+    		);
+    	}
     }
-
     // ==================== GRÁFICAS ====================
 
     private static Respuesta procesarGraficasEmpresa(BolsaEmpleo bolsa, Usuario usuarioSesion) {

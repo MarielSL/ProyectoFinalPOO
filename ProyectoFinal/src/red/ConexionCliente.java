@@ -14,7 +14,7 @@ public class ConexionCliente {
 
     private ConexionCliente() throws IOException {
         socket = new Socket();
-        socket.connect(new java.net.InetSocketAddress("127.0.0.1", 7000), 5000); 
+        socket.connect(new java.net.InetSocketAddress("172.20.10.5", 7000), 5000); 
         salida = new ObjectOutputStream(socket.getOutputStream());
         salida.flush();
         entrada = new ObjectInputStream(socket.getInputStream());
