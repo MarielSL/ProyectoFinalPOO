@@ -77,6 +77,7 @@ public class VerPostulantesOferta extends JDialog {
 	private BotonRedond btnVerTodos;
 	private JTable table;
 	private DefaultTableModel model;
+	private BotonRedond btnRefresh;
 
 	public static void main(String[] args) {
 		try {
@@ -166,6 +167,18 @@ public class VerPostulantesOferta extends JDialog {
 		construirTop1(panelPrincipal);
 		construirTablaResto(panelPrincipal);
 		construirBotonVerTodos(panelPrincipal);
+		
+		btnRefresh = new BotonRedond("Actualizar", 30);
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cargarInformacionConHilo();
+			}
+		});
+		btnRefresh.setForeground(new Color(225, 239, 254));
+		btnRefresh.setFont(new Font("Calibri", Font.BOLD, 20));
+		btnRefresh.setBackground(new Color(0, 0, 51));
+		btnRefresh.setBounds(1699, 24, 143, 40);
+		contentPanel.add(btnRefresh);
 	}
 
 	private void construirPanelInformacion(JPanel panelPrincipal) {

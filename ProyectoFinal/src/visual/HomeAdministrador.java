@@ -60,6 +60,7 @@ import red.ConexionCliente;
 import red.DatosDashboardAdmin;
 import red.Peticion;
 import red.Respuesta;
+import javax.swing.JButton;
 
 public class HomeAdministrador extends JFrame {
 
@@ -82,6 +83,7 @@ public class HomeAdministrador extends JFrame {
     private JPanel panel_Grafica1;
     private JPanel panel_Grafica2;
     private JPanel panel_Grafica3;
+    private JButton btnRefresh;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -227,6 +229,19 @@ public class HomeAdministrador extends JFrame {
             }
         });
         panelMenu.add(lblVerUsuarios);
+        
+        BotonRedond btnRefresh = new BotonRedond("Actualizar",30);
+        btnRefresh.setFont(new Font("Calibri", Font.BOLD, 20));
+        btnRefresh.setForeground(Color.decode("#e1effe"));
+        btnRefresh.setBackground(new Color(0, 0, 51));
+        btnRefresh.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+                cargarDatosHomeConHilo();
+                
+        	}
+        });
+        btnRefresh.setBounds(1666, 31, 143, 40);
+        panelMenu.add(btnRefresh);
     }
 
     private void construirTarjetas(JPanel panel) {
@@ -1021,7 +1036,6 @@ public class HomeAdministrador extends JFrame {
         boton.setIcon(new ImageIcon(imagenEscalada));
     }
 
-    //metodo imagenes
     private void colocarImagen(JLabel label, String ruta) {
         if (label == null || ruta == null) {
             return;

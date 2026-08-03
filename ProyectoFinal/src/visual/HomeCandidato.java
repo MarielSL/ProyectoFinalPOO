@@ -69,6 +69,7 @@ public class HomeCandidato extends JFrame {
 	private JLabel lblMayorCoincidenciaValor;
 	private JPanel panel_Grafica1;
 	private JPanel panel_Grafica2;
+	private BotonRedond btnRefresh;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -229,6 +230,19 @@ public class HomeCandidato extends JFrame {
 			}
 		});
 		panelMenu.add(btnMenu);
+		
+		btnRefresh = new BotonRedond("Actualizar", 30);
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cargarDatosHomeConHilo();
+				cargarGraficasConHilo();
+			}
+		});
+		btnRefresh.setForeground(new Color(225, 239, 254));
+		btnRefresh.setFont(new Font("Calibri", Font.BOLD, 20));
+		btnRefresh.setBackground(new Color(0, 0, 51));
+		btnRefresh.setBounds(86, 18, 143, 40);
+		panelMenu.add(btnRefresh);
 	}
 
 	private void construirTarjetaEstadoBusqueda(JPanel panel, int margen, int anchoTarjeta) {

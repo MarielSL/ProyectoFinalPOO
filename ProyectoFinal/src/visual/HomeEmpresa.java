@@ -60,6 +60,7 @@ import red.Peticion;
 import red.Respuesta;
 
 import java.awt.SystemColor;
+import javax.swing.JButton;
 
 public class HomeEmpresa extends JFrame {
 
@@ -73,6 +74,7 @@ public class HomeEmpresa extends JFrame {
 	private JPanel panel_Grafica1;
 	private JPanel panel_Grafica2;
 	private boolean cargandoGraficas = false;
+	private BotonRedond btnRefresh;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -259,6 +261,20 @@ public class HomeEmpresa extends JFrame {
 			lblLogo.setBounds(1741, -9, 114, 88);
 			colocarImagen(lblLogo, "/img/iconoLogo_FondoOscuro.png");
 			panelMenu.add(lblLogo);
+			
+			btnRefresh = new BotonRedond("Actualizar", 30);
+			btnRefresh.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					cargarDatosHomeConHilo();
+					cargarGraficasConHilo();
+					
+				}
+			});
+			btnRefresh.setForeground(new Color(225, 239, 254));
+			btnRefresh.setFont(new Font("Calibri", Font.BOLD, 20));
+			btnRefresh.setBackground(new Color(0, 0, 51));
+			btnRefresh.setBounds(84, 15, 143, 40);
+			panelMenu.add(btnRefresh);
 		}
 
 		int anchoTarjeta = (anchoContenido - 48) / 3;

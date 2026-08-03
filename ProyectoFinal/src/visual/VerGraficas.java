@@ -59,6 +59,7 @@ public class VerGraficas extends JFrame {
     private DefaultCategoryDataset datasetOfertaVsDemanda;
     private DefaultCategoryDataset datasetCoincidencias;
     private BotonRedond btnVolver;
+    private BotonRedond btnRefresh;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -127,6 +128,18 @@ public class VerGraficas extends JFrame {
         panelMenu.add(lblTitulo);
 
         contentPane.add(panelMenu, BorderLayout.NORTH);
+        
+        btnRefresh = new BotonRedond("Actualizar", 30);
+        btnRefresh.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		cargarGraficasConHilo();
+        	}
+        });
+        btnRefresh.setForeground(new Color(225, 239, 254));
+        btnRefresh.setFont(new Font("Calibri", Font.BOLD, 20));
+        btnRefresh.setBackground(new Color(0, 0, 51));
+        btnRefresh.setBounds(1656, 21, 143, 40);
+        panelMenu.add(btnRefresh);
     }
 
     private void construirPanelContenido() {

@@ -145,6 +145,18 @@ public class VerUsuariosAdmin extends JFrame {
 		lblLogo.setBounds(1805, 0, 86, 90);
 		colocarImagen(lblLogo, "/img/iconoLogo_FondoOscuro.png");
 		panelHeader.add(lblLogo);
+		
+		BotonRedond btnRefresh = new BotonRedond("Actualizar", 30);
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cargarUsuariosConHilo();
+			}
+		});
+		btnRefresh.setForeground(new Color(225, 239, 254));
+		btnRefresh.setFont(new Font("Calibri", Font.BOLD, 20));
+		btnRefresh.setBackground(new Color(0, 0, 51));
+		btnRefresh.setBounds(1686, 25, 143, 40);
+		panelHeader.add(btnRefresh);
 	}
 
 	private void construirTarjetas(JPanel panel, int margen, int anchoContenido) {

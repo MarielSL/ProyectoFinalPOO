@@ -54,6 +54,7 @@ public class VerOfertasEmpresa extends JFrame {
 	private JLabel lblTotalOfertasNum;
 	private JLabel lblOfertasActivasNum;
 	private BotonRedond btnVolver;
+	private BotonRedond btnRefresh;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -167,8 +168,20 @@ public class VerOfertasEmpresa extends JFrame {
 		JLabel lblNombreEmpresa = new JLabel(nombreEmpresa);
 		lblNombreEmpresa.setFont(new Font("Calibri", Font.PLAIN, 16));
 		lblNombreEmpresa.setForeground(Color.WHITE);
-		lblNombreEmpresa.setBounds(dim.width - 66 - anchoNombre, 26, anchoNombre, 20);
+		lblNombreEmpresa.setBounds(1695, 28, anchoNombre, 20);
 		panelHeader.add(lblNombreEmpresa);
+		
+		btnRefresh = new BotonRedond("Actualizar", 30);
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cargarDatosConHilo();
+			}
+		});
+		btnRefresh.setForeground(new Color(225, 239, 254));
+		btnRefresh.setFont(new Font("Calibri", Font.BOLD, 20));
+		btnRefresh.setBackground(new Color(0, 0, 51));
+		btnRefresh.setBounds(1512, 15, 143, 40);
+		panelHeader.add(btnRefresh);
 	}
 
 	private void construirTarjetas(JPanel panel, int margen, int anchoContenido) {

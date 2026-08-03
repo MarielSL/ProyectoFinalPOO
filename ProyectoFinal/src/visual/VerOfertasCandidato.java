@@ -56,6 +56,7 @@ public class VerOfertasCandidato extends JFrame {
     private ArrayList<Oferta> listaOfertas;
     private BotonRedond btnVolver;
     private Persona candidato;
+    private BotonRedond btnRefresh;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -170,6 +171,18 @@ public class VerOfertasCandidato extends JFrame {
         iconoLogo.setBounds(1784, 0, 114, 88);
         colocarImagen(iconoLogo, "/img/iconoLogo_FondoOscuro.png");
         panelHeader.add(iconoLogo);
+        
+        btnRefresh = new BotonRedond("Actualizar", 30);
+        btnRefresh.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+                cargarDatosConHilo();
+        	}
+        });
+        btnRefresh.setForeground(new Color(225, 239, 254));
+        btnRefresh.setFont(new Font("Calibri", Font.BOLD, 20));
+        btnRefresh.setBackground(new Color(0, 0, 51));
+        btnRefresh.setBounds(1490, 27, 143, 40);
+        panelHeader.add(btnRefresh);
     }
 
     private void construirFiltros(JPanel panel, int margen, int anchoContenido) {

@@ -41,6 +41,7 @@ public class VerCandidatosEmpresa extends JFrame {
 	private JTable table;
 	private DefaultTableModel modelo;
 	private ArrayList<DatosMejorMatchCandidato> candidatosMostrados = new ArrayList<DatosMejorMatchCandidato>();
+	private BotonRedond btnRefresh;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -113,6 +114,18 @@ public class VerCandidatosEmpresa extends JFrame {
 		lblTitulo.setForeground(new Color(255, 153, 0));
 		lblTitulo.setBounds(74, 28, 400, 30);
 		panelHeader.add(lblTitulo);
+		
+		btnRefresh = new BotonRedond("Actualizar", 30);
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cargarCandidatosConHilo();
+			}
+		});
+		btnRefresh.setForeground(new Color(225, 239, 254));
+		btnRefresh.setFont(new Font("Calibri", Font.BOLD, 20));
+		btnRefresh.setBackground(new Color(0, 0, 51));
+		btnRefresh.setBounds(1620, 26, 143, 40);
+		panelHeader.add(btnRefresh);
 	}
 
 	private void construirContenido(JPanel panel, int margen, int anchoContenido) {

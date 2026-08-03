@@ -59,6 +59,7 @@ public class VerEmpresasAdmin extends JFrame {
 	private TableRowSorter<DefaultTableModel> sorterEmpresas;
 	private JLabel lblTotalEmpresasNum;
 	private JLabel lblEmpresasActivasNum;
+	private BotonRedond btnrRefresh;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -146,6 +147,18 @@ public class VerEmpresasAdmin extends JFrame {
 		lblNewLabel_1.setBounds(1784, 0, 114, 88);
 		colocarImagen(lblNewLabel_1, "/img/iconoLogo_FondoOscuro.png");
 		panelHeader.add(lblNewLabel_1);
+		
+		btnrRefresh = new BotonRedond("Actualizar", 30);
+		btnrRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cargarDatosConHilo();
+			}
+		});
+		btnrRefresh.setForeground(new Color(225, 239, 254));
+		btnrRefresh.setFont(new Font("Calibri", Font.BOLD, 20));
+		btnrRefresh.setBackground(new Color(0, 0, 51));
+		btnrRefresh.setBounds(1585, 25, 143, 40);
+		panelHeader.add(btnrRefresh);
 	}
 
 	private void construirTarjetas(JPanel panel, int margen, int anchoContenido) {
