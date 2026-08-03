@@ -29,6 +29,7 @@ import logico.EstadoSolicitud;
 import logico.Oferta;
 import logico.Persona;
 import logico.SolicitudEmpleo;
+import javax.swing.SwingConstants;
 
 public class VerReportesAdmin extends JFrame {
 
@@ -60,7 +61,7 @@ public class VerReportesAdmin extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		dim = getToolkit().getScreenSize();
-		setSize(dim.width, dim.height);
+		setSize(dim.width, dim.height - 55);
 		setLocationRelativeTo(null);
 
 		JLayeredPane layeredPane = new JLayeredPane();
@@ -77,6 +78,25 @@ public class VerReportesAdmin extends JFrame {
 
 		construirHeader(panel, margen, anchoContenido);
 		construirReportes(panel, margen, anchoContenido);
+		
+		BotonRedond btnrdndVolver = new BotonRedond("    Volver", 25);
+		btnrdndVolver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				HomeAdministrador volver = new HomeAdministrador();
+				volver.setVisible(true);
+				dispose();
+			}
+		});
+		btnrdndVolver.setVerticalTextPosition(SwingConstants.TOP);
+		btnrdndVolver.setText(" Volver");
+		btnrdndVolver.setIconTextGap(6);
+		btnrdndVolver.setHorizontalTextPosition(SwingConstants.CENTER);
+		btnrdndVolver.setForeground(new Color(0, 0, 51));
+		btnrdndVolver.setFont(new Font("Calibri", Font.PLAIN, 18));
+		btnrdndVolver.setColorHover(new Color(255, 220, 183));
+		btnrdndVolver.setBackground(new Color(255, 235, 215));
+		btnrdndVolver.setBounds(45, 884, 194, 57);
+		panel.add(btnrdndVolver);
 	}
 
 	private void construirHeader(JPanel panel, int margen, int anchoContenido) {
@@ -323,5 +343,4 @@ public class VerReportesAdmin extends JFrame {
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.CENTER);
 	}
-	
 }

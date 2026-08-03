@@ -37,6 +37,7 @@ import red.ConexionCliente;
 import red.DatosGraficasAdmin;
 import red.Peticion;
 import red.Respuesta;
+import javax.swing.SwingConstants;
 
 public class VerGraficas extends JFrame {
 
@@ -57,6 +58,7 @@ public class VerGraficas extends JFrame {
     private DefaultPieDataset datasetEstadoDecisiones;
     private DefaultCategoryDataset datasetOfertaVsDemanda;
     private DefaultCategoryDataset datasetCoincidencias;
+    private BotonRedond btnVolver;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -179,6 +181,25 @@ public class VerGraficas extends JFrame {
         tarjeta5.add(crearChartPanel(graficoDistribucionCoincidencias(datasetCoincidencias), ancho2 - 30, 225), BorderLayout.CENTER);
 
         panelContenido.setPreferredSize(new Dimension(anchoContenido, 850));
+        
+        btnVolver = new BotonRedond("    Volver", 25);
+        btnVolver.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		VerReportesAdmin volver = new VerReportesAdmin();
+        		volver.setVisible(true);
+        		dispose();
+        	}
+        });
+        btnVolver.setVerticalTextPosition(SwingConstants.TOP);
+        btnVolver.setText(" Volver");
+        btnVolver.setIconTextGap(6);
+        btnVolver.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnVolver.setForeground(new Color(0, 0, 51));
+        btnVolver.setFont(new Font("Calibri", Font.PLAIN, 18));
+        btnVolver.setColorHover(new Color(255, 220, 183));
+        btnVolver.setBackground(new Color(255, 235, 215));
+        btnVolver.setBounds(40, 830, 194, 57);
+        panelContenido.add(btnVolver);
     }
 
     private JLabel crearKpi(JPanel padre, int x, int y, int ancho, int alto, String titulo, String valor) {
