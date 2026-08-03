@@ -13,11 +13,13 @@ public class ConexionCliente {
     private ObjectInputStream entrada;
 
     private ConexionCliente() throws IOException {
-        socket = new Socket("127.0.0.1", 7000);
+        socket = new Socket();
+        socket.connect(new java.net.InetSocketAddress("127.0.0.1", 7000), 5000); 
         salida = new ObjectOutputStream(socket.getOutputStream());
         salida.flush();
         entrada = new ObjectInputStream(socket.getInputStream());
     }
+
 
     public static ConexionCliente getInstancia() throws IOException {
         if (instancia == null) {
