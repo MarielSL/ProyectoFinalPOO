@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.AbstractDocument;
 
@@ -118,43 +119,61 @@ public class LogIn extends JDialog {
                     return;
                 }
 
-                try {
-                	DatosLogin datosLogin = new DatosLogin(usuario, password);
-                	Peticion peticion = new Peticion(Peticion.Tipo.LOGIN, datosLogin);
+                btnLogin.setEnabled(false);
+                btnLogin.setText("Conectando...");
 
-                    Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
-
-                    if (!respuesta.isExito()) {
-                        JOptionPane.showMessageDialog(null, respuesta.getDatos().toString(), "Advertencia", JOptionPane.WARNING_MESSAGE);
-                        return;
+                SwingWorker<Respuesta, Void> hilo = new SwingWorker<Respuesta, Void>() {
+                    @Override
+                    protected Respuesta doInBackground() throws Exception {
+                        Peticion peticion = new Peticion(Peticion.Tipo.LOGIN, new DatosLogin(usuario, password));
+                        return ConexionCliente.getInstancia().enviarPeticion(peticion);
                     }
 
-                    Usuario loginUser = (Usuario) respuesta.getDatos();
+                    @Override
+                    protected void done() {
+                        btnLogin.setEnabled(true);
+                        btnLogin.setText("Login");
 
+                        try {
+                            Respuesta respuesta = get();
 
-                    BolsaEmpleo.getInstancia().setLoginUser(loginUser);
+                            if (!respuesta.isExito()) {
+                                JOptionPane.showMessageDialog(null, respuesta.getDatos().toString(), "Advertencia", JOptionPane.WARNING_MESSAGE);
+                                return;
+                            }
 
-                    if (loginUser.getTipoUser() == TipoUser.ADMINISTRADOR) {
-                        HomeAdministrador homeAdmin = new HomeAdministrador();
-                        homeAdmin.setVisible(true);
-                        dispose();
-                        return;
+                            Usuario loginUser = (Usuario) respuesta.getDatos();
+                            BolsaEmpleo.getInstancia().setLoginUser(loginUser);
+
+                            if (loginUser.getTipoUser() == TipoUser.ADMINISTRADOR) {
+                                HomeAdministrador homeAdmin = new HomeAdministrador();
+                                homeAdmin.setVisible(true);
+                                dispose();
+                                return;
+                            }
+                            if (loginUser.getEmpresa() != null) {
+                                HomeEmpresa homeEmpresa = new HomeEmpresa();
+                                homeEmpresa.setVisible(true);
+                                dispose();
+                                return;
+                            }
+                            if (loginUser.getPersona() != null) {
+                                HomeCandidato homeCandidato = new HomeCandidato();
+                                homeCandidato.setVisible(true);
+                                dispose();
+                            }
+
+                        } catch (Exception ex) {
+                            Throwable causa = ex.getCause();
+                            String mensaje = causa != null ? causa.getMessage() : ex.getMessage();
+                            JOptionPane.showMessageDialog(null,
+                                    mensaje != null ? mensaje : "No se pudo conectar con el servidor.",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
-                    if (loginUser.getEmpresa() != null) {
-                        HomeEmpresa homeEmpresa = new HomeEmpresa();
-                        homeEmpresa.setVisible(true);
-                        dispose();
-                        return;
-                    }
-                    if (loginUser.getPersona() != null) {
-                        HomeCandidato homeCandidato = new HomeCandidato();
-                        homeCandidato.setVisible(true);
-                        dispose();
-                    }
+                };
 
-                } catch (IOException | ClassNotFoundException ex) {
-                    JOptionPane.showMessageDialog(null, "No se pudo conectar con el servidor.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                hilo.execute();
             }
         });
         btnLogin.setForeground(new Color(0, 0, 51));
