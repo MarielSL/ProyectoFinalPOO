@@ -15,12 +15,7 @@ public class DatosGraficasAdmin implements Serializable {
 
     private int solicitudesMes;
     private int ofertasMes;
-
-    private int solicitudesRecibidas;
-    private int solicitudesAceptadas;
-
-    private int hombresEmpleados;
-    private int mujeresEmpleadas;
+    private int contratadosMes;
 
     private ArrayList<String> nombresAreasLaborales;
     private ArrayList<Integer> ofertasPorAreaLaboral;
@@ -33,29 +28,19 @@ public class DatosGraficasAdmin implements Serializable {
     private ArrayList<String> rangosCoincidencia;
     private ArrayList<Integer> cantidadCoincidencias;
 
-    public DatosGraficasAdmin(int solicitantesEmpleados, int empresasActivas,
-            ArrayList<String> nombresEmpresasTop, ArrayList<Integer> ofertasPorEmpresaTop,
-            int solicitudesMes, int ofertasMes,
-            int solicitudesRecibidas, int solicitudesAceptadas,
-            int hombresEmpleados, int mujeresEmpleadas) {
-
-        this.solicitantesEmpleados = solicitantesEmpleados;
-        this.empresasActivas = empresasActivas;
-        this.nombresEmpresasTop = nombresEmpresasTop;
-        this.ofertasPorEmpresaTop = ofertasPorEmpresaTop;
-        this.solicitudesMes = solicitudesMes;
-        this.ofertasMes = ofertasMes;
-        this.solicitudesRecibidas = solicitudesRecibidas;
-        this.solicitudesAceptadas = solicitudesAceptadas;
-        this.hombresEmpleados = hombresEmpleados;
-        this.mujeresEmpleadas = mujeresEmpleadas;
+    public DatosGraficasAdmin() {
+        this.nombresEmpresasTop = new ArrayList<String>();
+        this.ofertasPorEmpresaTop = new ArrayList<Integer>();
+        this.nombresAreasLaborales = new ArrayList<String>();
+        this.ofertasPorAreaLaboral = new ArrayList<Integer>();
+        this.solicitudesPorAreaLaboral = new ArrayList<Integer>();
+        this.rangosCoincidencia = new ArrayList<String>();
+        this.cantidadCoincidencias = new ArrayList<Integer>();
     }
 
     public DatosGraficasAdmin(int solicitantesEmpleados, int empresasActivas,
             ArrayList<String> nombresEmpresasTop, ArrayList<Integer> ofertasPorEmpresaTop,
-            int solicitudesMes, int ofertasMes,
-            int solicitudesRecibidas, int solicitudesAceptadas,
-            int hombresEmpleados, int mujeresEmpleadas,
+            int solicitudesMes, int ofertasMes, int contratadosMes,
             ArrayList<String> nombresAreasLaborales,
             ArrayList<Integer> ofertasPorAreaLaboral,
             ArrayList<Integer> solicitudesPorAreaLaboral,
@@ -69,10 +54,7 @@ public class DatosGraficasAdmin implements Serializable {
         this.ofertasPorEmpresaTop = ofertasPorEmpresaTop;
         this.solicitudesMes = solicitudesMes;
         this.ofertasMes = ofertasMes;
-        this.solicitudesRecibidas = solicitudesRecibidas;
-        this.solicitudesAceptadas = solicitudesAceptadas;
-        this.hombresEmpleados = hombresEmpleados;
-        this.mujeresEmpleadas = mujeresEmpleadas;
+        this.contratadosMes = contratadosMes;
         this.nombresAreasLaborales = nombresAreasLaborales;
         this.ofertasPorAreaLaboral = ofertasPorAreaLaboral;
         this.solicitudesPorAreaLaboral = solicitudesPorAreaLaboral;
@@ -107,20 +89,8 @@ public class DatosGraficasAdmin implements Serializable {
         return ofertasMes;
     }
 
-    public int getSolicitudesRecibidas() {
-        return solicitudesRecibidas;
-    }
-
-    public int getSolicitudesAceptadas() {
-        return solicitudesAceptadas;
-    }
-
-    public int getHombresEmpleados() {
-        return hombresEmpleados;
-    }
-
-    public int getMujeresEmpleadas() {
-        return mujeresEmpleadas;
+    public int getContratadosMes() {
+        return contratadosMes;
     }
 
     public ArrayList<String> getNombresAreasLaborales() {

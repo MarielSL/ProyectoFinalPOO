@@ -10,10 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.AbstractButton;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
@@ -40,20 +41,30 @@ import red.Respuesta;
 public class VerGraficas extends JFrame {
 
     private static final long serialVersionUID = 1L;
+
     private JPanel contentPane;
-    private Dimension dim;
+    private JPanel panelMenu;
     private JPanel panelContenido;
+
+    private Dimension dim;
     private int anchoContenido;
 
+    private JLabel lblSolicitantesEmpleados;
+    private JLabel lblEmpresasActivas;
+
+    private DefaultCategoryDataset datasetTopEmpresas;
+    private DefaultCategoryDataset datasetActividadMensual;
+    private DefaultPieDataset datasetEstadoDecisiones;
+    private DefaultCategoryDataset datasetOfertaVsDemanda;
+    private DefaultCategoryDataset datasetCoincidencias;
+
     public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    VerGraficas frame = new VerGraficas();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        EventQueue.invokeLater(() -> {
+            try {
+                VerGraficas frame = new VerGraficas();
+                frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
@@ -72,23 +83,21 @@ public class VerGraficas extends JFrame {
         contentPane.setLayout(new BorderLayout(0, 0));
         setContentPane(contentPane);
 
-        JLayeredPane layeredPane = new JLayeredPane();
-        contentPane.add(layeredPane, BorderLayout.CENTER);
-        layeredPane.setLayout(new BorderLayout(0, 0));
+        anchoContenido = dim.width - 80;
 
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(245, 245, 245));
-        panel.setLayout(null);
-        layeredPane.add(panel, BorderLayout.CENTER);
+        construirInterfaz();
+        cargarGraficasConHilo();
+    }
 
-        int margen = 40;
-        int anchoContenidoLocal = dim.width - (margen * 2);
-        this.anchoContenido = anchoContenidoLocal;
+    private void construirInterfaz() {
+        construirMenu();
+        construirPanelContenido();
+    }
 
-        PanelConSombra panelMenu = new PanelConSombra(25);
+    private void construirMenu() {
+        panelMenu = new PanelConSombra(25);
         panelMenu.setBackground(new Color(0, 0, 51));
-        panelMenu.setBounds(40, 20, anchoContenidoLocal, 82);
-        panel.add(panelMenu);
+        panelMenu.setPreferredSize(new Dimension(anchoContenido, 82));
         panelMenu.setLayout(null);
 
         BotonRedond btnAtras = new BotonRedond("", 18);
@@ -106,103 +115,93 @@ public class VerGraficas extends JFrame {
                 dispose();
             }
         });
-        panelMenu.add(btnAtras);
 
         JLabel lblTitulo = new JLabel("Ver Gráficas");
         lblTitulo.setForeground(new Color(255, 51, 51));
         lblTitulo.setFont(new Font("Calibri", Font.BOLD, 30));
         lblTitulo.setBounds(74, 22, 400, 30);
+
+        panelMenu.add(btnAtras);
         panelMenu.add(lblTitulo);
 
-        panelContenido = panel;
-        cargarGraficasConHilo();
+        contentPane.add(panelMenu, BorderLayout.NORTH);
     }
 
-    private void cargarGraficasConHilo() {
-        SwingWorker<DatosGraficasAdmin, Void> hilo = new SwingWorker<DatosGraficasAdmin, Void>() {
-            @Override
-            protected DatosGraficasAdmin doInBackground() throws Exception {
-                Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_GRAFICAS_ADMIN, null);
-                Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
-                if (!respuesta.isExito()) {
-                    throw new IllegalArgumentException(String.valueOf(respuesta.getDatos()));
-                }
-                return (DatosGraficasAdmin) respuesta.getDatos();
-            }
+    private void construirPanelContenido() {
+        panelContenido = new JPanel();
+        panelContenido.setBackground(new Color(245, 245, 245));
+        panelContenido.setLayout(null);
+        contentPane.add(panelContenido, BorderLayout.CENTER);
 
-            @Override
-            protected void done() {
-                try {
-                    DatosGraficasAdmin datos = get();
-                    dibujarPantalla(datos);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(VerGraficas.this, "No se pudieron cargar las gráficas.", "Error", JOptionPane.ERROR_MESSAGE);
-                    dibujarPantalla(null);
-                }
-            }
-        };
-        hilo.execute();
+        construirKPIs();
+        construirGraficas();
     }
 
-    private void dibujarPantalla(DatosGraficasAdmin datos) {
-        panelContenido.removeAll();
-
-        int y = 110;
-        int tarjetaKpiW = 420;
+    private void construirKPIs() {
+        int y = 20;
+        int tarjetaKpiW = (anchoContenido - 100) / 2;
         int tarjetaKpiH = 95;
         int gapKpi = 20;
 
-        crearKpi(panelContenido, 40, y, tarjetaKpiW, tarjetaKpiH, "Solicitantes empleados", datos != null ? datos.getSolicitantesEmpleados() : 0);
-        crearKpi(panelContenido, 40 + tarjetaKpiW + gapKpi, y, tarjetaKpiW, tarjetaKpiH, "Empresas activas", datos != null ? datos.getEmpresasActivas() : 0);
-
-        int yGraficas = 220;
-        int gap = 20;
-        int anchoTarjeta = (anchoContenido - (gap * 2)) / 3;
-        int altoTarjeta = 340;
-
-        PanelConSombra tarjeta1 = crearTarjeta(panelContenido, 40, yGraficas, anchoTarjeta, altoTarjeta, "Top 5 empresas con más ofertas");
-        tarjeta1.add(crearChartPanel(graficoTopEmpresas(datos), anchoTarjeta - 30, 255), BorderLayout.CENTER);
-
-        PanelConSombra tarjeta2 = crearTarjeta(panelContenido, 40 + anchoTarjeta + gap, yGraficas, anchoTarjeta, altoTarjeta, "Actividad mensual de la plataforma");
-        tarjeta2.add(crearChartPanel(graficoActividadMensual(datos), anchoTarjeta - 30, 255), BorderLayout.CENTER);
-
-        PanelConSombra tarjeta3 = crearTarjeta(panelContenido, 40 + (anchoTarjeta + gap) * 2, yGraficas, anchoTarjeta, altoTarjeta, "Estado de las decisiones de candidatos");
-        tarjeta3.add(crearChartPanel(graficoEstadoDecisiones(datos), anchoTarjeta - 30, 255), BorderLayout.CENTER);
-
-        int y2 = 580;
-        int anchoInferior = anchoContenido - 80;
-
-        PanelConSombra tarjeta4 = crearTarjeta(panelContenido, 40, y2, anchoInferior, 300, "Oferta vs. demanda por área laboral");
-        tarjeta4.add(crearChartPanel(graficoOfertaVsDemandaArea(datos), anchoInferior - 30, 215), BorderLayout.CENTER);
-
-        int y3 = 900;
-        PanelConSombra tarjeta5 = crearTarjeta(panelContenido, 40, y3, anchoInferior, 300, "Distribución de coincidencias");
-        tarjeta5.add(crearChartPanel(graficoDistribucionCoincidencias(datos), anchoInferior - 30, 215), BorderLayout.CENTER);
-
-        panelContenido.setPreferredSize(new Dimension(anchoContenido, 1250));
-        panelContenido.revalidate();
-        panelContenido.repaint();
+        lblSolicitantesEmpleados = crearKpi(panelContenido, 40, y, tarjetaKpiW, tarjetaKpiH, "Solicitantes empleados", "0");
+        lblEmpresasActivas = crearKpi(panelContenido, 40 + tarjetaKpiW + gapKpi, y, tarjetaKpiW, tarjetaKpiH, "Empresas activas", "0");
     }
 
-    private void crearKpi(JPanel padre, int x, int y, int ancho, int alto, String titulo, int valor) {
+    private void construirGraficas() {
+        int yInicio = 140;
+        int gap = 20;
+
+        int ancho3 = (anchoContenido - 80 - (gap * 2)) / 3;
+        int altoTarjeta = 340;
+
+        PanelConSombra tarjeta1 = crearTarjeta(panelContenido, 40, yInicio, ancho3, altoTarjeta, "Top 5 empresas con más ofertas");
+        datasetTopEmpresas = new DefaultCategoryDataset();
+        tarjeta1.add(crearChartPanel(graficoTopEmpresas(datasetTopEmpresas), ancho3 - 30, 250), BorderLayout.CENTER);
+
+        PanelConSombra tarjeta2 = crearTarjeta(panelContenido, 40 + ancho3 + gap, yInicio, ancho3, altoTarjeta, "Actividad mensual de la plataforma");
+        datasetActividadMensual = new DefaultCategoryDataset();
+        tarjeta2.add(crearChartPanel(graficoActividadMensual(datasetActividadMensual), ancho3 - 30, 250), BorderLayout.CENTER);
+
+        PanelConSombra tarjeta3 = crearTarjeta(panelContenido, 40 + (ancho3 + gap) * 2, yInicio, ancho3, altoTarjeta, "Estado de decisiones");
+        datasetEstadoDecisiones = new DefaultPieDataset();
+        tarjeta3.add(crearChartPanel(graficoEstadoDecisiones(datasetEstadoDecisiones), ancho3 - 30, 250), BorderLayout.CENTER);
+
+        int yAbajo = 500;
+        int ancho2 = (anchoContenido - 100 - gap) / 2;
+        int altoAbajo = 320;
+
+        PanelConSombra tarjeta4 = crearTarjeta(panelContenido, 40, yAbajo, ancho2, altoAbajo, "Oferta vs. demanda por área laboral");
+        datasetOfertaVsDemanda = new DefaultCategoryDataset();
+        tarjeta4.add(crearChartPanel(graficoOfertaVsDemandaArea(datasetOfertaVsDemanda), ancho2 - 30, 225), BorderLayout.CENTER);
+
+        PanelConSombra tarjeta5 = crearTarjeta(panelContenido, 40 + ancho2 + gap, yAbajo, ancho2, altoAbajo, "Distribución de coincidencias");
+        datasetCoincidencias = new DefaultCategoryDataset();
+        tarjeta5.add(crearChartPanel(graficoDistribucionCoincidencias(datasetCoincidencias), ancho2 - 30, 225), BorderLayout.CENTER);
+
+        panelContenido.setPreferredSize(new Dimension(anchoContenido, 850));
+    }
+
+    private JLabel crearKpi(JPanel padre, int x, int y, int ancho, int alto, String titulo, String valor) {
         PanelConSombra card = new PanelConSombra(18);
         card.setBackground(Color.WHITE);
         card.setBounds(x, y, ancho, alto);
         card.setLayout(null);
-        padre.add(card);
 
         JLabel lblTitulo = new JLabel(titulo);
         lblTitulo.setForeground(new Color(0, 0, 51));
         lblTitulo.setFont(new Font("Calibri", Font.BOLD, 17));
         lblTitulo.setBounds(20, 14, ancho - 40, 20);
-        card.add(lblTitulo);
 
-        JLabel lblValor = new JLabel(String.valueOf(valor));
+        JLabel lblValor = new JLabel(valor);
         lblValor.setForeground(new Color(0, 0, 51));
         lblValor.setFont(new Font("Calibri", Font.BOLD, 34));
         lblValor.setBounds(20, 40, ancho - 40, 35);
+
+        card.add(lblTitulo);
         card.add(lblValor);
+        padre.add(card);
+
+        return lblValor;
     }
 
     private PanelConSombra crearTarjeta(JPanel padre, int x, int y, int ancho, int alto, String titulo) {
@@ -210,7 +209,6 @@ public class VerGraficas extends JFrame {
         tarjeta.setBackground(Color.WHITE);
         tarjeta.setBounds(x, y, ancho, alto);
         tarjeta.setLayout(new BorderLayout());
-        padre.add(tarjeta);
 
         JPanel header = new JPanel();
         header.setOpaque(false);
@@ -221,15 +219,11 @@ public class VerGraficas extends JFrame {
         lblTitulo.setForeground(new Color(0, 0, 51));
         lblTitulo.setFont(new Font("Calibri", Font.BOLD, 20));
         lblTitulo.setBounds(18, 12, ancho - 36, 24);
-        header.add(lblTitulo);
 
+        header.add(lblTitulo);
         tarjeta.add(header, BorderLayout.NORTH);
 
-        JPanel body = new JPanel();
-        body.setOpaque(false);
-        body.setLayout(new BorderLayout());
-        tarjeta.add(body, BorderLayout.CENTER);
-
+        padre.add(tarjeta);
         return tarjeta;
     }
 
@@ -245,14 +239,85 @@ public class VerGraficas extends JFrame {
         return panel;
     }
 
-    private JFreeChart graficoTopEmpresas(DatosGraficasAdmin datos) {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        if (datos != null && datos.getNombresEmpresasTop() != null && datos.getOfertasPorEmpresaTop() != null) {
+    private void cargarGraficasConHilo() {
+        SwingWorker<DatosGraficasAdmin, Void> hilo = new SwingWorker<DatosGraficasAdmin, Void>() {
+            @Override
+            protected DatosGraficasAdmin doInBackground() throws Exception {
+                Peticion peticion = new Peticion(Peticion.Tipo.OBTENER_GRAFICAS_ADMIN, null);
+                Respuesta respuesta = ConexionCliente.getInstancia().enviarPeticion(peticion);
+
+                if (!respuesta.isExito()) {
+                    throw new IllegalArgumentException(String.valueOf(respuesta.getDatos()));
+                }
+
+                return (DatosGraficasAdmin) respuesta.getDatos();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    DatosGraficasAdmin datos = get();
+                    actualizarGraficas(datos);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                            VerGraficas.this,
+                            "No se pudieron cargar las gráficas.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            }
+        };
+        hilo.execute();
+    }
+
+    private void actualizarGraficas(DatosGraficasAdmin datos) {
+        if (datos == null) return;
+
+        lblSolicitantesEmpleados.setText(String.valueOf(datos.getSolicitantesEmpleados()));
+        lblEmpresasActivas.setText(String.valueOf(datos.getEmpresasActivas()));
+
+        datasetTopEmpresas.clear();
+        if (datos.getNombresEmpresasTop() != null && datos.getOfertasPorEmpresaTop() != null) {
             for (int i = 0; i < datos.getNombresEmpresasTop().size() && i < datos.getOfertasPorEmpresaTop().size(); i++) {
-                dataset.addValue(datos.getOfertasPorEmpresaTop().get(i), "Ofertas", datos.getNombresEmpresasTop().get(i));
+                datasetTopEmpresas.addValue(datos.getOfertasPorEmpresaTop().get(i), "Ofertas", datos.getNombresEmpresasTop().get(i));
             }
         }
 
+        datasetActividadMensual.clear();
+        datasetActividadMensual.addValue(datos.getSolicitudesMes(), "Cantidad", "Solicitudes");
+        datasetActividadMensual.addValue(datos.getOfertasMes(), "Cantidad", "Ofertas");
+        datasetActividadMensual.addValue(datos.getContratadosMes(), "Cantidad", "Contrataciones");
+
+        datasetEstadoDecisiones.clear();
+        datasetEstadoDecisiones.setValue("Pendientes", Math.max(0, datos.getPendientes()));
+        datasetEstadoDecisiones.setValue("Contratados", Math.max(0, datos.getContratados()));
+        datasetEstadoDecisiones.setValue("Rechazados", Math.max(0, datos.getRechazados()));
+
+        datasetOfertaVsDemanda.clear();
+        if (datos.getNombresAreasLaborales() != null && datos.getOfertasPorAreaLaboral() != null && datos.getSolicitudesPorAreaLaboral() != null) {
+            for (int i = 0; i < datos.getNombresAreasLaborales().size(); i++) {
+                String area = datos.getNombresAreasLaborales().get(i);
+                int ofertas = i < datos.getOfertasPorAreaLaboral().size() ? datos.getOfertasPorAreaLaboral().get(i) : 0;
+                int solicitudes = i < datos.getSolicitudesPorAreaLaboral().size() ? datos.getSolicitudesPorAreaLaboral().get(i) : 0;
+                datasetOfertaVsDemanda.addValue(ofertas, "Ofertas", area);
+                datasetOfertaVsDemanda.addValue(solicitudes, "Solicitudes", area);
+            }
+        }
+
+        datasetCoincidencias.clear();
+        if (datos.getRangosCoincidencia() != null && datos.getCantidadCoincidencias() != null) {
+            for (int i = 0; i < datos.getRangosCoincidencia().size() && i < datos.getCantidadCoincidencias().size(); i++) {
+                datasetCoincidencias.addValue(datos.getCantidadCoincidencias().get(i), "Coincidencias", datos.getRangosCoincidencia().get(i));
+            }
+        }
+
+        panelContenido.revalidate();
+        panelContenido.repaint();
+    }
+
+    private JFreeChart graficoTopEmpresas(DefaultCategoryDataset dataset) {
         JFreeChart chart = ChartFactory.createBarChart(null, "Empresa", "Ofertas", dataset, PlotOrientation.HORIZONTAL, false, true, false);
         CategoryPlot plot = chart.getCategoryPlot();
         plot.setBackgroundPaint(Color.WHITE);
@@ -270,14 +335,7 @@ public class VerGraficas extends JFrame {
         return chart;
     }
 
-    private JFreeChart graficoActividadMensual(DatosGraficasAdmin datos) {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        if (datos != null) {
-            dataset.addValue(datos.getSolicitudesMes(), "Cantidad", "Solicitudes");
-            dataset.addValue(datos.getOfertasMes(), "Cantidad", "Ofertas");
-            dataset.addValue(datos.getContratados(), "Cantidad", "Contrataciones");
-        }
-
+    private JFreeChart graficoActividadMensual(DefaultCategoryDataset dataset) {
         JFreeChart chart = ChartFactory.createBarChart(null, "Tipo", "Cantidad", dataset, PlotOrientation.VERTICAL, false, true, false);
         CategoryPlot plot = chart.getCategoryPlot();
         plot.setBackgroundPaint(Color.WHITE);
@@ -297,14 +355,7 @@ public class VerGraficas extends JFrame {
         return chart;
     }
 
-    private JFreeChart graficoEstadoDecisiones(DatosGraficasAdmin datos) {
-        DefaultPieDataset dataset = new DefaultPieDataset();
-        if (datos != null) {
-            dataset.setValue("Pendientes", Math.max(0, datos.getPendientes()));
-            dataset.setValue("Contratados", Math.max(0, datos.getContratados()));
-            dataset.setValue("Rechazados", Math.max(0, datos.getRechazados()));
-        }
-
+    private JFreeChart graficoEstadoDecisiones(DefaultPieDataset dataset) {
         JFreeChart chart = ChartFactory.createPieChart(null, dataset, true, true, false);
         PiePlot plot = (PiePlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
@@ -323,18 +374,7 @@ public class VerGraficas extends JFrame {
         return chart;
     }
 
-    private JFreeChart graficoOfertaVsDemandaArea(DatosGraficasAdmin datos) {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        if (datos != null && datos.getNombresAreasLaborales() != null && datos.getOfertasPorAreaLaboral() != null && datos.getSolicitudesPorAreaLaboral() != null) {
-            for (int i = 0; i < datos.getNombresAreasLaborales().size(); i++) {
-                String area = datos.getNombresAreasLaborales().get(i);
-                int ofertas = i < datos.getOfertasPorAreaLaboral().size() ? datos.getOfertasPorAreaLaboral().get(i) : 0;
-                int solicitudes = i < datos.getSolicitudesPorAreaLaboral().size() ? datos.getSolicitudesPorAreaLaboral().get(i) : 0;
-                dataset.addValue(ofertas, "Ofertas", area);
-                dataset.addValue(solicitudes, "Solicitudes", area);
-            }
-        }
-
+    private JFreeChart graficoOfertaVsDemandaArea(DefaultCategoryDataset dataset) {
         JFreeChart chart = ChartFactory.createBarChart(null, "Área laboral", "Cantidad", dataset, PlotOrientation.HORIZONTAL, true, true, false);
         CategoryPlot plot = chart.getCategoryPlot();
         plot.setBackgroundPaint(Color.WHITE);
@@ -353,14 +393,7 @@ public class VerGraficas extends JFrame {
         return chart;
     }
 
-    private JFreeChart graficoDistribucionCoincidencias(DatosGraficasAdmin datos) {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        if (datos != null && datos.getRangosCoincidencia() != null && datos.getCantidadCoincidencias() != null) {
-            for (int i = 0; i < datos.getRangosCoincidencia().size() && i < datos.getCantidadCoincidencias().size(); i++) {
-                dataset.addValue(datos.getCantidadCoincidencias().get(i), "Coincidencias", datos.getRangosCoincidencia().get(i));
-            }
-        }
-
+    private JFreeChart graficoDistribucionCoincidencias(DefaultCategoryDataset dataset) {
         JFreeChart chart = ChartFactory.createBarChart(null, "Rango", "Cantidad", dataset, PlotOrientation.VERTICAL, false, true, false);
         CategoryPlot plot = chart.getCategoryPlot();
         plot.setBackgroundPaint(Color.WHITE);
@@ -380,9 +413,7 @@ public class VerGraficas extends JFrame {
 
     private void colocarIconoBoton(AbstractButton boton, String ruta, int ancho, int alto) {
         java.net.URL recurso = getClass().getResource(ruta);
-        if (recurso == null) {
-            return;
-        }
+        if (recurso == null) return;
         ImageIcon icono = new ImageIcon(recurso);
         Image imagenEscalada = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
         boton.setIcon(new ImageIcon(imagenEscalada));
