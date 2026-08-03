@@ -1,5 +1,6 @@
 package logico;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -472,21 +473,63 @@ public class BolsaEmpleo implements Serializable {
 	}
 
 	private static BolsaEmpleo cargarDatos() {
-	    try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream("BolsaEmpleo.dat"))) {
+	    File archivoPrincipal = new File("BolsaEmpleo.dat");
+
+	    if (!archivoPrincipal.exists()) {
+	        System.out.println("BolsaEmpleo.dat no existe. Buscando respaldo más reciente...");
+	        BolsaEmpleo restaurada = intentarRestaurarDesdeRespaldo();
+	        if (restaurada != null) {
+	            return restaurada;
+	        }
+	        System.out.println("No se encontró ningún respaldo. Creando BolsaEmpleo vacía.");
+	        return new BolsaEmpleo();
+	    }
+
+	    try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(archivoPrincipal))) {
 	        BolsaEmpleo bolsa = (BolsaEmpleo) entrada.readObject();
 	        recalcularContadores(bolsa);
 	        return bolsa;
 
-	    } catch (FileNotFoundException e) {
-	        return new BolsaEmpleo();
-
-	    } catch (IOException e) {
+	    } catch (IOException | ClassNotFoundException e) {
 	        e.printStackTrace();
-	        return new BolsaEmpleo();
+	        System.out.println("BolsaEmpleo.dat existe pero está dañado. Intentando restaurar desde respaldo...");
 
-	    } catch (ClassNotFoundException e) {
-	        e.printStackTrace();
+	        BolsaEmpleo restaurada = intentarRestaurarDesdeRespaldo();
+	        if (restaurada != null) {
+	            return restaurada;
+	        }
 	        return new BolsaEmpleo();
+	    }
+	}
+
+	private static BolsaEmpleo intentarRestaurarDesdeRespaldo() {
+	    File carpetaBackups = new File("backups");
+	    if (!carpetaBackups.exists()) {
+	        return null;
+	    }
+
+	    File[] respaldos = carpetaBackups.listFiles((dir, nombre) -> nombre.endsWith(".dat"));
+	    if (respaldos == null || respaldos.length == 0) {
+	        return null;
+	    }
+
+	    java.util.Arrays.sort(respaldos, Comparator.comparing(File::getName).reversed());
+	    File masReciente = respaldos[0];
+
+	    try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(masReciente))) {
+	        BolsaEmpleo bolsa = (BolsaEmpleo) entrada.readObject();
+	        recalcularContadores(bolsa);
+
+	        System.out.println("Datos restaurados automáticamente desde: " + masReciente.getName());
+
+	        bolsa.guardarDatos();
+
+	        return bolsa;
+
+	    } catch (IOException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	        System.out.println("No se pudo restaurar desde el respaldo: " + masReciente.getName());
+	        return null;
 	    }
 	}
 
