@@ -1021,6 +1021,7 @@ public class HomeAdministrador extends JFrame {
         boton.setIcon(new ImageIcon(imagenEscalada));
     }
 
+    //metodo imagenes
     private void colocarImagen(JLabel label, String ruta) {
         if (label == null || ruta == null) {
             return;
