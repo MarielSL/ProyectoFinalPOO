@@ -41,6 +41,7 @@ import red.DatosEstadisticas;
 import red.DatosEstadisticasCandidato;
 import red.DatosEstadisticasEmpresa;
 import red.DatosGraficasAdmin;
+import red.DatosGraficasCandidato;
 import red.DatosGraficasEmpresa;
 import red.DatosLogin;
 import red.DatosMejorMatchCandidato;
@@ -190,6 +191,9 @@ public class ServidorBolsaEmpleo {
 
             case OBTENER_GRAFICAS_ADMIN:
                 return procesarGraficasAdmin(bolsa);
+                
+            case OBTENER_GRAFICAS_CANDIDATO:
+                return procesarGraficasCandidato(bolsa, usuarioSesion);
 
             default:
                 return new Respuesta(false, "Operación no reconocida");
@@ -563,7 +567,135 @@ public class ServidorBolsaEmpleo {
         DatosEstadisticasEmpresa resultado = new DatosEstadisticasEmpresa(ofertasActivas, candidatosCompatibles, contratadosEsteMes);
         return new Respuesta(true, resultado);
     }
+    
+    //CANDIDATO 
+    
+    private static Respuesta procesarGraficasCandidato(BolsaEmpleo bolsa, Usuario usuarioSesion) {
+        try {
+            ArrayList<String> ofertasTop = new ArrayList<String>();
+            ArrayList<Float> porcentajesTop = new ArrayList<Float>();
+            ArrayList<String> categoriasLaborales = new ArrayList<String>();
+            ArrayList<Integer> cantidadPorCategoria = new ArrayList<Integer>();
 
+            if (bolsa == null || bolsa.getLoginUser() == null || bolsa.getLoginUser().getPersona() == null) {
+                DatosGraficasCandidato datos = new DatosGraficasCandidato(
+                        ofertasTop,
+                        porcentajesTop,
+                        categoriasLaborales,
+                        cantidadPorCategoria
+                );
+                return new Respuesta(true, datos);
+            }
+
+            Persona candidato = bolsa.getLoginUser().getPersona();
+            SolicitudEmpleo solicitud = candidato.getSolicitud();
+
+            if (solicitud == null) {
+                DatosGraficasCandidato datos = new DatosGraficasCandidato(
+                        ofertasTop,
+                        porcentajesTop,
+                        categoriasLaborales,
+                        cantidadPorCategoria
+                );
+                return new Respuesta(true, datos);
+            }
+
+            ArrayList<Oferta> ofertas = bolsa.getOfertas() != null ? bolsa.getOfertas() : new ArrayList<Oferta>();
+
+            ArrayList<Oferta> ofertasCompatibles = new ArrayList<Oferta>();
+            ArrayList<Float> porcentajesCompatibles = new ArrayList<Float>();
+
+            for (Oferta oferta : ofertas) {
+                if (oferta == null) {
+                    continue;
+                }
+
+                if (oferta.getEstado() != EstadoOferta.PENDIENTE) {
+                    continue;
+                }
+
+                float porcentaje = bolsa.calcCoincidencia(oferta, solicitud);
+
+                if (porcentaje > 0) {
+                    ofertasCompatibles.add(oferta);
+                    porcentajesCompatibles.add(porcentaje);
+                }
+            }
+
+            for (int i = 0; i < ofertasCompatibles.size() - 1; i++) {
+                for (int j = i + 1; j < ofertasCompatibles.size(); j++) {
+                    if (porcentajesCompatibles.get(j) > porcentajesCompatibles.get(i)) {
+                        Oferta ofertaTemp = ofertasCompatibles.get(i);
+                        ofertasCompatibles.set(i, ofertasCompatibles.get(j));
+                        ofertasCompatibles.set(j, ofertaTemp);
+
+                        Float porcTemp = porcentajesCompatibles.get(i);
+                        porcentajesCompatibles.set(i, porcentajesCompatibles.get(j));
+                        porcentajesCompatibles.set(j, porcTemp);
+                    }
+                }
+            }
+
+            int limite = Math.min(5, ofertasCompatibles.size());
+            for (int i = 0; i < limite; i++) {
+            	Oferta oferta = ofertasCompatibles.get(i);
+
+            	String nombreOferta = oferta.getPuesto();
+
+            	if (oferta.getEmpresa() != null && oferta.getEmpresa().getNombre() != null) {
+            	    nombreOferta = oferta.getEmpresa().getNombre() + " - " + oferta.getPuesto();
+            	}
+
+            	ofertasTop.add(nombreOferta);
+                porcentajesTop.add(porcentajesCompatibles.get(i));
+            }
+
+            java.util.LinkedHashMap<String, Integer> mapaCategorias = new java.util.LinkedHashMap<String, Integer>();
+            
+            for (Oferta oferta : ofertas) {
+                if (oferta == null) {
+                    continue;
+                }
+
+                if (oferta.getEstado() != EstadoOferta.PENDIENTE) {
+                    continue;
+                }
+
+                String categoria;
+
+                if (oferta.getAreaLaboral() == null) {
+                    categoria = "No especificada";
+                } else {
+                    categoria = oferta.getAreaLaboral()
+                                      .name()
+                                      .replace("_", " ");
+                }
+
+                if (mapaCategorias.containsKey(categoria)) {
+                    mapaCategorias.put(categoria, mapaCategorias.get(categoria) + 1);
+                } else {
+                    mapaCategorias.put(categoria, 1);
+                }
+            }
+
+            for (String categoria : mapaCategorias.keySet()) {
+                categoriasLaborales.add(categoria);
+                cantidadPorCategoria.add(mapaCategorias.get(categoria));
+            }
+
+            DatosGraficasCandidato datos = new DatosGraficasCandidato(
+                    ofertasTop,
+                    porcentajesTop,
+                    categoriasLaborales,
+                    cantidadPorCategoria
+            );
+
+            return new Respuesta(true, datos);
+
+        } catch (Exception e) {
+            return new Respuesta(false, "Error al generar las graficas del candidato: " + e.getMessage());
+        }
+    }
     // ==================== ADMIN ====================
 
     private static Respuesta procesarDashboardAdmin(BolsaEmpleo bolsa) {

@@ -506,9 +506,10 @@ public class HomeCandidato extends JFrame {
 		renderer.setBaseItemLabelPaint(colorTexto);
 
 		if (plot.getRangeAxis() instanceof NumberAxis) {
-			NumberAxis ejeCantidad = (NumberAxis) plot.getRangeAxis();
-			ejeCantidad.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-			ejeCantidad.setLowerBound(0);
+		    NumberAxis ejePorcentaje = (NumberAxis) plot.getRangeAxis();
+		    ejePorcentaje.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		    ejePorcentaje.setLowerBound(0);
+		    ejePorcentaje.setUpperBound(100);
 		}
 	}
 
