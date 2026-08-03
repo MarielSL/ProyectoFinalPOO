@@ -109,10 +109,21 @@ public class BolsaEmpleo implements Serializable {
 	}
 
 	public void regSolicitud(SolicitudEmpleo solicitud, Persona persona) {
+		if(solicitud == null) {
+			throw new IllegalArgumentException("La solicitud no puede ser nula.");
+		}
+
+		if(persona == null) {
+			throw new IllegalArgumentException("El candidato no puede ser nulo.");
+		}
+
+		if(solicitudes == null) {
+			solicitudes = new ArrayList<SolicitudEmpleo>();
+		}
 
 		persona.setSolicitudes(solicitud);
-		loginUser.getPersona().setSolicitudes(solicitud);
 		solicitudes.add(solicitud);
+
 		generadorIdSolicitud++;
 		guardarDatos();
 	}
@@ -378,9 +389,22 @@ public class BolsaEmpleo implements Serializable {
 	}
 
 	public void modSolicitud(SolicitudEmpleo solicitud) {
+		if(solicitud == null) {
+			throw new IllegalArgumentException("La solicitud no puede ser nula.");
+		}
+
 		int indexSolicitud = buscarIndexSolicitud(solicitud.getId());
+
+		if(indexSolicitud == -1) {
+			throw new IllegalArgumentException("No se encontró la solicitud.");
+		}
+
 		solicitudes.set(indexSolicitud, solicitud);
-		loginUser.getPersona().setSolicitudes(solicitud);
+
+		if(solicitud.getCandidato() != null) {
+			solicitud.getCandidato().setSolicitudes(solicitud);
+		}
+
 		guardarDatos();
 	}
 
