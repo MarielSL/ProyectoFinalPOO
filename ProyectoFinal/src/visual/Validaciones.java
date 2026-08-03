@@ -7,7 +7,7 @@ import javax.swing.text.DocumentFilter;
 
 public class Validaciones {
 
-    // Patrones compilados una sola vez (mejor rendimiento)
+
     private static final Pattern PATRON_SOLO_LETRAS = Pattern.compile("^\\p{L}[\\p{L}\\s]*$");
     private static final Pattern PATRON_SOLO_NUMEROS = Pattern.compile("^\\d+$");
     private static final Pattern PATRON_CORREO = Pattern.compile("^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$");
@@ -15,7 +15,7 @@ public class Validaciones {
     private static final int MAX_DIGITOS_CEDULA = 11;
     private static final int MAX_DIGITOS_TELEFONO = 10;
 
-    // Método genérico para validar contra un patrón
+    
     private static boolean validarConPatron(String texto, Pattern patron) {
         if (texto == null) {
             return false;
@@ -83,9 +83,9 @@ public class Validaciones {
 
         StringBuilder resultado = new StringBuilder();
         for (int i = 0; i < soloDigitos.length(); i++) {
-            if (i == 3 || i == 7) { // Formato típico: 001-0000000-0
-                resultado.append("-");
-            }
+        	if (i == 3 || i == 10) { 
+        	    resultado.append("-");
+        	}
             resultado.append(soloDigitos.charAt(i));
         }
         return resultado.toString();
@@ -306,6 +306,35 @@ public class Validaciones {
                 String formateado = formatearRnc(digitos);
 
                 fb.replace(0, fb.getDocument().getLength(), formateado, atributos);
+            }
+        };
+    }
+    
+    public static DocumentFilter filtroCedulaFormateado() {
+        return new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                reemplazarTexto(fb, offset, 0, string);
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                reemplazarTexto(fb, offset, length, text);
+            }
+
+            @Override
+            public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+                String textoActual = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String nuevoTexto = textoActual.substring(0, offset) + textoActual.substring(offset + length);
+                String formateado = formatearCedula(nuevoTexto);
+                fb.replace(0, fb.getDocument().getLength(), formateado, null);
+            }
+
+            private void reemplazarTexto(FilterBypass fb, int offset, int length, String text) throws BadLocationException {
+                String textoActual = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String nuevoTexto = textoActual.substring(0, offset) + text + textoActual.substring(offset + length);
+                String formateado = formatearCedula(nuevoTexto);
+                fb.replace(0, fb.getDocument().getLength(), formateado, null);
             }
         };
     }

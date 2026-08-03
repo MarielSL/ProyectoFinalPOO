@@ -361,10 +361,6 @@ public class RegistrarSolicitante extends JDialog {
 			JOptionPane.showMessageDialog(null, "Debe de completar todos los datos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-		if (!Validaciones.soloNumeros(txtCedula.getText())) {
-			JOptionPane.showMessageDialog(null, "La c\u00E9dula solo debe contener n\u00FAmeros.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
 		if (!Validaciones.soloLetras(txtNombre.getText())) {
 			JOptionPane.showMessageDialog(null, "El nombre solo debe contener letras.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return false;
@@ -506,6 +502,7 @@ public class RegistrarSolicitante extends JDialog {
 		lblCedula.setBounds(0, 43, 200, 20);
 		paso.add(lblCedula);
 		txtCedula = new TextFieldRedond(25);
+		((AbstractDocument) txtCedula.getDocument()).setDocumentFilter(Validaciones.filtroCedulaFormateado());
 		txtCedula.setForeground(new Color(0, 0, 51));
 		txtCedula.setBackground(SystemColor.controlHighlight);
 		txtCedula.setFont(new Font("Calibri", Font.PLAIN, 18));
